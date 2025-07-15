@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.custom-row-padding .MuiTableCell-root {
+    padding: 4px 8px; /* Adjust padding as needed */
+  }
+
+
+
+.mui-datatables-1t7lzbz-MuiTableCell-root{
+    padding: 5px !important;
+}
+
+
+/* .tss-10rusft-MUIDataTableToolbar-icon{
+    background-color: blue !important;
+    color: white !important;
+} */
+.dj1{
+    color: red;
+}
+
+.css-113cboj-MuiTabs-root {
+    min-height: "30px"!important;
+}
