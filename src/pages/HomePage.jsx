@@ -32,7 +32,7 @@ function HomePage() {
   }
 
   return (
-    <div>
+    <div className=" px-20 py-6 rounded-md ">
       <MuiTable tableData={clients} fetchClients={fetchClients} />
     </div>
   );

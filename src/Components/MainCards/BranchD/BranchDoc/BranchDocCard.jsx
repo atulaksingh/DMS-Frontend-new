@@ -17,6 +17,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 import { FaFileAlt } from "react-icons/fa";
 // import "react-toastify/dist/ReactToastify.css";
 const options = ["None", "Atria", "Callisto"];
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",
@@ -112,7 +113,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-branchdoc/${branchID}/${rowId}`,
+        `${API_URL}/api/edit-branchdoc/${branchID}/${rowId}`,
         formDataToSend,
         {
           headers: {
@@ -175,7 +176,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-branchdoc/${branchID}/${deleteId}`
+        `${API_URL}/api/delete-branchdoc/${branchID}/${deleteId}`
       );
       // console.log("res-----branchDoc---->", response);
       setOpenDeleteModal(false);
@@ -254,7 +255,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/single-branchdoc/${branchID}/${rowId}`
+          `${API_URL}/api/single-branchdoc/${branchID}/${rowId}`
         );
         setBranchDocData(response.data);
         setLoading(false);
@@ -274,7 +275,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-branchdoc/${branchID}/${rowId}`
+        `${API_URL}/api/edit-branchdoc/${branchID}/${rowId}`
       );
       // console.log("dd", response.data);
       setFormData(response.data);

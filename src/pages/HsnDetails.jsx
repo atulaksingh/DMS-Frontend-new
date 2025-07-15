@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
 
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 function HsnDetails() {
 
    
@@ -15,7 +15,7 @@ function HsnDetails() {
       const fetchClients = async () => {
         try {
           const response = await axios.get(
-            "http://127.0.0.1:8000/api/list-client"
+            `${API_URL}/api/list-client`
           );
           // console.log("response",response.data)
           setHsnData(response.data.hsn); // Assuming the data is returned in the response body
@@ -44,7 +44,7 @@ function HsnDetails() {
     
   return (
     <>
-      <div className=" px-20 py-6 rounded-md ">
+      <div className=" px-40 py-12 rounded-md ">
         <Hsn hsnData={hsnData} fetchClients={fetchClients} />
       </div>
     </>

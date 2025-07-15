@@ -20,6 +20,7 @@ import { TextField } from "@mui/material";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { useDispatch } from "react-redux";
 const options = ["None", "Atria", "Callisto"];
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",
@@ -138,7 +139,7 @@ export default function BranchCard({ rowId }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-branch/${id}/${rowId}`,
+        `${API_URL}/api/edit-branch/${id}/${rowId}`,
         formDataToSend
       );
       // console.log("response",response)
@@ -195,7 +196,7 @@ export default function BranchCard({ rowId }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-branch/${id}/${deleteId}`
+        `${API_URL}/api/delete-branch/${id}/${deleteId}`
       );
       // console.log("res-----Branch---->", response);
 
@@ -234,7 +235,7 @@ export default function BranchCard({ rowId }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-branch/${id}/${rowId}`
+        `${API_URL}/api/edit-branch/${id}/${rowId}`
       );
 
       // Check if the response is successful

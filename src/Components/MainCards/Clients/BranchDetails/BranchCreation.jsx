@@ -12,6 +12,7 @@ import { Country, State, City } from "country-state-city";
 import { Autocomplete, Stack, TextField } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const styleCreateMOdal = {
   position: "absolute",
@@ -114,7 +115,7 @@ function BranchCreation() {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-branch/${id}`,
+        `${API_URL}/api/create-branch/${id}`,
         formDataToSend
       );
 

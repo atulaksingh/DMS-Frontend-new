@@ -9,6 +9,7 @@ import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -76,7 +77,7 @@ function BranchDocCreation({ fetchBranchDetails }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-branchdoc/${branchID}`,
+        `${API_URL}/api/create-branchdoc/${branchID}`,
         formDataToSend,
         {
           headers: {

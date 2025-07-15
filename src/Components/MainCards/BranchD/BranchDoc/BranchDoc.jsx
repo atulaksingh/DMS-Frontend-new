@@ -31,7 +31,7 @@ const styleCreateMOdal = {
   p: 4,
   borderRadius: "10px",
 };
-function BranchDoc({ branchDocumentsData ,fetchBranchDetails }) {
+function BranchDoc({ branchDocumentsData, fetchBranchDetails }) {
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
@@ -105,8 +105,8 @@ function BranchDoc({ branchDocumentsData ,fetchBranchDetails }) {
         }),
       },
     },
- 
-   
+
+
     {
       name: "Actions",
       options: {
@@ -114,7 +114,7 @@ function BranchDoc({ branchDocumentsData ,fetchBranchDetails }) {
           const rowData = branchDocumentsData[dataIndex];
           return (
             <div>
-              <BranchDocCard rowId={rowData.id}  fetchBranchDetails={fetchBranchDetails}/>
+              <BranchDocCard rowId={rowData.id} fetchBranchDetails={fetchBranchDetails} />
             </div>
           );
         },
@@ -188,7 +188,7 @@ function BranchDoc({ branchDocumentsData ,fetchBranchDetails }) {
             Branch Documents Details
           </div>
           <div>
-            <BranchDocCreation  fetchBranchDetails={fetchBranchDetails}/>
+            <BranchDocCreation fetchBranchDetails={fetchBranchDetails} />
           </div>
         </div>
         <CacheProvider value={muiCache}>

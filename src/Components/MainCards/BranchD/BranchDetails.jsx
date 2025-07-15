@@ -10,6 +10,7 @@ import axios from "axios";
 import BranchDoc from "./BranchDoc/BranchDoc";
 import OfficeLoc from "./OfficeLoc/OfficeLoc";
 import { HomeIcon } from "@heroicons/react/16/solid";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 function BranchDetails() {
   const { clientID, branchID } = useParams();
@@ -27,7 +28,7 @@ function BranchDetails() {
   const fetchBranchDetails = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/detail-branch/${clientID}/${branchID}`
+        `${API_URL}/api/detail-branch/${clientID}/${branchID}`
       );
       // console.log("branch------------->", response.data);
       setBranchData(response.data.Branch);

@@ -5,6 +5,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 
 import ProductDescription from "../Components/MainCards/ProductDescription/ProductDescription";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ProductDesc() {
 
@@ -13,9 +14,9 @@ function ProductDesc() {
   const [loading, setLoading] = useState(true);
   const fetchClients = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/api/list-client");
+      const response = await axios.get(`${API_URL}/api/list-client`);
       // console.log("response",response.data)
-      setProductDescriptionData(response.data.product_description); // Assuming the data is returned in the response body
+      setProductDescriptionData(response?.data?.product_description); // Assuming the data is returned in the response body
       setLoading(false);
     } catch (error) {
       console.error("Error fetching clients:", error);
@@ -38,7 +39,7 @@ function ProductDesc() {
   }
   return (
     <>
-      <div className=" px-20 py-6 rounded-md ">
+      <div className=" px-40 py-12 rounded-md ">
         <ProductDescription
           productDescriptionData={productDescriptionData}
           fetchClients={fetchClients}
