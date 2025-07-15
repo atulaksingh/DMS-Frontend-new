@@ -588,7 +588,7 @@ function Header() {
       <Navbar className="mx-auto max-w-full p-2  lg:pl-6 bg-[#366FA1] rounded-none bg-opacity-100 border-none py-0">
         <div className="relative mx-auto flex items-center justify-between  text-white ">
           {/* <Typography as="a"  className=""> */}
-          <Link to="/master">
+          <Link to="/client-details">
             <img
               src={logo}
               alt="Logo"
