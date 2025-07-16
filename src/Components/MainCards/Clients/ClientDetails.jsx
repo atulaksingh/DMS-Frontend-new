@@ -269,79 +269,7 @@ function ClientDetails() {
                 {/* <p>📊 This is Dashboard content</p> */}
                 {clientData ? (
                   <>
-                    {/* <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
-                      <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
-                        🧾 Client Details
-                      </h2>
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[15px] text-gray-800">
-                        <div className="flex flex-col">
-                          <span className="text-gray-500 text-sm">
-                            Client Name
-                          </span>
-                          <span className="font-medium">Zaco123</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-gray-500 text-sm">
-                            Entity Type
-                          </span>
-                          <span className="font-medium">Proprietorship</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-gray-500 text-sm">
-                            Date of Incorporation
-                          </span>
-                          <span className="font-medium">11-01-2025</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-gray-500 text-sm">
-                            Contact Person
-                          </span>
-                          <span className="font-medium">oiuytre</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-gray-500 text-sm">
-                            Designation
-                          </span>
-                          <span className="font-medium">CEO</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-gray-500 text-sm">
-                            Contact No
-                          </span>
-                          <span className="font-medium">1234567890</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-gray-500 text-sm">
-                            Another No
-                          </span>
-                          <span className="font-medium">1234567</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-gray-500 text-sm">Status</span>
-                          <span className="font-medium capitalize text-green-600">
-                            Active
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="mt-6">
-                        <span className="text-gray-500 text-sm block mb-1">
-                          Business Details
-                        </span>
-                        <div className="bg-gray-50 p-4 rounded-md text-sm leading-relaxed text-gray-700 border">
-                          wertysdfghj sdfghjert dfghjdfghj, sdfghsdfghj
-                          wertyuivbnm, xcvbnm, vbnm, xcvbnm, asdfg.
-                        </div>
-                      </div>
-                    </div> */}
+                   
                     <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
                       <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
                         🧾 Client Details
@@ -352,50 +280,50 @@ function ClientDetails() {
                           <span className="text-gray-500 text-sm min-w-[150px]">
                             Client Name:
                           </span>
-                          <span className="font-medium">Zaco123</span>
+                          <span className="font-medium"> {clientData.client_name}</span>
                         </div>
                         <div className="flex">
                           <span className="text-gray-500 text-sm min-w-[150px]">
                             Entity Type:
                           </span>
-                          <span className="font-medium">Proprietorship</span>
+                          <span className="font-medium"> {clientData.entity_type}</span>
                         </div>
                         <div className="flex">
                           <span className="text-gray-500 text-sm min-w-[150px]">
                             Date of Incorporation:
                           </span>
-                          <span className="font-medium">11-01-2025</span>
+                          <span className="font-medium"> {clientData.date_of_incorporation}</span>
                         </div>
                         <div className="flex">
                           <span className="text-gray-500 text-sm min-w-[150px]">
                             Contact Person:
                           </span>
-                          <span className="font-medium">oiuytre</span>
+                          <span className="font-medium"> {clientData.contact_person}</span>
                         </div>
                         <div className="flex">
                           <span className="text-gray-500 text-sm min-w-[150px]">
                             Designation:
                           </span>
-                          <span className="font-medium">CEO</span>
+                          <span className="font-medium"> {clientData.designation}</span>
                         </div>
                         <div className="flex">
                           <span className="text-gray-500 text-sm min-w-[150px]">
                             Contact No:
                           </span>
-                          <span className="font-medium">1234567890</span>
+                          <span className="font-medium"> {clientData.contact_no_1}</span>
                         </div>
                         <div className="flex">
                           <span className="text-gray-500 text-sm min-w-[150px]">
                             Another No:
                           </span>
-                          <span className="font-medium">1234567</span>
+                          <span className="font-medium">{clientData.contact_no_2}</span>
                         </div>
                         <div className="flex">
                           <span className="text-gray-500 text-sm min-w-[150px]">
                             Status:
                           </span>
                           <span className="font-medium capitalize text-green-600">
-                            Active
+                             {clientData.status}
                           </span>
                         </div>
                       </div>
@@ -569,9 +497,11 @@ function ClientDetails() {
 
                     <Owner ownerData={ownerData} />
                   </>
-                ) : (
+                )
+                 : (
                   <div>No owner data available</div>
-                )}
+                )
+                }
               </div>
             </>
           )}

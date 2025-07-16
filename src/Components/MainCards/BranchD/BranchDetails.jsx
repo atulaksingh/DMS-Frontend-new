@@ -48,7 +48,6 @@ function BranchDetails() {
     fetchBranchDetails();
   }, [clientID, branchID]);
 
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -112,77 +111,67 @@ function BranchDetails() {
           </nav>
         </div>
 
-        <div className="bg-secondary  px-6 py-5 rounded-md shadow-lg">
-          <div className="text-xl font-bold ">BranchDetails</div>
-          <div className="py-3 mx-2">
+        <div className="  py-5 rounded-md ">
+
+          <div className="py-3">
             {branchData && (
               <>
-                {/* First Row */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 py-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-3">
-                    <div className="font-semibold text-gray-700">
-                      Branch Name:
-                    </div>
-                    <div className="text-gray-600">
-                      {branchData?.branch_name}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-5">
-                    <div className="font-semibold text-gray-700">GST NO:</div>
-                    <div className="text-gray-700 font-medium">
-                      {branchData?.gst_no}
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-5">
-                    <div className="font-semibold text-gray-700">Contact:</div>
-                    <div className="text-gray-700 font-medium">
-                      {branchData?.contact}
-                    </div>
-                  </div>
-                </div>
+  
+                <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
+                  <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
+                    🧾 Branch Details
+                  </h2>
 
-                {/* Second Row */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 py-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-6">
-                    <div className="font-semibold text-gray-700">State:</div>
-                    <div className="text-gray-600">{branchData?.state}</div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-6">
-                    <div className="font-semibold text-gray-700">City:</div>
-                    <div className="text-gray-700 font-medium">
-                      {branchData?.city}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[15px] text-gray-800">
+                    <div className="flex">
+                      <span className="text-gray-500 text-sm min-w-[150px]">
+                         Branch Name:
+                      </span>
+                      <span className="font-medium"> {branchData?.branch_name}</span>
                     </div>
+                    <div className="flex">
+                      <span className="text-gray-500 text-sm min-w-[150px]">
+                        GST NO:
+                      </span>
+                      <span className="font-medium"> {branchData?.gst_no}</span>
+                    </div>
+                    <div className="flex">
+                      <span className="text-gray-500 text-sm min-w-[150px]">
+                        Contact No:
+                      </span>
+                      <span className="font-medium"> {branchData?.contact}</span>
+                    </div>
+                    <div className="flex">
+                      <span className="text-gray-500 text-sm min-w-[150px]">
+                       State:
+                      </span>
+                      <span className="font-medium">{branchData?.state}</span>
+                    </div>
+                    <div className="flex">
+                      <span className="text-gray-500 text-sm min-w-[150px]">
+                        City:
+                      </span>
+                      <span className="font-medium">  {branchData?.city}</span>
+                    </div>
+          
                   </div>
-                </div>
 
-                {/* Address */}
-                <div className="flex flex-row items-start py-3">
-                  <div className="sm:col-span-2 mr-5 font-semibold text-gray-700">
-                    Address:
-                  </div>
-                  <div className="sm:col-span-10 text-gray-700 font-medium">
-                    {branchData?.address}
+                  <div className="mt-6">
+                    <span className="text-gray-500 text-sm block mb-1">
+                       Address Details
+                    </span>
+                    <div className="bg-gray-50 p-4 rounded-md text-sm leading-relaxed text-gray-700 border">
+                     {branchData?.address}
+                    </div>
                   </div>
                 </div>
               </>
             )}
           </div>
         </div>
-        <div className="grid grid-cols-3">
-          <div className="grid grid-cols-2">
-            <div></div>
-            <div></div>
-          </div>
-          <div className="grid grid-cols-2">
-            <div></div>
-            <div></div>
-          </div>
-          <div className="grid grid-cols-2">
-            <div></div>
-            <div></div>
-          </div>
-        </div>
+   
       </div>
+
       <div className="py-10 px-32">
         <div className="bg-secondary px-6 py-3 rounded-md shadow-lg">
           <Box sx={{ width: "100%", typography: "body1" }}>
