@@ -15,7 +15,7 @@ import PfCard from "./PfCard";
 import PfFileCreation from "./PfFileCreation";
 import axios from "axios";
 import { set } from "date-fns";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const muiCache = createCache({
   key: "mui-datatables",
   prepend: true,
@@ -850,7 +850,7 @@ function Pf({ PfData }) {
 
   // useEffect(() => {
   //   axios
-  //     .get(`http://127.0.0.1:8000/api/get-pf-totals/${id}`)
+  //     .get(`${API_URL}/api/get-pf-totals/${id}`)
   //     .then((response) => {
   //       // Agar response single object ho toh array me wrap kar le
   //       const result = Array.isArray(response.data)
@@ -866,8 +866,9 @@ function Pf({ PfData }) {
   const fetchPfTotals = async (id) => {
     console.log("gggggg")
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/get-pf-totals/${id}`);
-      const result = Array.isArray(response.data) ? response.data : [response.data];
+      const response = await axios.get(`${API_URL}/api/get-pf-totals/${id}`);
+      const result = Array.isArray(response?.data) ? response?.data : [response?.data];
+      console.log("Response data:", result);
       setData(result);
     } catch (error) {
       console.error("Error fetching data:", error);

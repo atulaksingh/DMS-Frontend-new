@@ -10,6 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { useDispatch } from "react-redux";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -57,7 +58,7 @@ function SalesFileCreation() {
       }
 
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-sales/${id}`,
+        `${API_URL}/api/create-sales/${id}`,
         formDataToSend,
         {
           headers: {

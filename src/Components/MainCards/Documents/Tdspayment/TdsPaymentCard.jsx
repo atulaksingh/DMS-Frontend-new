@@ -22,6 +22,7 @@ import { useRef } from "react";
 import { parse } from "date-fns"
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -119,7 +120,7 @@ export default function TdsPaymentCard({
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-tdspayment/${id}/${rowId}`,
+        `${API_URL}/api/edit-tdspayment/${id}/${rowId}`,
         formDataToSend,
         {
           headers: {
@@ -184,7 +185,7 @@ export default function TdsPaymentCard({
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-tdspayment/${id}/${deleteId}`
+        `${API_URL}/api/delete-tdspayment/${id}/${deleteId}`
       );
       // console.log("res-----Tds Return---->", response);
       setOpenDeleteModal(false);
@@ -214,7 +215,7 @@ export default function TdsPaymentCard({
     setAnchorEl(null);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/single-tdspayment/${id}/${rowId}`
+        `${API_URL}/api/single-tdspayment/${id}/${rowId}`
       );
       setTdsPaymentData(response.data);
       setLoading(false);
@@ -232,7 +233,7 @@ export default function TdsPaymentCard({
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-tdspayment/${id}/${rowId}`
+        `${API_URL}/api/edit-tdspayment/${id}/${rowId}`
       );
       // console.log("dd", response.data);
       setFormData(response.data);

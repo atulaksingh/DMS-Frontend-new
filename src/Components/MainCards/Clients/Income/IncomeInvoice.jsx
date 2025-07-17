@@ -1,15 +1,10 @@
-
-
-
-
-
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function IncomeInvoice({ invoiceData }) {
   //   console.log("res", useParams());
- 
+
   // console.log("res", invoiceData);
   const handlePrint = () => {
     window.print();
@@ -43,7 +38,7 @@ function IncomeInvoice({ invoiceData }) {
                 Office Location: {invoiceData?.client_location_name || "Not Available"}
               </p>
               <p className="text-gray-600">
-                Address: 
+                Address:
                 {invoiceData?.address || "Not Available"}
               </p>
               <p className="text-gray-600">
@@ -81,13 +76,13 @@ function IncomeInvoice({ invoiceData }) {
               <p className="text-gray-600">
                 Customer and Vendor Type :{" "}
                 {invoiceData?.customer_customer === "True" &&
-                invoiceData?.customer_vendor === "True"
+                  invoiceData?.customer_vendor === "True"
                   ? "Both"
                   : invoiceData?.customer_customer === "True"
-                  ? "Customer"
-                  : invoiceData?.customer_vendor === "True"
-                  ? "Vendor"
-                  : "Not Available"}
+                    ? "Customer"
+                    : invoiceData?.customer_vendor === "True"
+                      ? "Vendor"
+                      : "Not Available"}
               </p>
             </div>
           </div>
@@ -184,11 +179,11 @@ function IncomeInvoice({ invoiceData }) {
                 ₹
                 {invoiceData?.taxable_amount
                   ? parseFloat(invoiceData.taxable_amount).toLocaleString(
-                      "en-IN",
-                      {
-                        minimumFractionDigits: 2,
-                      }
-                    )
+                    "en-IN",
+                    {
+                      minimumFractionDigits: 2,
+                    }
+                  )
                   : "0.00"}
               </span>
             </div>
@@ -199,11 +194,11 @@ function IncomeInvoice({ invoiceData }) {
                 ₹
                 {invoiceData?.total_invoice_value
                   ? parseFloat(invoiceData.total_invoice_value).toLocaleString(
-                      "en-IN",
-                      {
-                        minimumFractionDigits: 2,
-                      }
-                    )
+                    "en-IN",
+                    {
+                      minimumFractionDigits: 2,
+                    }
+                  )
                   : "0.00"}
               </span>
             </div>

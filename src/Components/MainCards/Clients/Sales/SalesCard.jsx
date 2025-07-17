@@ -51,7 +51,7 @@ import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
 import { format, parse, isValid } from "date-fns";
 //   import { useEffect } from "react";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",
@@ -131,7 +131,7 @@ export default function SalesCard({
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-sales-invoice/${id}/${deleteId}`
+        `${API_URL}/api/delete-sales-invoice/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
       setOpenDeleteModal(false);
@@ -174,7 +174,7 @@ export default function SalesCard({
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/sales-view/${id}/${rowId}`
+          `${API_URL}/api/sales-view/${id}/${rowId}`
         );
         setBankData(response.data);
         setLoading(false);
@@ -286,7 +286,7 @@ export default function SalesCard({
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/get-sales-invoice/${id}/${rowId}`
+        `${API_URL}/api/get-sales-invoice/${id}/${rowId}`
       );
       // console.log("dd123", response.data);
       setFormData(response.data.client_location);
@@ -384,7 +384,7 @@ export default function SalesCard({
         setShowBranchInput(false);
 
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
       }
@@ -515,7 +515,7 @@ export default function SalesCard({
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-sales/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-sales/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } =
@@ -800,7 +800,7 @@ export default function SalesCard({
 
     try {
       const response = await axios.put(
-        `http://127.0.0.1:8000/api/update-sales-post/${id}/${rowId}`,
+        `${API_URL}/api/update-sales-post/${id}/${rowId}`,
         payload,
         {
           headers: {

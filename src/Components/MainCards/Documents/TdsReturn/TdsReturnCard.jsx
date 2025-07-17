@@ -23,6 +23,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 // import "react-toastify/dist/ReactToastify.css";
 const options = ["None", "Atria", "Callisto"];
 const style = {
@@ -135,7 +136,7 @@ export default function TdsReturnCard({
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-tds/${id}/${rowId}`,
+        `${API_URL}/api/edit-tds/${id}/${rowId}`,
         formDataToSend,
         {
           headers: {
@@ -203,7 +204,7 @@ export default function TdsReturnCard({
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-tds/${id}/${deleteId}`
+        `${API_URL}/api/delete-tds/${id}/${deleteId}`
       );
       // console.log("res-----Tds Return---->", response);
       setOpenDeleteModal(false);
@@ -233,7 +234,7 @@ export default function TdsReturnCard({
     setAnchorEl(null);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/single-tds/${id}/${rowId}`
+        `${API_URL}/api/single-tds/${id}/${rowId}`
       );
       setTdsReturnData(response.data);
       setLoading(false);
@@ -251,7 +252,7 @@ export default function TdsReturnCard({
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-tds/${id}/${rowId}`
+        `${API_URL}/api/edit-tds/${id}/${rowId}`
       );
       // console.log("dd", response.data);
       setFormData(response.data);

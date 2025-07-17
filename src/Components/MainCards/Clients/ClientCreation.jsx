@@ -25,6 +25,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 function ClientCreation() {
   const navigate = useNavigate();
   const [filesList, setFilesList] = useState([]);
@@ -134,7 +135,7 @@ function ClientCreation() {
 
       // console.log("data to send:", data);
       const response = await axios.post(
-        "http://127.0.0.1:8000/api/create-client",
+        `${API_URL}/api/create-client`,
         data,
         {
           headers: {

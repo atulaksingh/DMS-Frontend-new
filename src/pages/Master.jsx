@@ -11,6 +11,7 @@ import axios from "axios";
 import HomePage from "./HomePage";
 import Product from "../Components/MainCards/Product/Product";
 import ProductDescription from "../Components/MainCards/ProductDescription/ProductDescription";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 function Master() {
   const location = useLocation();
@@ -25,7 +26,7 @@ function Master() {
   const fetchClients = async () => {
     try {
       const response = await axios.get(
-        "http://127.0.0.1:8000/api/list-client"
+        `${API_URL}/api/list-client`
       );
       // console.log("response",response.data)
       setHsnData(response.data.hsn); // Assuming the data is returned in the response body

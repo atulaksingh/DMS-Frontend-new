@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 const options = ["None", "Atria", "Callisto"];
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",
@@ -100,7 +101,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
     e.preventDefault(); // Prevent default form submission
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-owner/${id}/${rowId}`,
+        `${API_URL}/api/edit-owner/${id}/${rowId}`,
         formData
       );
       // console.log("111",response.data)
@@ -161,7 +162,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-owner/${id}/${deleteId}`
+        `${API_URL}/api/delete-owner/${id}/${deleteId}`
       );
       // console.log("res-----owner---->", response);
       // setOwnerShare(response.remaining_shares)
@@ -194,7 +195,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
     const fetchClientDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/single-owner/${id}/${rowId}`
+          `${API_URL}/api/single-owner/${id}/${rowId}`
         );
         // console.log("ss", response.data);
         setOwnerData(response.data);
@@ -221,7 +222,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-owner/${id}/${rowId}`
+        `${API_URL}/api/edit-owner/${id}/${rowId}`
       );
       setFormData(response.data);
     } catch (error) {

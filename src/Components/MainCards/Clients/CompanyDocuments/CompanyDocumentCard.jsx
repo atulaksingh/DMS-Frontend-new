@@ -16,9 +16,9 @@ import axios from "axios";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
-
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 import { FaFileAlt } from "react-icons/fa";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -126,7 +126,7 @@ export default function CompanyDocumentCard({ rowId }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-companydoc/${id}/${rowId}`,
+        `${API_URL}/api/edit-companydoc/${id}/${rowId}`,
         formDataToSend,
         {
           headers: {
@@ -188,7 +188,7 @@ export default function CompanyDocumentCard({ rowId }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-companydoc/${id}/${deleteId}`
+        `${API_URL}/api/delete-companydoc/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
       setOpenDeleteModal(false);
@@ -227,7 +227,7 @@ export default function CompanyDocumentCard({ rowId }) {
 
   //   try {
   //     const response = await axios.get(
-  //       `http://127.0.0.1:8000/api/edit-companydoc/${id}/${rowId}`
+  //       `${API_URL}/api/edit-companydoc/${id}/${rowId}`
   //     );
   //     // console.log("dd", response.data);
   //     setFormData(response.data);
@@ -249,7 +249,7 @@ export default function CompanyDocumentCard({ rowId }) {
   //   const fetchBankDetails = async () => {
   //     try {
   //       const response = await axios.get(
-  //         `http://127.0.0.1:8000/api/single-fileinfo/${id}/${rowId}`
+  //         `${API_URL}/api/single-fileinfo/${id}/${rowId}`
   //       );
   //       // console.log("jjj", response);
   //       // dispatch(fetchClientDetails(id));
@@ -270,7 +270,7 @@ export default function CompanyDocumentCard({ rowId }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/single-fileinfo/${id}/${rowId}`
+          `${API_URL}/api/single-fileinfo/${id}/${rowId}`
         );
         setcompanyDocData(response.data);
         setLoading(false);
@@ -290,10 +290,10 @@ export default function CompanyDocumentCard({ rowId }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-companydoc/${id}/${rowId}`
+        `${API_URL}/api/edit-companydoc/${id}/${rowId}`
       );
       // console.log("dd", response.data);
-      setFormData(response.data);
+      setFormData(response?.data);
     } catch (error) {
       console.error("Error fetching bank data:", error);
       toast.error("Failed to load bank data. Please try again.", {
@@ -678,7 +678,7 @@ export default function CompanyDocumentCard({ rowId }) {
                         <p className="text-sm text-gray-500 mt-2">
                           Selected file:
                           <a
-                            href={`http://127.0.0.1:8000/${formData.attachment}`}
+                            href={`${API_URL}/${formData.attachment}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-500 underline"

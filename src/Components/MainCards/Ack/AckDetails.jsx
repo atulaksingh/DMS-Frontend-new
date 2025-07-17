@@ -123,7 +123,7 @@ import { HomeIcon } from "@heroicons/react/16/solid";
 import Acknowledgement from "./Ack";
 import Ack from "./Ack";
 import { useSelector } from "react-redux";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 function AckDetails() {
   const { id } = useParams();
   //   console.log("useee",useParams())
@@ -142,7 +142,7 @@ function AckDetails() {
   const fetchAckDetails = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/detail-ack/${id}`
+        `${API_URL}/api/detail-ack/${id}`
       );
       // console.log("branch------------->", response.data);
       // setBranchData(response.data.Branch);
@@ -228,11 +228,11 @@ function AckDetails() {
                         ))}
                     </nav> */}
           <div className="text-2xl text-gray-800 font-semibold">
-           Acknowledgement Details
+            Acknowledgement Details
           </div>
         </div>
 
-        
+
       </div>
       <div className="py-6">
         <div className="bg-secondary px-6 py-3 rounded-md shadow-lg">

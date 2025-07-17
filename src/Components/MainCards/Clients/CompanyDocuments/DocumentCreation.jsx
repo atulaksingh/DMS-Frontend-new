@@ -24,6 +24,7 @@ import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const styleCreateMOdal = {
   position: "absolute",
@@ -100,7 +101,7 @@ function DocumentCreation() {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-companydoc/${id}`,
+        `${API_URL}/api/create-companydoc/${id}`,
         formDataToSend,
         {
           headers: {

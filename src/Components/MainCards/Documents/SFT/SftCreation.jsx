@@ -13,7 +13,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 // Styles for modal
 const styleCreateModal = {
   position: "absolute",
@@ -87,7 +87,7 @@ function SftCreation() {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-sft/${id}`,
+        `${API_URL}/api/create-sft/${id}`,
         formDataToSend,
         {
           headers: { "Content-Type": "multipart/form-data" },

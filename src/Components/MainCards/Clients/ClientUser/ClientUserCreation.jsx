@@ -18,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 import { Autocomplete, TextField } from "@mui/material";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -44,7 +45,7 @@ function ClientUserCreation() {
 
   // Fetch Data from API
   // useEffect(() => {
-  //   fetch("http://127.0.0.1:8000/api/user-clientform/1")
+  //   fetch("${API_URL}/api/user-clientform/1")
   //     .then((response) => response.json())
   //     .then((data) => setCustomers(data))
   //     .catch((error) => console.error("Error fetching customers:", error));
@@ -81,7 +82,7 @@ function ClientUserCreation() {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/user-clientform/${id}`,
+        `${API_URL}/api/user-clientform/${id}`,
         formDataToSend
       );
       console.log(response);

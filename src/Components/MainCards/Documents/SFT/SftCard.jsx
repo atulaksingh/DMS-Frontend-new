@@ -14,7 +14,6 @@ import { useState } from "react";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import { format } from "date-fns";
-
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -22,6 +21,7 @@ import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { FaFileAlt } from "react-icons/fa";
 import { parse } from "date-fns";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 // import "react-toastify/dist/ReactToastify.css";
 const options = ["None", "Atria", "Callisto"];
 const style = {
@@ -131,7 +131,7 @@ export default function SftCard({ rowId }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-sft/${id}/${rowId}`,
+        `${API_URL}/api/edit-sft/${id}/${rowId}`,
         formDataToSend,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -194,7 +194,7 @@ export default function SftCard({ rowId }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-sft/${id}/${deleteId}`
+        `${API_URL}/api/delete-sft/${id}/${deleteId}`
       );
       // console.log("res-----sft---->", response);
       setOpenDeleteModal(false);
@@ -226,7 +226,7 @@ export default function SftCard({ rowId }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-sft/${id}/${rowId}`
+        `${API_URL}/api/edit-sft/${id}/${rowId}`
       );
       const data = response.data;
       setFormData(response.data);
@@ -249,7 +249,7 @@ export default function SftCard({ rowId }) {
     const fetchSftDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/single-sft/${id}/${rowId}`
+          `${API_URL}/api/single-sft/${id}/${rowId}`
         );
         setSftData(response.data);
         setLoading(false);

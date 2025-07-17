@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom";
 import DocumentCreation from "./DocumentCreation";
 import CompanyDocumentCard from "./CompanyDocumentCard";
 // import CompanyDocumentCreation from "./CompanyDocumentCreationcopy";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const muiCache = createCache({
   key: "mui-datatables",
   prepend: true,

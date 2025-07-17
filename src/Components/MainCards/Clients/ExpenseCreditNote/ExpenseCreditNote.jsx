@@ -26,7 +26,7 @@ import { HomeIcon } from "@heroicons/react/16/solid";
 // import SalesCreation from "./SalesCreation";
 // import SalesFileCreation from "./SalesFileCreation";
 // import SalesCard from "./SalesCard";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const muiCache = createCache({
   key: "mui-datatables",
   prepend: true,
@@ -54,7 +54,7 @@ function ExpenseCreditNote() {
   const fetchInvoiceDetails = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/expensescreditnote-list/${id}/${expensesID}`
+        `${API_URL}/api/expensescreditnote-list/${id}/${expensesID}`
       );
       console.log("gggggggg", response);
       const apiData = response.data;

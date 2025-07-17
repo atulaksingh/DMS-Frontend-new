@@ -24,7 +24,7 @@ import axios from "axios";
 // import SalesCreation from "./SalesCreation";
 // import SalesFileCreation from "./SalesFileCreation";
 // import SalesCard from "./SalesCard";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const muiCache = createCache({
   key: "mui-datatables",
   prepend: true,
@@ -49,7 +49,7 @@ function Expenses({ expensesInvoiceData }) {
   const [allLocationBranchProductData, setAllLocationBranchProductData] = useState([])
   const fetchAllLocBranchDetails = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/get-expenses/${id}`);
+      const response = await axios.get(`${API_URL}/api/get-expenses/${id}`);
       // console.log("income",response.data)
       setAllLocationBranchProductData({
         serializer: response?.data?.serializer || [],

@@ -20,6 +20,7 @@ import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 // import { DialogFooter, Button } from "@material-tailwind/react";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const muiCache = createCache({
   key: "mui-datatables",
   prepend: true,
@@ -101,7 +102,7 @@ function Owner({ ownerData }) {
   const createOwnerShare = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/create-owner/${id}`,
+        `${API_URL}/api/create-owner/${id}`,
         formData
       );
       setOwnerShare(response?.data?.remaining_shares)
@@ -128,7 +129,7 @@ function Owner({ ownerData }) {
     try {
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-owner/${id}`,
+        `${API_URL}/api/create-owner/${id}`,
         formData
       );
       console.log(response.data); // Handle success response

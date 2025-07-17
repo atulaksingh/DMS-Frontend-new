@@ -56,6 +56,7 @@ import { useDispatch } from "react-redux";
 //   paddingInline: "40px",
 //   borderRadius: "10px",
 // };
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateModal = {
   position: "absolute",
   top: "50%",
@@ -358,7 +359,7 @@ function PurchaseCreation({
       // Fetch additional data if needed
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         console.log("Location Data:---->", response.data.branch_gst);
         setBranchNoGst(response?.data?.branch_gst);
@@ -499,7 +500,7 @@ function PurchaseCreation({
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-purchase/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-purchase/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } =
@@ -824,7 +825,7 @@ function PurchaseCreation({
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-purchase-post2/${id}`,
+        `${API_URL}/api/create-purchase-post2/${id}`,
         payload,
         {
           headers: {

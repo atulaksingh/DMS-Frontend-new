@@ -20,7 +20,7 @@ import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Styles for modal
 const styleCreateModal = {
@@ -114,7 +114,7 @@ function OthersCreation() {
 
     //         // Make a POST request to your API
     //         const response = await axios.post(
-    //             `http://127.0.0.1:8000/api/create-others/${id}`,
+    //             `${API_URL}/api/create-others/${id}`,
     //             formDataToSend,
     //             {
     //                 headers: { "Content-Type": "multipart/form-data" },
@@ -178,7 +178,7 @@ function OthersCreation() {
             console.log("FormData being sent:", formDataToSend.get("text")); // Check if text is included
 
             const response = await axios.post(
-                `http://127.0.0.1:8000/api/create-others/${id}`,
+                `${API_URL}/api/create-others/${id}`,
                 formDataToSend,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );

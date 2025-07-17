@@ -24,6 +24,7 @@ import { FaFileAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
 import { parse } from "date-fns";
 // import { newDate } from "react-datepicker/dist/date_utils";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 const options = ["None", "Atria", "Callisto"];
@@ -163,7 +164,7 @@ export default function OthersCard({ rowId }) {
 
             // API request
             const response = await axios.post(
-                `http://127.0.0.1:8000/api/edit-others/${id}/${rowId}`,
+                `${API_URL}/api/edit-others/${id}/${rowId}`,
                 formDataToSend,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
@@ -240,7 +241,7 @@ export default function OthersCard({ rowId }) {
     const handleDeleteID = async () => {
         try {
             const response = await axios.delete(
-                `http://127.0.0.1:8000/api/delete-others/${id}/${deleteId}`
+                `${API_URL}/api/delete-others/${id}/${deleteId}`
             );
             // console.log("res-----air---->", response);
             setOpenDeleteModal(false);
@@ -273,7 +274,7 @@ export default function OthersCard({ rowId }) {
 
         try {
             const response = await axios.get(
-                `http://127.0.0.1:8000/api/edit-others/${id}/${rowId}`
+                `${API_URL}/api/edit-others/${id}/${rowId}`
             );
             const data = response.data;
 
@@ -303,7 +304,7 @@ export default function OthersCard({ rowId }) {
         const fetchAirDetails = async () => {
             try {
                 const response = await axios.get(
-                    `http://127.0.0.1:8000/api/single-others/${id}/${rowId}`
+                    `${API_URL}/api/single-others/${id}/${rowId}`
                 );
                 setOthersData(response.data);
                 setLoading(false);

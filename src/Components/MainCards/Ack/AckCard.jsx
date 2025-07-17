@@ -22,6 +22,7 @@ import { useDispatch } from "react-redux";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
 import { parse } from "date-fns";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
     position: "absolute",
@@ -229,7 +230,7 @@ export default function AckCard({ rowId, fetchAckDetails }) {
             }
 
             const response = await axios.post(
-                `http://127.0.0.1:8000/api/edit-acknowledgement/${id}/${rowId}`,
+                `${API_URL}/api/edit-acknowledgement/${id}/${rowId}`,
                 formDataToSend,
                 // foDataToSend,
                 { headers: { "Content-Type": "multipart/form-data" } }
@@ -310,7 +311,7 @@ export default function AckCard({ rowId, fetchAckDetails }) {
     const handleDeleteID = async () => {
         try {
             const response = await axios.delete(
-                `http://127.0.0.1:8000/api/delete-acknowledgement/${id}/${deleteId}`
+                `${API_URL}/api/delete-acknowledgement/${id}/${deleteId}`
             );
             // console.log("res-----bank---->", response);
             // dispatch(fetchClientDetails(id));
@@ -342,7 +343,7 @@ export default function AckCard({ rowId, fetchAckDetails }) {
         const fetchAckDetails = async () => {
             try {
                 const response = await axios.get(
-                    `http://127.0.0.1:8000/api/single-acknowledgement/${id}/${rowId}`
+                    `${API_URL}/api/single-acknowledgement/${id}/${rowId}`
                 );
                 setAcknowledgementData(response.data);
                 console.log("Acknowledgement Data:", response.data);
@@ -364,7 +365,7 @@ export default function AckCard({ rowId, fetchAckDetails }) {
 
         try {
             const response = await axios.get(
-                `http://127.0.0.1:8000/api/edit-acknowledgement/${id}/${rowId}`
+                `${API_URL}/api/edit-acknowledgement/${id}/${rowId}`
             );
             setFormData(response.data);
             console.log("Edit Acknowledgement Data:", response.data);
@@ -377,14 +378,14 @@ export default function AckCard({ rowId, fetchAckDetails }) {
 
     // const downloadComputationFile = async () => {
     //     try {
-    //         const response = await axios.get(`http://127.0.0.1:8000/api/download-computation-file/${id}/${rowId}`);
+    //         const response = await axios.get(`${API_URL}/api/download-computation-file/${id}/${rowId}`);
     //         console.log("API Response:", response.data);
 
     //         if (response.data && response.data.length > 0) {
     //             for (let i = 0; i < response.data.length; i++) {
     //                 const fileObj = response.data[i];
     //                 const filePath = fileObj.file;
-    //                 const fileUrl = `http://127.0.0.1:8000${filePath}`;
+    //                 const fileUrl = `${API_URL}${filePath}`;
     //                 console.log("File URL:", fileUrl);
 
     //                 // Add a delay for each download
@@ -410,7 +411,7 @@ export default function AckCard({ rowId, fetchAckDetails }) {
         try {
             // First get the list of file URLs from your API (assumed JSON array of objects with 'file' key)
             const response = await axios.get(
-                `http://127.0.0.1:8000/api/download-computation-file/${id}/${rowId}`
+                `${API_URL}/api/download-computation-file/${id}/${rowId}`
             );
 
             const files = response.data;
@@ -424,7 +425,7 @@ export default function AckCard({ rowId, fetchAckDetails }) {
             for (let i = 0; i < files.length; i++) {
                 const fileObj = files[i];
                 const filePath = fileObj.file; // e.g., "/media/uploads/example.pdf"
-                const fileUrl = `http://127.0.0.1:8000${filePath}`;
+                const fileUrl = `${API_URL}${filePath}`;
 
                 // Fetch the file as a blob
                 const fileResponse = await axios.get(fileUrl, {
@@ -462,7 +463,7 @@ export default function AckCard({ rowId, fetchAckDetails }) {
         try {
             // First get the list of file URLs from your API (assumed JSON array of objects with 'file' key)
             const response = await axios.get(
-                `http://127.0.0.1:8000/api/download-return-file/${id}/${rowId}`
+                `${API_URL}/api/download-return-file/${id}/${rowId}`
             );
 
             const files = response.data;
@@ -476,7 +477,7 @@ export default function AckCard({ rowId, fetchAckDetails }) {
             for (let i = 0; i < files.length; i++) {
                 const fileObj = files[i];
                 const filePath = fileObj.file; // e.g., "/media/uploads/example.pdf"
-                const fileUrl = `http://127.0.0.1:8000${filePath}`;
+                const fileUrl = `${API_URL}${filePath}`;
 
                 // Fetch the file as a blob
                 const fileResponse = await axios.get(fileUrl, {
@@ -512,14 +513,14 @@ export default function AckCard({ rowId, fetchAckDetails }) {
   
     // const downloadReturnFile = async () => {
     //     try {
-    //         const response = await axios.get(`http://127.0.0.1:8000/api/download-return-file/${id}/${rowId}`);
+    //         const response = await axios.get(`${API_URL}/api/download-return-file/${id}/${rowId}`);
     //         console.log("API Response:", response.data);
 
     //         if (response.data && response.data.length > 0) {
     //             for (let i = 0; i < response.data.length; i++) {
     //                 const fileObj = response.data[i];
     //                 const filePath = fileObj.file;
-    //                 const fileUrl = `http://127.0.0.1:8000${filePath}`;
+    //                 const fileUrl = `${API_URL}${filePath}`;
     //                 console.log("File URL:", fileUrl);
 
     //                 // Add a delay for each download

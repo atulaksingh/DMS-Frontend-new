@@ -24,7 +24,7 @@ import { HomeIcon } from "@heroicons/react/16/solid";
 // import DebitNoteCreation from "./DebitNoteCreation";
 // import DebitNoteFileCreation from "./DebitNoteFileCreation";
 // import DebitNoteCard from "./DebitNoteCard";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const muiCache = createCache({
   key: "mui-datatables",
   prepend: true,
@@ -55,7 +55,7 @@ function IncomeDebitNote() {
   const fetchInvoiceDetails = async () => {
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/incomedebitnote-list/${id}/${incomeID}`
+        `${API_URL}/api/incomedebitnote-list/${id}/${incomeID}`
       );
       const apiData = response.data;
       // console.log("gggggggg",response.data)

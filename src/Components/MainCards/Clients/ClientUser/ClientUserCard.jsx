@@ -19,6 +19,7 @@ import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 import { Autocomplete, TextField } from "@mui/material";
 import { is } from "date-fns/locale/is";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -102,7 +103,7 @@ export default function ClientUserCard({ rowId }) {
       console.log("Data to submit:", dataToSubmit); // Check the final data being sent
 
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-clientuser/${id}/${rowId}`,
+        `${API_URL}/api/edit-clientuser/${id}/${rowId}`,
         dataToSubmit
       );
       console.log("ss", response);
@@ -168,7 +169,7 @@ export default function ClientUserCard({ rowId }) {
       console.log("Data to submit:", dataToSubmit); // Check the final data being sent
 
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/reset-password/${id}/${rowId}`,
+        `${API_URL}/api/reset-password/${id}/${rowId}`,
         dataToSubmit
       );
       console.log("ss", response);
@@ -220,7 +221,7 @@ export default function ClientUserCard({ rowId }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-clientuser/${id}/${deleteId}`
+        `${API_URL}/api/delete-clientuser/${id}/${deleteId}`
       );
       // console.log("res-----ClientUser---->123", response);
       setOpenDeleteModal(false);
@@ -260,7 +261,7 @@ export default function ClientUserCard({ rowId }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/single-clientuser/${id}/${rowId}`
+          `${API_URL}/api/single-clientuser/${id}/${rowId}`
         );
         setClientUser(response.data);
         setLoading(false);
@@ -280,7 +281,7 @@ export default function ClientUserCard({ rowId }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-clientuser/${id}/${rowId}`
+        `${API_URL}/api/edit-clientuser/${id}/${rowId}`
       );
       console.log("previous", formData.password);
 
@@ -313,7 +314,7 @@ export default function ClientUserCard({ rowId }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/edit-clientuser/${id}/${rowId}`
+          `${API_URL}/api/edit-clientuser/${id}/${rowId}`
         );
 
         setClientUser(response.data);

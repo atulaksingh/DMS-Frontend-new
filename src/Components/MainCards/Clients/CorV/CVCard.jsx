@@ -14,6 +14,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 // import "react-toastify/dist/ReactToastify.css";
 const options = ["None", "Atria", "Callisto"];
 const style = {
@@ -95,7 +96,7 @@ export default function CVCard({ rowId }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-customer/${id}/${rowId}`,
+        `${API_URL}/api/edit-customer/${id}/${rowId}`,
         formDataToSend
       );
 
@@ -161,7 +162,7 @@ export default function CVCard({ rowId }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-customer/${id}/${deleteId}`
+        `${API_URL}/api/delete-customer/${id}/${deleteId}`
       );
       // console.log("res-----Client and Vendor---->", response);
       setOpenDeleteModal(false);
@@ -196,7 +197,7 @@ export default function CVCard({ rowId }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/single-customer/${id}/${rowId}`
+          `${API_URL}/api/single-customer/${id}/${rowId}`
         );
         setCVData(response.data);
         setLoading(false);
@@ -214,7 +215,7 @@ export default function CVCard({ rowId }) {
   //   const fetchClientDetails = async () => {
   //     try {
   //       const response = await axios.get(
-  //         `http://127.0.0.1:8000/api/single-customer/${id}/${rowId}`
+  //         `${API_URL}/api/single-customer/${id}/${rowId}`
   //       );
   //       // console.log("ss", response.data);
   //       setFormData(response.data);
@@ -237,7 +238,7 @@ export default function CVCard({ rowId }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-customer/${id}/${rowId}`
+        `${API_URL}/api/edit-customer/${id}/${rowId}`
       );
       // console.log("dd", response.data);
       setFormData(response.data);
@@ -259,7 +260,7 @@ export default function CVCard({ rowId }) {
     const fetchCVDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/edit-customer/${id}/${rowId}`
+          `${API_URL}/api/edit-customer/${id}/${rowId}`
         );
         setCVData(response.data);
         setLoading(false);

@@ -23,7 +23,7 @@ import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { FaFileAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
 import { parse } from "date-fns";  
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const options = ["None", "Atria", "Callisto"];
 const style = {
@@ -140,7 +140,7 @@ export default function AirCard({ rowId }) {
 
       // API request
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-air/${id}/${rowId}`,
+        `${API_URL}/api/edit-air/${id}/${rowId}`,
         formDataToSend,
         { headers: { "Content-Type": "multipart/form-data" } }
       );
@@ -210,7 +210,7 @@ export default function AirCard({ rowId }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-air/${id}/${deleteId}`
+        `${API_URL}/api/delete-air/${id}/${deleteId}`
       );
       // console.log("res-----air---->", response);
       setOpenDeleteModal(false);
@@ -243,7 +243,7 @@ export default function AirCard({ rowId }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-air/${id}/${rowId}`
+        `${API_URL}/api/edit-air/${id}/${rowId}`
       );
       const data = response.data;
 
@@ -271,7 +271,7 @@ export default function AirCard({ rowId }) {
     const fetchAirDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/single-air/${id}/${rowId}`
+          `${API_URL}/api/single-air/${id}/${rowId}`
         );
         setAirData(response.data);
         setLoading(false);

@@ -21,7 +21,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { parse } from "date-fns";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -132,7 +132,7 @@ export default function TaxAuditCard({ rowId }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-taxaudit/${id}/${rowId}`,
+        `${API_URL}/api/edit-taxaudit/${id}/${rowId}`,
         formDataToSend,
         {
           headers: { "Content-Type": "multipart/form-data" },
@@ -195,7 +195,7 @@ export default function TaxAuditCard({ rowId }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-taxaudit/${id}/${deleteId}`
+        `${API_URL}/api/delete-taxaudit/${id}/${deleteId}`
       );
       // console.log("res-----taxAudit---->", response);
       setOpenDeleteModal(false);
@@ -228,7 +228,7 @@ export default function TaxAuditCard({ rowId }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-taxaudit/${id}/${rowId}`
+        `${API_URL}/api/edit-taxaudit/${id}/${rowId}`
       );
       const data = response.data;
       setFormData(response.data);
@@ -251,7 +251,7 @@ export default function TaxAuditCard({ rowId }) {
     const fetchTaxAuditDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/single-taxaudit/${id}/${rowId}`
+          `${API_URL}/api/single-taxaudit/${id}/${rowId}`
         );
         setTaxAuditData(response.data);
         setLoading(false);

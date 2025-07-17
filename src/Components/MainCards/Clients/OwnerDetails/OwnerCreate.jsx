@@ -3,6 +3,7 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import { useDispatch } from "react-redux";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 function OwnerCreate() {
 
   return (
@@ -199,7 +200,7 @@ function OwnerCreate() {
                           color="blue-gray"
                           className="block font-semibold mb-2"
                         >
-                          Mobile Number 
+                          Mobile Number
                         </Typography>
                       </label>
 

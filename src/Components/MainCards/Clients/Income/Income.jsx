@@ -19,7 +19,7 @@ import IncomeFileCreation from "./IncomeFileCreation";
 import IncomeCreation from "./IncomeCreation";
 import IncomeCard from "./IncomeCard";
 import axios from "axios";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -45,7 +45,7 @@ function Income({ incomeInvoiceData }) {
   const [allLocationBranchProductData, setAllLocationBranchProductData] = useState([])
   const fetchAllLocBranchDetails = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/get-income/${id}`);
+      const response = await axios.get(`${API_URL}/api/get-income/${id}`);
       // console.log("insome",response.data)
       setAllLocationBranchProductData({
         serializer: response?.data?.serializer || [],

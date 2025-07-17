@@ -18,6 +18,7 @@ import { useRef } from "react";
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -169,7 +170,7 @@ function TdsPaymentCreation({
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-tdspayment/${id}`,
+        `${API_URL}/api/create-tdspayment/${id}`,
         formDataToSend
       );
 

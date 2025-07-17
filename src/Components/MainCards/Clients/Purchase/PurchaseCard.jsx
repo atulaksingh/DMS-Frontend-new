@@ -50,7 +50,7 @@ import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import PurchaseInvoice from "./PurchaseInvoice";
 //   import { useEffect } from "react";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",
@@ -189,7 +189,7 @@ export default function PurchaseCard({
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-purchase-invoice/${id}/${deleteId}`
+        `${API_URL}/api/delete-purchase-invoice/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
       setOpenDeleteModal(false);
@@ -231,7 +231,7 @@ export default function PurchaseCard({
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/purchase-view/${id}/${rowId}`
+          `${API_URL}/api/purchase-view/${id}/${rowId}`
         );
         // console.log("purch",response)
         setBankData(response.data);
@@ -349,7 +349,7 @@ export default function PurchaseCard({
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/get-purchase-invoice/${id}/${rowId}`
+        `${API_URL}/api/get-purchase-invoice/${id}/${rowId}`
       );
       // console.log("dd123", response.data);
       setFormData(response?.data?.client_location);
@@ -459,7 +459,7 @@ export default function PurchaseCard({
         setShowBranchInput(false);
 
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         // setBranchNoGst(response.data.branch_gst || "N/A");
         setBranchNoGst(response?.data?.branch_gst);
@@ -609,7 +609,7 @@ export default function PurchaseCard({
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-purchase/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-purchase/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } =
@@ -894,7 +894,7 @@ export default function PurchaseCard({
 
     try {
       const response = await axios.put(
-        `http://127.0.0.1:8000/api/update-purchase-post/${id}/${rowId}`,
+        `${API_URL}/api/update-purchase-post/${id}/${rowId}`,
         payload,
         {
           headers: {

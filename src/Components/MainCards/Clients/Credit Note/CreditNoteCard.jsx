@@ -47,7 +47,7 @@ import { fetchClientDetails } from "../../../Redux/clientSlice";
 import CreditNoteInvoice from "./CreditNoteInvoice";
 // import PurchaseInvoice from "./PurchaseInvoice";
 //   import { useEffect } from "react";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",
@@ -116,7 +116,7 @@ export default function CreditNoteCard({ rowId, fileData, fetchInvoiceDetails })
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-creditnote-invoice/${id}/${purchID}/${deleteId}`
+        `${API_URL}/api/delete-creditnote-invoice/${id}/${purchID}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
       setOpenDeleteModal(false);
@@ -159,7 +159,7 @@ export default function CreditNoteCard({ rowId, fileData, fetchInvoiceDetails })
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/creditnote-view/${id}/${purchID}/${rowId}`
+          `${API_URL}/api/creditnote-view/${id}/${purchID}/${rowId}`
         );
         // console.log("purch",response)
         setBankData(response.data);
@@ -274,7 +274,7 @@ export default function CreditNoteCard({ rowId, fileData, fetchInvoiceDetails })
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/get-creditnote-invoice/${id}/${purchID}/${rowId}`
+        `${API_URL}/api/get-creditnote-invoice/${id}/${purchID}/${rowId}`
       );
       // console.log("dd123", response.data);
       setFormData(response.data.client_location);
@@ -361,7 +361,7 @@ export default function CreditNoteCard({ rowId, fileData, fetchInvoiceDetails })
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-creditnote/${id}`
+          `${API_URL}/api/get-creditnote/${id}`
         );
         // console.log("ggggggg->", response.data);
         setOffData(response.data.serializer);
@@ -397,7 +397,7 @@ export default function CreditNoteCard({ rowId, fileData, fetchInvoiceDetails })
         setShowBranchInput(false);
 
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-creditnote/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-creditnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
       }
@@ -512,7 +512,7 @@ export default function CreditNoteCard({ rowId, fileData, fetchInvoiceDetails })
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-creditnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-creditnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } =
@@ -778,7 +778,7 @@ export default function CreditNoteCard({ rowId, fileData, fetchInvoiceDetails })
 
     try {
       const response = await axios.put(
-        `http://127.0.0.1:8000/api/update-creditnote-post/${id}/${purchID}/${rowId}`,
+        `${API_URL}/api/update-creditnote-post/${id}/${purchID}/${rowId}`,
         payload,
         {
           headers: {

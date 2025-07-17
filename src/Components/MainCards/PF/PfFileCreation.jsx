@@ -10,6 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../Redux/clientSlice";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -35,7 +36,7 @@ function PfFileCreation({ fetchPfTotals }) {
   const handleDownloadTemplate = async () => {
     try {
       // API call to get the file URL
-      const response = await axios.get("http://127.0.0.1:8000/api/get-excel-file");
+      const response = await axios.get(`${API_URL}/api/get-excel-file`);
       console.log("API Response:", response.data); // Debugging line
 
       if (response.data && response.data.length > 0) {
@@ -43,7 +44,7 @@ function PfFileCreation({ fetchPfTotals }) {
         const filePath = response.data[0].file; // Ensure correct index
 
         // Construct the complete file URL
-        const fileUrl = `http://127.0.0.1:8000${filePath}`;
+        const fileUrl = `${API_URL}${filePath}`;
         console.log("File URL:", fileUrl); // Debugging line
 
         // Create an anchor element to download the file
@@ -87,7 +88,7 @@ function PfFileCreation({ fetchPfTotals }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-file/${id}`,
+        `${API_URL}/api/create-file/${id}`,
         formDataToSend,
         {
           headers: {
@@ -159,7 +160,7 @@ function PfFileCreation({ fetchPfTotals }) {
 
   //     // Make a POST request to your API
   //     const response = await axios.post(
-  //       `http://127.0.0.1:8000/api/create-file/${id}`,
+  //       `${API_URL}/api/create-file/${id}`,
   //       formDataToSend,
   //       {
   //         headers: {

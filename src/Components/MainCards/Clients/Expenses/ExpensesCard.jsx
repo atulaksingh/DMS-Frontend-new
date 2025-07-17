@@ -52,7 +52,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
 import { format, parse, isValid } from "date-fns";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",
@@ -133,7 +133,7 @@ export default function ExpensesCard({
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-expenses/${id}/${deleteId}`
+        `${API_URL}/api/delete-expenses/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
       setOpenDeleteModal(false);
@@ -164,7 +164,7 @@ export default function ExpensesCard({
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/expenses-view/${id}/${rowId}`
+          `${API_URL}/api/expenses-view/${id}/${rowId}`
         );
         // console.log("purch",response)
         setBankData(response.data);
@@ -189,7 +189,7 @@ export default function ExpensesCard({
   //     const fetchBankDetails = async () => {
   //       try {
   //         const response = await axios.get(
-  //           `http://127.0.0.1:8000/api/expenses-view/${id}/${rowId}`
+  //           `${API_URL}/api/expenses-view/${id}/${rowId}`
   //         );
   //         // console.log("purch",response)
   //         setBankData(response.data);
@@ -302,7 +302,7 @@ export default function ExpensesCard({
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/get-expenses/${id}/${rowId}`
+        `${API_URL}/api/get-expenses/${id}/${rowId}`
       );
       // console.log("dd123", response.data);
       setFormData(response.data.client_location);
@@ -411,7 +411,7 @@ export default function ExpensesCard({
         setShowBranchInput(false);
 
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
       }
@@ -541,7 +541,7 @@ export default function ExpensesCard({
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-expenses/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-expenses/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } =
@@ -825,7 +825,7 @@ export default function ExpensesCard({
 
     try {
       const response = await axios.put(
-        `http://127.0.0.1:8000/api/update-expenses-post/${id}/${rowId}`,
+        `${API_URL}/api/update-expenses-post/${id}/${rowId}`,
         payload,
         {
           headers: {

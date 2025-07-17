@@ -1,20 +1,7 @@
-// import React from 'react'
-
-// function ExpensesCreditNoteInvoice() {
-//   return (
-//     <div>ExpensesCreditNoteInvoice</div>
-//   )
-// }
-
-// export default ExpensesCreditNoteInvoice
-
-
-
-
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 function ExpensesCreditNoteInvoice({ rowId }) {
   const { id, expensesID } = useParams();
   //   console.log("res", useParams());
@@ -26,7 +13,7 @@ function ExpensesCreditNoteInvoice({ rowId }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/expensescreditnote-view/${id}/${expensesID}/${rowId}`
+          `${API_URL}/api/expensescreditnote-view/${id}/${expensesID}/${rowId}`
         );
         setInvoiceData(response.data);
         setLoading(false);

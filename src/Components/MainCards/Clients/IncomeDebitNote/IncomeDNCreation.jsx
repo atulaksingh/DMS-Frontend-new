@@ -53,7 +53,7 @@ import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 // import DebitNoteInvoice from "./DebitNoteInvoice";
 //   import { useEffect } from "react";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
   top: "50%",
@@ -237,7 +237,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/get-incomedebitnote/${id}/${incomeID}`
+        `${API_URL}/api/get-incomedebitnote/${id}/${incomeID}`
       );
       //   console.log("dd123", response.data);
       setFormData(response.data.client_location);
@@ -314,7 +314,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-debitnote/${id}`
+          `${API_URL}/api/get-debitnote/${id}`
         );
         // console.log("ggggggg->", response.data);
         setOffData(response.data.serializer);
@@ -351,7 +351,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
         setShowBranchInput(false);
 
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
       }
@@ -466,7 +466,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } =
@@ -732,7 +732,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/update-incomedebitnote/${id}/${incomeID}`,
+        `${API_URL}/api/update-incomedebitnote/${id}/${incomeID}`,
         payload,
         {
           headers: {

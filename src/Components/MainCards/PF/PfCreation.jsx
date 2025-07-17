@@ -22,6 +22,7 @@ import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 // import "./App.css";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -155,7 +156,7 @@ const PfCreation = ({ fetchPfTotals }) => {
 
       // Make the API call
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-pf/${id}`,
+        `${API_URL}/api/create-pf/${id}`,
         formDataToSend
       );
       console.log(response.data); // Handle success response

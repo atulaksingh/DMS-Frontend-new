@@ -14,6 +14,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
     position: "absolute",
     top: "50%",
@@ -176,7 +177,7 @@ function AckCreation({ fetchAckDetails }) {
 
             // Make a POST request to your API
             const response = await axios.post(
-                `http://127.0.0.1:8000/api/create-acknowledgement/${id}`,
+                `${API_URL}/api/create-acknowledgement/${id}`,
                 formDataToSend,
                 {
                     headers: {

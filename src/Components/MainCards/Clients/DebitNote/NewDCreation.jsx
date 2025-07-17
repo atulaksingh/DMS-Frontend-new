@@ -19,7 +19,7 @@ import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
 import { format, parse, isValid } from "date-fns";
 const options = ["None", "Atria", "Callisto"];
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 import {
   Button,
   // Checkbox,
@@ -239,7 +239,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/get-debitnote-invoice/${id}/${salesID}`
+        `${API_URL}/api/get-debitnote-invoice/${id}/${salesID}`
       );
       //   console.log("dd123", response.data);
       setFormData(response.data.client_location);
@@ -316,7 +316,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-debitnote/${id}`
+          `${API_URL}/api/get-debitnote/${id}`
         );
         // console.log("ggggggg->", response.data);
         setOffData(response.data.serializer);
@@ -353,7 +353,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
         setShowBranchInput(false);
 
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
       }
@@ -468,7 +468,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } =
@@ -734,7 +734,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/update-debitnote-post/${id}/${salesID}`,
+        `${API_URL}/api/update-debitnote-post/${id}/${salesID}`,
         payload,
         {
           headers: {

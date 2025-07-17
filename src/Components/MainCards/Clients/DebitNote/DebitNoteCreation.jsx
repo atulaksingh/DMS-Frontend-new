@@ -38,6 +38,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import { useEffect } from "react";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { useDispatch } from "react-redux";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -213,7 +214,7 @@ function DebitNoteCreation({ fetchInvoiceDetails }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-debitnote/${id}`
+          `${API_URL}/api/get-debitnote/${id}`
         );
         // console.log("ggggggg->", response.data);
         setOffData(response.data.serializer);
@@ -250,7 +251,7 @@ function DebitNoteCreation({ fetchInvoiceDetails }) {
       // Fetch additional data if needed
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         // console.log("Location Data:---->", response.data.branch_gst);
         setBranchNoGst(response.data.branch_gst);
@@ -381,7 +382,7 @@ function DebitNoteCreation({ fetchInvoiceDetails }) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } = response.data.hsn || {};
@@ -682,7 +683,7 @@ function DebitNoteCreation({ fetchInvoiceDetails }) {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-debitnote-post2/${id}/${salesID}`,
+        `${API_URL}/api/create-debitnote-post2/${id}/${salesID}`,
         payload,
         {
           headers: {

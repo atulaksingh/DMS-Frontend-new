@@ -36,6 +36,7 @@ import TabPanel from "@mui/lab/TabPanel";
 import { useEffect } from "react";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { useDispatch } from "react-redux";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -214,7 +215,7 @@ function ExpensesCreditNoteCreation() {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-creditnote/${id}`
+          `${API_URL}/api/get-creditnote/${id}`
         );
         // console.log("ggggggg->", response.data);
         setOffData(response.data.serializer);
@@ -250,7 +251,7 @@ function ExpensesCreditNoteCreation() {
       // Fetch additional data if needed
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-creditnote/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-creditnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         // console.log("Location Data:---->", response.data.branch_gst);
         setBranchNoGst(response.data.branch_gst);
@@ -379,7 +380,7 @@ function ExpensesCreditNoteCreation() {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-creditnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-creditnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } =
@@ -682,7 +683,7 @@ function ExpensesCreditNoteCreation() {
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-expensescreditnote-post2/${id}/${expensesID}`,
+        `${API_URL}/api/create-expensescreditnote-post2/${id}/${expensesID}`,
         payload,
         {
           headers: {

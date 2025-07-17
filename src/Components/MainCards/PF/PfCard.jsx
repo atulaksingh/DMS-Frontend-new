@@ -23,6 +23,7 @@ import { parse } from "date-fns"
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 // import "react-toastify/dist/ReactToastify.css";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -88,7 +89,7 @@ export default function PfCard({ rowId, fetchPfTotals }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-pf/${id}/${deleteId}`
+        `${API_URL}/api/delete-pf/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
       setOpenDeleteModal(false);
@@ -122,7 +123,7 @@ export default function PfCard({ rowId, fetchPfTotals }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/edit-pf/${id}/${rowId}`
+          `${API_URL}/api/edit-pf/${id}/${rowId}`
         );
         setBankData(response.data);
         setLoading(false);
@@ -142,7 +143,7 @@ export default function PfCard({ rowId, fetchPfTotals }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-pf/${id}/${rowId}`
+        `${API_URL}/api/edit-pf/${id}/${rowId}`
       );
       //   console.log("dd", response.data);
       const updatedData = {
@@ -170,7 +171,7 @@ export default function PfCard({ rowId, fetchPfTotals }) {
   //   const fetchBankDetails = async () => {
   //     try {
   //       const response = await axios.get(
-  //         `http://127.0.0.1:8000/api/editpf/${id}/${rowId}`
+  //         `${API_URL}/api/editpf/${id}/${rowId}`
   //       );
   //       setBankData(response.data);
   //       setLoading(false);
@@ -294,7 +295,7 @@ export default function PfCard({ rowId, fetchPfTotals }) {
       }
 
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-pf/${id}/${rowId}`,
+        `${API_URL}/api/edit-pf/${id}/${rowId}`,
         formDataToSend
       );
       const responseData = response.data; // Store response data safely

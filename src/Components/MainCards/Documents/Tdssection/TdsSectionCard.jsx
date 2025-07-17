@@ -16,6 +16,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 // import "react-toastify/dist/ReactToastify.css";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -81,7 +82,7 @@ export default function TdsSectionCard({ rowId }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-tdssection/${rowId}`,
+        `${API_URL}/api/edit-tdssection/${rowId}`,
         formDataToSend,
         {
           headers: {
@@ -133,7 +134,7 @@ export default function TdsSectionCard({ rowId }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-tdssection/${deleteId}`
+        `${API_URL}/api/delete-tdssection/${deleteId}`
       );
       // console.log("res-----Tds Section---->", response);
       setOpenDeleteModal(false);
@@ -163,7 +164,7 @@ export default function TdsSectionCard({ rowId }) {
     setAnchorEl(null);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/single-tdssection/${rowId}`
+        `${API_URL}/api/single-tdssection/${rowId}`
       );
       setTdsSectionData(response.data);
       setLoading(false);
@@ -181,7 +182,7 @@ export default function TdsSectionCard({ rowId }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-tdssection/${rowId}`
+        `${API_URL}/api/edit-tdssection/${rowId}`
       );
       // console.log("dd", response.data);
       setFormData(response.data);

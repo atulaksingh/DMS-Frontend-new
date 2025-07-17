@@ -42,7 +42,7 @@ import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
 import { format, parse } from "date-fns";
 
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateModal = {
   position: "absolute",
   top: "50%",
@@ -315,7 +315,7 @@ function SalesCreation({
   // const fetchBankDetails = async () => {
   //   try {
   //     const response = await axios.get(
-  //       `http://127.0.0.1:8000/api/get-sales/${id}`
+  //       `${API_URL}/api/get-sales/${id}`
   //     );
   //     // console.log("ggggggg->", response.data);
   //   } catch (error) {}
@@ -350,7 +350,7 @@ function SalesCreation({
       // Fetch additional data if needed
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-sales/${id}/?newValue=${newValue.id}&productID=${productID}`
+          `${API_URL}/api/get-sales/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         // console.log("Location Data:---->", response.data.branch_gst);
         setBranchNoGst(response.data.branch_gst);
@@ -487,7 +487,7 @@ function SalesCreation({
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/get-sales/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
+          `${API_URL}/api/get-sales/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
         const { hsn_code: hsnCode, gst_rate: gstRate } =
@@ -809,7 +809,7 @@ function SalesCreation({
 
     try {
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-sales-post2/${id}`,
+        `${API_URL}/api/create-sales-post2/${id}`,
         payload,
         {
           headers: {

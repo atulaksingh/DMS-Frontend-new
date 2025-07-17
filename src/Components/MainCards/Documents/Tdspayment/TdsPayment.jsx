@@ -14,7 +14,7 @@ import TdsPaymentCreation from "./TdsPaymentCreation";
 import TdsPaymentCard from "./TdsPaymentCard";
 import TdsPaymentFileCreation from "./TdsPaymentFileCreation";
 import axios from "axios";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const muiCache = createCache({
   key: "mui-datatables",
@@ -58,7 +58,7 @@ function TdsPayment({ tdsPaymentData }) {
   const [allTdsSectionData, setAllTdsSectionData] = useState([]);
   const fetchAllTdsSectionDetails = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/get-tdssection`);
+      const response = await axios.get(`${API_URL}/api/get-tdssection`);
       console.log("response tds section", response?.data)
       setAllTdsSectionData({
         tds_section: response?.data?.tds_section || [],

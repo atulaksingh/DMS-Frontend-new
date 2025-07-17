@@ -20,6 +20,12 @@ import "react-toastify/dist/ReactToastify.css";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import axios from "axios";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { FaRegCalendarAlt } from "react-icons/fa";
+import { useRef } from "react";
+import { format, parse, isValid } from "date-fns";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 function ClientUpdate() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -51,7 +57,7 @@ function ClientUpdate() {
     const fetchClientData = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/edit-client/${id}`
+          `${API_URL}/api/edit-client/${id}`
           // 'http://127.0.0.1:8000/api/edit-client/${id}'
         );
         const data = response.data;
@@ -153,6 +159,18 @@ function ClientUpdate() {
     });
   };
 
+  const date_of_incorporation = useRef(null);
+  const handleDateChange = (date) => {
+    if (isValid(date)) {
+      const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
+      setFormData((prevData) =>
+        prevData.map((item, index) =>
+          index === 0 ? { ...item, date_of_incorporation: formattedDate } : item
+        )
+      );
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -214,7 +232,7 @@ function ClientUpdate() {
 
       // Submit the form data
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-client/${id}`,
+        `${API_URL}/api/edit-client/${id}`,
         data,
         {
           headers: {
@@ -311,7 +329,7 @@ function ClientUpdate() {
                     unmount: { y: 25 },
                   }}
                   className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                  labelProps={{  
+                  labelProps={{
                     className: "hidden",
                   }}
                   containerProps={{ className: "min-w-[100px]" }}
@@ -550,7 +568,7 @@ function ClientUpdate() {
               </label>
 
               <div className="">
-                <Input
+                {/* <Input
                   type="date"
                   size="lg"
                   name="date_of_incorporation"
@@ -562,7 +580,49 @@ function ClientUpdate() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.date_of_incorporation}
                   onChange={handleChange}
-                />
+                /> */}
+                <div className="">
+                  {/* <Input
+                  type="date"
+                  size="lg"
+                  name="date_of_incorporation"
+                  placeholder="Contact Person"
+                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  labelProps={{
+                    className: "hidden",
+                  }}
+                  containerProps={{ className: "min-w-[100px]" }}
+                  value={formData.date_of_incorporation}
+                  onChange={handleChange}
+                /> */}
+                  <DatePicker
+                    ref={date_of_incorporation}
+                    selected={
+                      formData[0]?.date_of_incorporation
+                        ? isValid(parse(formData[0].date_of_incorporation, "dd-MM-yyyy", new Date()))
+                          ? parse(formData[0].date_of_incorporation, "dd-MM-yyyy", new Date())
+                          : null
+                        : null
+                    }
+                    value={formData.date_of_incorporation}
+                    onChange={handleDateChange}
+                    dateFormat="dd-MM-yyyy"
+                    // className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
+                    //                                                               focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"
+                    className="w-full !border !border-[#cecece] w-[335px] bg-white py-2 pl-3 pr-10 text-gray-900 
+                                                                                  focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md 
+                                                                                  outline-none"
+                    placeholderText="dd-mm-yyyy"
+                    showYearDropdown
+                    scrollableYearDropdown
+                    yearDropdownItemNumber={25}
+                  />
+                  {/* <FaRegCalendarAlt
+                  // className="absolute top-1/2 left-40 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  className="absolute top-[300px] left-[600px] transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  onClick={() => date_of_incorporation.current.setFocus()} // Focus the correct DatePicker
+                /> */}
+                </div>
               </div>
             </div>
             <div className="my-3">

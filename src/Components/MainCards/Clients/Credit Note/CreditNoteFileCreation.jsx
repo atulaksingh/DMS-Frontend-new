@@ -12,6 +12,7 @@ import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -58,7 +59,7 @@ function CreditNoteFileCreation() {
       }
 
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-creditnote/${id}/${purchID}`,
+        `${API_URL}/api/create-creditnote/${id}/${purchID}`,
         formDataToSend,
         {
           headers: {
