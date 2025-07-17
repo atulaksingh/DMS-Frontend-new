@@ -509,7 +509,7 @@ function ClientDetails() {
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <Bank bankData={bankData} />
-                <p>🏦 Bank details content goes here.</p>
+                {/* <p>🏦 Bank details content goes here.</p> */}
               </div>
             </>
           )}
@@ -517,7 +517,7 @@ function ClientDetails() {
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <Branch branchData={branchData} />
-                <p>📜 Statutory details content goes here.</p>
+                {/* <p>📜 Statutory details content goes here.</p> */}
               </div>
             </>
           )}
@@ -526,7 +526,7 @@ function ClientDetails() {
               <div className=" px-20 py-6 rounded-md ">
                 <ClientUser clientUserData={clientUserData} />
 
-                <p>👥 Client users content goes here.</p>
+                {/* <p>👥 Client users content goes here.</p> */}
               </div>
             </>
           )}
@@ -534,7 +534,7 @@ function ClientDetails() {
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <CompanyDocuments companyDocData={companyDocData} />
-                <p>📁 Company documents content goes here.</p>
+                {/* <p>📁 Company documents content goes here.</p> */}
               </div>
             </>
           )}
@@ -551,7 +551,7 @@ function ClientDetails() {
                   tdsSectionData={tdsSectionData}
                   othersData={othersData}
                 />
-                <p>📄 General documents content goes here.</p>
+                {/* <p>📄 General documents content goes here.</p> */}
               </div>
             </>
           )}
@@ -559,7 +559,7 @@ function ClientDetails() {
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <CV cvData={CVData} />
-                <p>🧾 Customer & Vendor content goes here.</p>
+                {/* <p>🧾 Customer & Vendor content goes here.</p> */}
               </div>
             </>
           )}
@@ -567,7 +567,7 @@ function ClientDetails() {
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <Purchase purchaseInvoiceData={purchaseInvoiceData} />
-                <p>🛒 Purchase section content goes here.</p>
+                {/* <p>🛒 Purchase section content goes here.</p> */}
               </div>
             </>
           )}
@@ -575,7 +575,7 @@ function ClientDetails() {
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <Sales salesInvoiceData={salesInvoiceData} />
-                <p>💼 Sales section content goes here.</p>
+                {/* <p>💼 Sales section content goes here.</p> */}
               </div>
             </>
           )}
@@ -583,7 +583,7 @@ function ClientDetails() {
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <Income incomeInvoiceData={incomeInvoiceData} />
-                <p>💰 Income-related content goes here.</p>
+                {/* <p>💰 Income-related content goes here.</p> */}
               </div>
             </>
           )}
@@ -591,7 +591,7 @@ function ClientDetails() {
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <Expenses expensesInvoiceData={expensesInvoiceData} />
-                <p>📉 Expenses-related content goes here.</p>
+                {/* <p>📉 Expenses-related content goes here.</p> */}
               </div>
             </>
           )}
@@ -599,7 +599,7 @@ function ClientDetails() {
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <ZipFile zipFileData={zipFileData} />
-                <p>📦 Zip file upload area content goes here.</p>
+                {/* <p>📦 Zip file upload area content goes here.</p> */}
               </div>
             </>
           )}
@@ -608,7 +608,7 @@ function ClientDetails() {
               <div className=" px-20 py-6 rounded-md ">
                 {/* <Ack acksData={acksData} /> */}
                 <AckDetails />
-                <p>✅ Acknowledgement content goes here.</p>
+                {/* <p>✅ Acknowledgement content goes here.</p> */}
               </div>
             </>
           )}
