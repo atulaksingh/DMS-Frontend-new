@@ -6,8 +6,8 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+// import { ToastContainer, toast } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
 
 import { useParams } from "react-router-dom";
 
@@ -210,7 +210,7 @@ function TdsSection({ tdsSectionData }) {
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
 
       <div>
         <div className="flex justify-between align-middle items-center mb-5">

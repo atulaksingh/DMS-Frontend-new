@@ -30,7 +30,7 @@ const navItems = [
   { name: "Client Details" },
   { name: "Owner Details" },
   { name: "Bank Details" },
-  { name: "Statutory Details" },
+  { name: "Branch Details" },
   { name: "Client Users" },
   { name: "Company Documents" },
   { name: "Documents" },
@@ -244,11 +244,10 @@ function ClientDetails() {
             {navItems.map((item) => (
               <div
                 key={item.name}
-                className={`cursor-pointer whitespace-nowrap px-2 py-1  ${
-                  selectedTab === item.name
-                    ? "text-blue-600 font-semibold border-b-2 border-blue-600"
-                    : "hover:text-blue-500"
-                }`}
+                className={`cursor-pointer whitespace-nowrap px-2 py-1  ${selectedTab === item.name
+                  ? "text-blue-600 font-semibold border-b-2 border-blue-600"
+                  : "hover:text-blue-500"
+                  }`}
                 onClick={() => setSelectedTab(item.name)}
               >
                 {item.name}
@@ -269,7 +268,7 @@ function ClientDetails() {
                 {/* <p>📊 This is Dashboard content</p> */}
                 {clientData ? (
                   <>
-                   
+
                     <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
                       <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
                         🧾 Client Details
@@ -323,9 +322,17 @@ function ClientDetails() {
                             Status:
                           </span>
                           <span className="font-medium capitalize text-green-600">
-                             {clientData.status}
+                            {clientData.status}
                           </span>
                         </div>
+                      </div>
+                      <div className="flex mr-2 mt-6">
+                        <span className="text-gray-500 text-sm min-w-[150px]">
+                          Email:
+                        </span>
+                        <span className="font-medium text-gray-800">
+                          {clientData.email}
+                        </span>
                       </div>
 
                       <div className="mt-6">
@@ -333,10 +340,10 @@ function ClientDetails() {
                           Business Details
                         </span>
                         <div className="bg-gray-50 p-4 rounded-md text-sm leading-relaxed text-gray-700 border">
-                          wertysdfghj sdfghjert dfghjdfghj, sdfghsdfghj
-                          wertyuivbnm, xcvbnm, vbnm, xcvbnm, asdfg.
+                          {clientData.business_detail}
                         </div>
                       </div>
+
                     </div>
 
                     {/* <Owner ownerData={ownerData} /> */}
@@ -498,9 +505,9 @@ function ClientDetails() {
                     <Owner ownerData={ownerData} />
                   </>
                 )
-                 : (
-                  <div>No owner data available</div>
-                )
+                  : (
+                    <div>No owner data available</div>
+                  )
                 }
               </div>
             </>
@@ -513,11 +520,11 @@ function ClientDetails() {
               </div>
             </>
           )}
-          {selectedTab === "Statutory Details" && (
+          {selectedTab === "Branch Details" && (
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <Branch branchData={branchData} />
-                {/* <p>📜 Statutory details content goes here.</p> */}
+                {/* <p>📜 Branch Details content goes here.</p> */}
               </div>
             </>
           )}
@@ -801,7 +808,7 @@ function ClientDetails() {
                     }}
                   />
                   <Tab
-                    label="Statutory Details"
+                    label="Branch Details"
                     value="3"
                     fontWeight="bold"
                     sx={{

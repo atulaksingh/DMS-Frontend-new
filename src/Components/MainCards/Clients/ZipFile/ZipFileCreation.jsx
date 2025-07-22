@@ -43,6 +43,7 @@ function ZipFileCreation() {
 
   const [formData, setFormData] = useState({
     files: [],
+    type_of_data: "",
   });
 
   const handleFileChange = (event) => {
@@ -52,6 +53,61 @@ function ZipFileCreation() {
     }));
   };
 
+  const handleInputChange = (name, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const formDataToSend = new FormData();
+  //     formDataToSend.append("type_of_data", formData.type_of_data);
+
+  //     for (let i = 0; i < formData.files.length; i++) {
+  //       formDataToSend.append("files", formData.files[i]);
+  //     }
+
+  //     const response = await axios.post(
+  //       `${API_URL}/api/create-zipupload/${id}`,
+  //       formDataToSend,
+  //       {
+  //         headers: {
+  //           "Content-Type": "multipart/form-data",
+  //         },
+  //       }
+  //     );
+
+  //     // Check if the response status is success (2xx)
+  //     console.log("Responsssse:", response);
+  //     if (response.status === 200 || response.status === 201) {
+  //       toast.success(`${response.data.message}`, {
+  //         position: "top-right",
+  //         autoClose: 2000,
+  //       });
+  //       dispatch(fetchClientDetails(id));
+  //       handleCreateClose();
+  //       setFormData((prevData) => ({
+  //         ...prevData,
+  //         files: [],
+  //         type_of_data: "",
+  //       }));
+  //     } else {
+  //       throw new Error("Unexpected response");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting data:", error);
+
+  //     toast.error("Failed to create bank details. Please try again.", {
+  //       position: "top-right",
+  //       autoClose: 2000,
+  //     });
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -60,6 +116,13 @@ function ZipFileCreation() {
 
       for (let i = 0; i < formData.files.length; i++) {
         formDataToSend.append("files", formData.files[i]);
+      }
+      formDataToSend.append("type_of_data", formData.type_of_data);
+
+      // 🔍 Log the FormData before sending
+      console.log("📦 Submitted FormData:");
+      for (let pair of formDataToSend.entries()) {
+        console.log(`${pair[0]}:`, pair[1]);
       }
 
       const response = await axios.post(
@@ -72,7 +135,6 @@ function ZipFileCreation() {
         }
       );
 
-      // Check if the response status is success (2xx)
       if (response.status === 200 || response.status === 201) {
         toast.success(`${response.data.message}`, {
           position: "top-right",
@@ -83,6 +145,7 @@ function ZipFileCreation() {
         setFormData((prevData) => ({
           ...prevData,
           files: [],
+          type_of_data: "",
         }));
       } else {
         throw new Error("Unexpected response");
@@ -108,6 +171,7 @@ function ZipFileCreation() {
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
+
           <Box sx={styleCreateMOdal}>
             <Typography
               id="modal-modal-title"
@@ -117,9 +181,36 @@ function ZipFileCreation() {
             >
               File Import
             </Typography>
-            <form className=" mt-10 w-full " onSubmit={handleSubmit}>
+            <form className=" mt-6 w-full " onSubmit={handleSubmit}>
               <div>
                 <div className="grid grid-cols-4 gap-4 ">
+                  <div className="col-span-2">
+                    <label htmlFor="text">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="block  font-semibold  mb-1"
+                      >
+                        Type of Data
+                      </Typography>
+                    </label>
+                    <div className="">
+                      <Input
+                        type="text"
+                        size="lg"
+                        name="type_of_data"
+                        placeholder="Type of Data"
+                        value={formData.type_of_data}
+                        // onChange={handleInputChange}
+                        onChange={(e) => handleInputChange(e.target.name, e.target.value)}
+                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        labelProps={{
+                          className: "hidden",
+                        }}
+                        containerProps={{ className: "min-w-full" }}
+                      />
+                    </div>
+                  </div>
                   <div className="col-span-4 ">
 
 
@@ -193,7 +284,7 @@ function ZipFileCreation() {
         className="bg-primary hover:bg-[#2d5e85]"
         onClick={handleCreateOpen}
       >
-        Upload Invoice
+        Upload Data
       </Button>
     </>
   );

@@ -1,69 +1,33 @@
+
 import React, { useState, useEffect } from "react";
-import { Menu, MenuItem, IconButton } from "@mui/material";
-import { Input, tab, Typography } from "@material-tailwind/react";
+import {
+    Menu, MenuItem, IconButton, Accordion, AccordionSummary, AccordionDetails,
+    Tabs, Tab, Box, Fade
+} from "@mui/material";
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Typography } from "@material-tailwind/react";
 import MUIDataTable from "mui-datatables";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useParams } from "react-router-dom";
-// import AcknowledgementCard from "./AcknowledgementCard";
-// import AcknowledgementCreation from "./AcknowledgementCreation";
 import AckCreation from "./AckCreation";
-import AcknowledgementCard from "../Clients/Acknowledgement/AcknowledgementCard";
-import AcknowledgementCreation from "../Clients/Acknowledgement/AcknowledgementCreation";
 import AckCard from "./AckCard";
 
+const muiCache = createCache({ key: "mui-datatables", prepend: true });
 
-/////
-// import Accordion, {
-//     accordionClasses,
-// } from '@mui/material/Accordion';
-// import {
-//   Accordion, AccordionSummary, AccordionDetails,
-//   Typography, Tabs, Tab, Box, Fade
-// } from '@mui/material';
-// import AccordionSummary from '@mui/material/AccordionSummary';
-// import AccordionDetails, {
-//     accordionDetailsClasses,
-// } from '@mui/material/AccordionDetails';
-// import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-// import Fade from '@mui/material/Fade';
-// import React, { useState } from 'react';
-import {
-    Accordion, AccordionSummary, AccordionDetails,
-    Tabs, Tab, Box, Fade, List, ListItemButton,
-} from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { min } from "date-fns";
-import { Key } from "@mui/icons-material";
-import { get } from "jquery";
-
-
-
-const muiCache = createCache({
-    key: "mui-datatables",
-    prepend: true,
-});
-
-const styleCreateMOdal = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 750,
-    bgcolor: "background.paper",
-    //   border: "1px solid #000",
-    boxShadow: 24,
-    p: 4,
-    borderRadius: "10px",
-};
-function Ack({ acknowledgementData, fetchAckDetails }) {
-
-    console.log("ye data hai", acknowledgementData);
-
-
+const Ack = ({ acknowledgementData, fetchAckDetails }) => {
+    const [tabIndex, setTabIndex] = useState(0);
+    const [expanded, setExpanded] = useState(false);
+    const [selectedGSTR, setSelectedGSTR] = useState({});
+    const [searchBtn, setSearchBtn] = useState(true);
+    const [downloadBtn, setDownloadBtn] = useState(true);
+    const [printBtn, setPrintBtn] = useState(true);
+    const [viewColumnBtn, setViewColumnBtn] = useState(true);
+    const [filterBtn, setFilterBtn] = useState(true);
+    const [responsive, setResponsive] = useState("vertical");
+    const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
     const calculateTableBodyHeight = () => {
         const rowHeight = 80; // Approximate height for one row
         const maxHeight = 525; // Maximum table body height
@@ -72,49 +36,114 @@ function Ack({ acknowledgementData, fetchAckDetails }) {
             ? `${maxHeight}px`
             : `${calculatedHeight}px`;
     };
-    const [errorMessage, setErrorMessage] = useState("");
-    // const [selectedMonth, setSelectedMonth] = useState(null);
-    const [responsive, setResponsive] = useState("vertical");
     const [tableBodyHeight, setTableBodyHeight] = useState(
         calculateTableBodyHeight
     );
-    const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
-    const [searchBtn, setSearchBtn] = useState(true);
-    const [downloadBtn, setDownloadBtn] = useState(true);
-    const [printBtn, setPrintBtn] = useState(true);
-    const [viewColumnBtn, setViewColumnBtn] = useState(true);
-    const [filterBtn, setFilterBtn] = useState(true);
 
 
     useEffect(() => {
         setTableBodyHeight(calculateTableBodyHeight());
     }, [acknowledgementData]);
 
-    const columns = [
-        {
-            name: "id",          // The ID column
-            label: "ID",
-            options: {
-                display: false,  // Hide this column from the table view
-                filter: false,   // Optionally hide it from filtering
-                sort: false,     // Optionally disable sorting on this column
+    const allMainTabs = [
+        { label: "GST", key: "gst_group" },
+        { label: "CMP 8", key: "cmp_8" },
+        { label: "ITC 04", key: "itc_04" },
+        { label: "INCOME TAX", key: "income_tax" },
+        { label: "TAX AUDIT", key: "tax_audit" },
+        { label: "AIR", key: "air" },
+        { label: "SFT", key: "sft" },
+        { label: "TDS RETURN", key: "tds_return" },
+        { label: "TDS PAYMENT", key: "tds_payment" },
+        { label: "PF", key: "pf" },
+        { label: "ESIC", key: "esic" },
+        { label: "GST NOTICE", key: "gst_notice" },
+        { label: "INCOME TAX NOTICE", key: "income_tax_notice" },
+    ];
+
+    const getSubTabs = {
+        gstr_1: "GSTR 1",
+        gstr_3b: "GSTR 3B",
+        gstr_4: "GSTR 4",
+        gstr_5: "GSTR 5",
+        gstr_5a: "GSTR 5A",
+        gstr_6: "GSTR 6",
+        gstr_7: "GSTR 7",
+        gstr_8: "GSTR 8",
+        gstr_9: "GSTR 9",
+        gstr_10: "GSTR 10",
+        gstr_11: "GSTR 11",
+    };
+
+    const theme = createTheme({
+        components: {
+            MuiTableCell: {
+                styleOverrides: {
+                    head: {
+                        backgroundColor: "#366FA1",
+                        paddingBlock: "2px",
+                        color: "#ffffff !important",
+                        "&.MuiTableSortLabel-root": {
+                            color: "#ffffff !important",
+                            "&:hover": {
+                                color: "#ffffff !important",
+                            },
+                            "&.Mui-active": {
+                                color: "#ffffff !important",
+                                "& .MuiTableSortLabel-icon": {
+                                    color: "#ffffff !important",
+                                },
+                            },
+                        },
+                    },
+                    body: {
+                        paddingBlock: "0px",
+                    },
+                },
             },
         },
+    });
+
+    // const columns = [
+    //     { name: "id", label: "ID", options: { display: false, filter: false, sort: false } },
+    //     { name: "return_type", label: "Return Type" },
+    //     { name: "month", label: "Month" },
+    //     { name: "frequency", label: "Frequency" },
+    //     { name: "return_period", label: "Return Period" },
+    //     { name: "from_date", label: "From Date" },
+    //     { name: "to_date", label: "To Date" },
+    //     {
+    //         name: "Actions",
+    //         options: {
+    //             customBodyRender: (value, tableMeta) => {
+    //                 const rowData = tableMeta.rowData;
+    //                 const actualRow = acknowledgementData.find(row =>
+    //                     row.return_type === rowData[1] && row.return_period === rowData[4] && row.id === rowData[0]);
+    //                 return <AckCard rowId={actualRow?.id} fetchAckDetails={fetchAckDetails} />;
+    //             },
+    //         },
+    //     }
+    // ];
+
+    // const options = {
+    //     search: true,
+    //     download: true,
+    //     print: true,
+    //     viewColumns: true,
+    //     filter: true,
+    //     filterType: "dropdown",
+    //     responsive: "vertical",
+    //     tableBodyHeight: "500px",
+    //     selectableRows: "none",
+    //     rowsPerPage: 13,
+    //     rowsPerPageOptions: [13, 25, 50],
+    // };
+
+
+    const columns = [
         {
             name: "return_type",
             label: "Return Type",
-            options: {
-                setCellHeaderProps: () => ({
-                    style: {
-                        backgroundColor: "#366FA1",
-                        color: "#ffffff",
-                    },
-                }),
-            },
-        },
-        {
-            name: "month",
-            label: "Month",
             options: {
                 setCellHeaderProps: () => ({
                     style: {
@@ -182,20 +211,24 @@ function Ack({ acknowledgementData, fetchAckDetails }) {
                 //     return (
                 //         <div>
                 //             {/* <BankCard rowId={rowData.id} /> */}
-                //             <AckCard rowId={rowData.id} />
-                //         </div>/./././././././././././././././././././././././././././././././././././././././././././././
-                //././././././././././././././././././././././././././././././
-
+                //             <AckCard rowId={rowData.id} fetchAckDetails={fetchAckDetails} setTabIndex={setTabIndex} />
+                //         </div>
                 //     );
-                //  
                 // },
                 customBodyRender: (value, tableMeta) => {
-                    const rowIndex = tableMeta.rowIndex;
-                    const rowData = tableMeta.rowData; // or use rowIndex safely
+                    const rowData = tableMeta.rowData;
                     const actualRow = acknowledgementData.find(row =>
-                        row.return_type === rowData[1] && row.return_period === rowData[4] && row.id === rowData[0]);
-                    return <AckCard rowId={actualRow?.id} fetchAckDetails={fetchAckDetails} />;
+                        row.return_type === rowData[0] && // return_type
+                        row.frequency === rowData[1] &&
+                        row.return_period === rowData[2] &&
+                        row.from_date === rowData[3] &&
+                        row.to_date === rowData[4]
+                    );
+                    return (
+                        <AckCard rowId={actualRow?.id} fetchAckDetails={fetchAckDetails} setTabIndex={setTabIndex} />
+                    );
                 },
+
                 setCellHeaderProps: () => ({
                     style: {
                         backgroundColor: "#366FA1",
@@ -227,580 +260,195 @@ function Ack({ acknowledgementData, fetchAckDetails }) {
         page: 0,
     };
 
-    const theme = createTheme({
-        components: {
-            MuiTableCell: {
-                styleOverrides: {
-                    head: {
-                        backgroundColor: "#366FA1",
-                        paddingBlock: "2px",
-                        color: "#ffffff !important",
-                        "&.MuiTableSortLabel-root": {
-                            color: "#ffffff !important",
-                            "&:hover": {
-                                color: "#ffffff !important",
-                            },
-                            "&.Mui-active": {
-                                color: "#ffffff !important",
-                                "& .MuiTableSortLabel-icon": {
-                                    color: "#ffffff !important",
-                                },
-                            },
-                        },
-                    },
-                    body: {
-                        paddingBlock: "0px",
-                    },
-                },
-            },
-        },
-    });
-
-
-
-    ////
-
-    const [expanded, setExpanded] = useState(false);
-    const [tabIndex, setTabIndex] = useState(0);
-
-    const handleExpansion = (event, isExpanded) => {
-        setExpanded(isExpanded);
-    };
-
-    const handleTabChange = (event, newValue) => {
-        setTabIndex(newValue);
-    };
-
-    const tabLabels = ['GST', 'CMP 8', 'ITC 04', 'Income Tax', 'Tax Audit', 'AIR', 'SFT', 'TDS Return', 'TDS Payment', 'PF', 'ESIC', 'GST Notice', 'Income Tax Notice'];
-
-    const getSubTab = [
-        'GSTR 1', 'GSTR 3B', 'GSTR 4', 'GSTR 5',
-        'GSTR 5A', 'GSTR 6', 'GSTR 7', 'GSTR 8',
-        'GSTR 9', 'GSTR 10', 'GSTR 11',
-    ];
-
-    const getSubTabs = {
-        gstr_1: 'GSTR 1',
-        gstr_3b: 'GSTR 3B',
-        gstr_4: 'GSTR 4',
-        gstr_5: 'GSTR 5',
-        gstr_5a: 'GSTR 5A',
-        gstr_6: 'GSTR 6',
-        gstr_7: 'GSTR 7',
-        gstr_8: 'GSTR 8',
-        gstr_9: 'GSTR 9',
-        gstr_10: 'GSTR 10',
-        gstr_11: 'GSTR 11',
-    }
-
-    const reverseSubTabs = Object.fromEntries(
-        Object.entries(getSubTabs).map(([key, value]) => [value, key])
-    );
-
-
-    const [selectedGSTR, setSelectedGSTR] = useState(0);
-
-    const [selectedSubTab, setSelectedSubTab] = useState(getSubTabs[0]);
-    const backendKey = reverseSubTabs[getSubTab[selectedGSTR]];
-
-
-
-    // 🧠 Track which month is currently expanded
-    // const [expandedMonth, setExpandedMonth] = useState(false);
-
-    // useEffect(() => {
-    //     setExpandedMonth(false);
-    // }, [selectedGSTR]);
-    // ///////\\\\\\\\\\\\\\\\\\\\\\\\\\\\
-
-    // const handleAccordionChange = (month) => (event, isExpanded) => {
-    //     setExpandedMonth(isExpanded ? month : false);
-    // };
-
     const getFinancialYearKey = (startStr) => {
         const [startMonthName, startYearStr] = startStr.split(" ");
         const startYear = parseInt(startYearStr);
-
-        const monthMap = {
-            "January": 1,
-            "February": 2,
-            "March": 3,
-            "April": 4,
-            "May": 5,
-            "June": 6,
-            "July": 7,
-            "August": 8,
-            "September": 9,
-            "October": 10,
-            "November": 11,
-            "December": 12
-        };
-
+        const monthMap = { January: 1, February: 2, March: 3, April: 4, May: 5, June: 6, July: 7, August: 8, September: 9, October: 10, November: 11, December: 12 };
         const startMonth = monthMap[startMonthName];
-
-        // if (startMonth <= 4) {
-        //     return `${startYear} - ${startYear + 1}`
-        // }
-        // else {
-        //     return `${startYear - 1} - ${startYear}`
-        // }
-        if (startMonth >= 4) {
-            return `${startYear} - ${startYear + 1}`;
-        } else {
-            return `${startYear - 1} - ${startYear}`;
-        }
-
-    }
+        return (startMonth >= 4) ? `${startYear} - ${startYear + 1}` : `${startYear - 1} - ${startYear}`;
+    };
 
     const groupByFinancialYear = (data) => {
-
         const grouped = {};
-
         data.forEach(item => {
             const [startStr] = item.return_period.split("-");
             const key = getFinancialYearKey(startStr);
-
-            if (!grouped[key]) {
-                grouped[key] = [];
-            }
+            if (!grouped[key]) grouped[key] = [];
             grouped[key].push(item);
-
-
-        })
-
-
+        });
         return grouped;
-    }
+    };
 
-    // const isInFinancialYear = (item, yearRange) => {
-    //     const [startStr, endStr] = item.return_period.split(" - ");
-    //     const startDate = new Date(`${startStr} 1`);
-    //     const endDate = new Date(`${endStr} 1`);
-
-    //     const [startYear, endYear] = yearRange.split(" - ").map(Number);
-
-    //     const fyStart = new Date(`April 1, ${startYear}`);
-    //     const fyEnd = new Date(`March 31, ${endYear}`);
-
-    //     return startDate <= fyEnd && endDate >= fyStart;
-    // };
-
-
-    // const taxAuditData = acknowledgementData.filter(item => item.return_type === "tax_audit" && isInFinancialYear(item, yearRange));
-    // const incomeTaxData = acknowledgementData.filter(item => item.return_type === "income_tax" && isInFinancialYear(item, yearRange));
-    // const airData = acknowledgementData.filter(item => item.return_type === "air" && isInFinancialYear(item, yearRange))
-    // const sftData = acknowledgementData.filter(item => item.return_type === "sft" && isInFinancialYear(item, yearRange));
-    // const tdsReturnData = acknowledgementData.filter(item => item.return_type === "tds_return" && isInFinancialYear(item, yearRange));
-    // const tdsPaymentData = acknowledgementData.filter(item => item.return_type === "tds_payment" && isInFinancialYear(item, yearRange));
-    // const pfData = acknowledgementData.filter(item => item.return_type === "pf" && isInFinancialYear(item, yearRange));
-    // const esicData = acknowledgementData.filter(item => item.return_type === "esic" && isInFinancialYear(item, yearRange));
-    // const gstData = acknowledgementData.filter(item => item.return_type === "gst_notice" && isInFinancialYear(item, yearRange));
-    // const cmp8Data = acknowledgementData.filter(item => item.return_type === "cmp_8" && isInFinancialYear(item, yearRange));
-    // const itc04Data = acknowledgementData.filter(item => item.return_type === "itc_04" && isInFinancialYear(item, yearRange));
-    // const incomeTaxNoticeData = acknowledgementData.filter(item => item.return_type === "income_tax_notice" && isInFinancialYear(item, yearRange));
-    // const subTabData = acknowledgementData.filter(
-    //     item => item.return_type === backendKey && isInFinancialYear(item, yearRange)
-    // );
-
-    const taxAuditData = acknowledgementData.filter(item => item.return_type === "tax_audit");
-    const incomeTaxData = acknowledgementData.filter(item => item.return_type === "income_tax");
-    const airData = acknowledgementData.filter(item => item.return_type === "air")
-    const sftData = acknowledgementData.filter(item => item.return_type === "sft");
-    const tdsReturnData = acknowledgementData.filter(item => item.return_type === "tds_return");
-    const tdsPaymentData = acknowledgementData.filter(item => item.return_type === "tds_payment");
-    const pfData = acknowledgementData.filter(item => item.return_type === "pf");
-    const esicData = acknowledgementData.filter(item => item.return_type === "esic");
-    const gstData = acknowledgementData.filter(item => item.return_type === "gst_notice");
-    const cmp8Data = acknowledgementData.filter(item => item.return_type === "cmp_8");
-    const itc04Data = acknowledgementData.filter(item => item.return_type === "itc_04");
-    const incomeTaxNoticeData = acknowledgementData.filter(item => item.return_type === "income_tax_notice");
-    const subTabData = acknowledgementData.filter(
-        item => item.return_type === backendKey
+    const RenderTable = ({ type, dataForYear }) => (
+        <AccordionDetails>
+            <CacheProvider value={muiCache}>
+                <ThemeProvider theme={theme}>
+                    <MUIDataTable
+                        data={dataForYear.filter(item => item.return_type === type)}
+                        columns={columns}
+                        options={options}
+                    />
+                </ThemeProvider>
+            </CacheProvider>
+        </AccordionDetails>
     );
 
     const groupedData = groupByFinancialYear(acknowledgementData || []);
 
-
-
-
     return (
         <>
             <ToastContainer />
+            <div className="flex justify-between items-center mb-5">
+                <div className="text-2xl text-gray-800 font-semibold">Acknowledgement Details</div>
+                <AckCreation fetchAckDetails={fetchAckDetails} />
+            </div>
+            {/* make changes from here *************************************************************** */}
 
-            <div>
-                <div className="flex justify-between align-middle items-center mb-5">
-                    <div className="text-2xl text-gray-800 font-semibold">
-                        Acknowledgement Details
-                    </div>
-                    <div>
+            {Object.entries(groupedData).map(([yearRange, dataForYear]) => {
+                const tabLabels = allMainTabs.filter(tab => {
+                    if (tab.key === "gst_group") {
+                        return Object.keys(getSubTabs).some(gstKey =>
+                            dataForYear.some(item => item.return_type === gstKey));
+                    }
+                    return dataForYear.some(item => item.return_type === tab.key);
+                });
 
-                        {/* <BankCreation /> */}
-                        {/* <AcknowledgementCreation /> */}
-                        <AckCreation fetchAckDetails={fetchAckDetails} />
-                        {/* <AcknowledgementCreation /> */}
-                    </div>
-                </div>
-                <div>
-                    <div>
-                        {/* <Accordion
-                        expanded={expanded}
-                        onChange={handleExpansion} 
+                const availableSubTabs = Object.entries(getSubTabs).filter(
+                    ([key]) => dataForYear.some(item => item.return_type === key)
+                );
+                const currentSelectedGSTR = selectedGSTR[yearRange] || 0;
+                const backendKey = availableSubTabs[currentSelectedGSTR]?.[0];
+
+                return (
+                    <Accordion key={yearRange} expanded={expanded === yearRange} onChange={() => setExpanded(prev => prev === yearRange ? false : yearRange)}
                         slots={{ transition: Fade }}
                         slotProps={{ transition: { timeout: 400 } }}
                         sx={[
-                            // { 
-                            //     backgroundColor: '#366FA1', // ✅ Change this color
-                            //     color: '#FFFFFF',     
-                            // },
-                            //
-                            expanded
+                            expanded === yearRange
                                 ? {
-                                    [`& .${accordionClasses.region}`]: {
+                                    [`& .MuiAccordion-region`]: {
                                         height: 'auto',
                                     },
-                                    [`& .${accordionDetailsClasses.root}`]: {
+                                    [`& .MuiAccordionDetails-root`]: {
                                         display: 'block',
                                     },
                                 }
                                 : {
-                                    [`& .${accordionClasses.region}`]: {
+                                    [`& .MuiAccordion-region`]: {
                                         height: 0,
                                     },
-                                    [`& .${accordionDetailsClasses.root}`]: {
+                                    [`& .MuiAccordionDetails-root`]: {
                                         display: 'none',
                                     },
                                 },
                         ]}
                     >
-                        <AccordionSummary
-                            expandIcon={<ExpandMoreIcon sx={{ color: '#ffffff' }} />}
-                            aria-controls="panel1-content"
-                            id="panel1-header"
+                        <AccordionSummary expandIcon={
+                            <ExpandMoreIcon
+                                sx={{
+                                    color: '#366FA1',
+                                    '&:hover': {
+                                        backgroundColor: '#3D79AD',
+                                        color: '#FFFFFF',
+                                    },
+                                }}
+                            />}
                             sx={{
-                                backgroundColor: '#366FA1',
-                                color: '#FFFFFF',
+                                backgroundColor: '#FFFFFF',
+                                color: '#366FA1',
+                                fontWeight: 'bold',
                                 '& .MuiTypography-root': {
-                                    color: '#FFFFFF', // applies to Typography inside
+                                    color: '#FFFFFF',
                                 },
+                                '&:hover': {
+                                    backgroundColor: '#3D79AD',
+                                    color: '#FFFFFF',
+                                },
+                                border: '1px solid #366FA1',
+                                borderRadius: '5px',
+                                boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
                             }}
-                        >
-                            <Typography component="span">2019-2020</Typography>
-                        </AccordionSummary>
+                        ><Typography>{yearRange}</Typography></AccordionSummary>
                         <AccordionDetails>
-                            <Typography>
-                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse
-                                malesuada lacus ex, sit amet blandit leo lobortis eget.
-                            </Typography>
-                        </AccordionDetails>
-                    </Accordion> */}
-                    </div>
-                    <div>
-                        {/* {Object.entries(groupedData).map(([yearRange, dataForYear]) => ( */}
-                        {Object.entries(groupedData)
-                            .sort((a, b) => {
-                                const aStart = parseInt(a[0].split(" - ")[0].trim());
-                                const bStart = parseInt(b[0].split(" - ")[0].trim());
-                                return aStart - bStart;
-                            })
-                            .map(([yearRange, dataForYear]) => (
-                                <Accordion
-                                    key={yearRange}
-                                    expanded={expanded === yearRange}
-                                    onChange={(e, isExpanded) => setExpanded(isExpanded ? yearRange : false)}
-                                    slots={{ transition: Fade }}
-                                    slotProps={{ transition: { timeout: 400 } }}
-                                    sx={[
-                                        expanded === yearRange
-                                            ? {
-                                                [`& .MuiAccordion-region`]: {
-                                                    height: 'auto',
-                                                },
-                                                [`& .MuiAccordionDetails-root`]: {
-                                                    display: 'block',
-                                                },
-                                            }
-                                            : {
-                                                [`& .MuiAccordion-region`]: {
-                                                    height: 0,
-                                                },
-                                                [`& .MuiAccordionDetails-root`]: {
-                                                    display: 'none',
-                                                },
-                                            },
-                                    ]}
-                                >
-                                    <AccordionSummary
-                                        expandIcon={<ExpandMoreIcon
-                                            sx={{
-                                                color: '#366FA1',
-                                                '&:hover': {
-                                                    backgroundColor: '#3D79AD',
-                                                    color: '#FFFFFF',
-                                                },
-                                            }} />}
-                                        aria-controls="panel1-content"
-                                        id="panel1-header"
+                            <Tabs value={tabIndex} onChange={(e, val) => setTabIndex(val)} variant="scrollable"
+                                sx={{ borderBottom: 1, borderColor: 'divider' }}
+                                TabIndicatorProps={{
+                                    style: {
+                                        backgroundColor: '#366FA1', // 🔵 your custom blue color
+
+                                    },
+                                }}
+                            >
+                                {tabLabels.map((tab, i) => (
+                                    <Tab key={i} label={tab.label}
                                         sx={{
-                                            backgroundColor: '#FFFFFF',
-                                            color: '#366FA1',
+                                            color: '#366FA1', // normal text color (blue)
                                             fontWeight: 'bold',
-                                            '& .MuiTypography-root': {
-                                                color: '#FFFFFF',
-                                            },
                                             '&:hover': {
-                                                backgroundColor: '#3D79AD',
-                                                color: '#FFFFFF',
+                                                color: '#004B87', // darker blue on hover
                                             },
-                                            border: '1px solid #366FA1',
-                                            borderRadius: '5px',
-                                            boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                                            '&.Mui-selected': {
+                                                color: '#366FA1', // selected tab stays blue
+                                                fontWeight: 'bold',
+                                            },
                                         }}
+                                    />
+                                ))}
+                            </Tabs>
+
+                            {tabLabels[tabIndex]?.key === "gst_group" && (
+                                <Box sx={{ width: '100%', overflowX: 'auto' }}>
+                                    <Tabs
+                                        value={typeof currentSelectedGSTR === "number" ? currentSelectedGSTR : 0}
+                                        onChange={(e, newValue) =>
+                                            setSelectedGSTR(prev => ({ ...prev, [yearRange]: newValue }))
+                                        }
+                                        variant="scrollable"
+                                        scrollButtons="auto"
+                                        allowScrollButtonsMobile
+                                        // sx={{ borderBottom: 1, borderColor: 'divider', mt: 2 }}
+                                        sx={{ borderBottom: 1, borderColor: 'divider', mt: 2 }}
+                                        TabIndicatorProps={{ style: { backgroundColor: '#366FA1' } }}
                                     >
-                                        <Typography component="span">{yearRange}</Typography>
-                                    </AccordionSummary>
+                                        {availableSubTabs.map(([key, label], index) => (
+                                            <Tab key={index} label={label}
+                                                sx={{
+                                                    color: '#366FA1',
+                                                    whiteSpace: 'nowrap',
+                                                    '&:hover': { color: '#004B87' },
+                                                    '&.Mui-selected': {
+                                                        color: '#366FA1',
+                                                        fontWeight: 'bold',
+                                                    },
+                                                    mr: '25px',
+                                                }}
+                                            />
+                                        ))}
+                                    </Tabs>
 
                                     <AccordionDetails>
-                                        {/* Tabs */}
-                                        <Tabs
-                                            value={tabIndex}
-                                            onChange={handleTabChange}
-                                            textColor="inherit"
-                                            // indicatorColor="secondary"
-                                            variant="scrollable"
-                                            scrollButtons="auto"
-                                            allowScrollButtonsMobile
-                                            sx={{ borderBottom: 1, borderColor: 'divider' }}
-                                            TabIndicatorProps={{
-                                                style: {
-                                                    backgroundColor: '#366FA1', // 🔵 your custom blue color
-
-                                                },
-                                            }}
-                                        >
-                                            {tabLabels.map((label, index) => (
-                                                <Tab
-                                                    key={index}
-                                                    label={label}
-                                                    sx={{
-                                                        color: '#366FA1', // normal text color (blue)
-                                                        fontWeight: 'bold',
-                                                        '&:hover': {
-                                                            color: '#004B87', // darker blue on hover
-                                                        },
-                                                        '&.Mui-selected': {
-                                                            color: '#366FA1', // selected tab stays blue
-                                                            fontWeight: 'bold',
-                                                        },
-                                                    }}
+                                        <CacheProvider value={muiCache}>
+                                            <ThemeProvider theme={theme}>
+                                                <MUIDataTable
+                                                    data={dataForYear.filter(item => item.return_type === backendKey)}
+                                                    columns={columns}
+                                                    options={options}
                                                 />
-                                            ))}
-                                        </Tabs>
-
-                                        {/* Tab Content with Nested Accordions */}
-                                        {tabIndex === 0 && (
-                                            <>
-                                                {/* GSTR Sub Tabs */}
-                                                <Box sx={{ width: '100%', overflowX: 'auto' }}>
-                                                    <Tabs
-                                                        value={selectedGSTR}
-                                                        onChange={(e, newValue) => setSelectedGSTR(newValue)}
-                                                        variant="scrollable"
-                                                        scrollButtons="auto"
-                                                        allowScrollButtonsMobile
-                                                        sx={{
-                                                            borderBottom: 1,
-                                                            borderColor: 'divider',
-                                                            mt: 2,
-
-                                                        }}
-                                                        TabIndicatorProps={{
-                                                            style: { backgroundColor: '#366FA1' },
-                                                        }}
-                                                    >
-                                                        {getSubTab.map((label, index) => (
-                                                            <Tab
-                                                                key={index}
-                                                                label={label}
-                                                                sx={{
-                                                                    color: '#366FA1',
-                                                                    whiteSpace: 'nowrap', // ✅ Prevents tab labels from wrapping
-                                                                    '&:hover': { color: '#004B87' },
-                                                                    '&.Mui-selected': {
-                                                                        color: '#366FA1',
-                                                                        fontWeight: 'bold',
-                                                                    },
-                                                                    mr: '25px',
-                                                                }}
-                                                            />
-                                                        ))}
-                                                    </Tabs>
-                                                    <AccordionDetails>
-                                                        <CacheProvider value={muiCache}>
-                                                            <ThemeProvider theme={theme}>
-                                                                <MUIDataTable data={dataForYear.filter(item => item.return_type === backendKey)} columns={columns} options={options} />
-                                                            </ThemeProvider>
-                                                        </CacheProvider>
-                                                    </AccordionDetails>
-                                                </Box>
-
-
-                                                {/* Sub Tab Content */}
-                                                {/* <Box sx={{ p: 2 }}>
-                                            {months.map((month, index) => (
-                                                <Accordion
-                                                    key={index}
-                                                    expanded={expandedMonth === month}
-                                                    onChange={handleAccordionChange(month)}
-                                                    sx={{
-                                                        mb: 1,
-                                                        color: '#366FA1',
-                                                        border: '1px solid #366FA1',
-                                                        borderRadius: '5px',
-                                                        whiteSpace: 'nowrap',
-                                                        '&:hover': { color: '#004B87' },
-                                                        '&.Mui-selected': {
-                                                            color: '#366FA1',
-                                                            fontWeight: 'bold',
-                                                        },
-                                                    }}
-                                                >
-                                                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                                        <Typography>{month}</Typography>
-                                                    </AccordionSummary>
-                                                    <AccordionDetails>
-                                                        <CacheProvider value={muiCache}>
-                                                            <ThemeProvider theme={theme}>
-                                                                <MUIDataTable data={acknowledgementData || []} columns={columns} options={options} />
-                                                            </ThemeProvider>
-                                                        </CacheProvider>
-                                                    </AccordionDetails>
-                                                </Accordion>
-                                            ))}
-                                        </Box> */}
-
-                                            </>
-                                        )}
-                                        {tabIndex === 1 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "cmp_8") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 2 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "itc_04") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 3 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "income_tax") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 4 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "tax_audit") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 5 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "air") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 6 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "sft") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 7 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "tds_return") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 8 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "tds_payment") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 9 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "pf") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 10 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "esic") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 11 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "gst_notice") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-                                        {tabIndex === 12 && (
-                                            <AccordionDetails>
-                                                <CacheProvider value={muiCache}>
-                                                    <ThemeProvider theme={theme}>
-                                                        <MUIDataTable data={dataForYear.filter(item => item.return_type === "income_tax_notice") || []} columns={columns} options={options} />
-                                                    </ThemeProvider>
-                                                </CacheProvider>
-                                            </AccordionDetails>
-                                        )}
-
-                                        {/* Add more tabs similarly */}
+                                            </ThemeProvider>
+                                        </CacheProvider>
                                     </AccordionDetails>
-                                </Accordion>
-                            ))}
-                    </div>
+                                </Box>
+                            )}
 
-                </div>
-
-
-            </div>
+                            {tabLabels[tabIndex] && tabLabels[tabIndex].key !== "gst_group" && (
+                                <RenderTable type={tabLabels[tabIndex].key} dataForYear={dataForYear} />
+                            )}
+                        </AccordionDetails>
+                    </Accordion>
+                );
+            })}
         </>
     );
-}
-// 
+};
+
 export default Ack;

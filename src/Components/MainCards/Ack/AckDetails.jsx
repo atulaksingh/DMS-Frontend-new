@@ -262,31 +262,9 @@ function AckDetails() {
                       },
                     }}
                   />
-                  {/* <Tab
-                                        label="Office Location"
-                                        value="2"
-                                        sx={{
-                                            "&.Mui-selected": {
-                                                color: "primary",
-                                                fontWeight: "bold",
-                                                border: 2,
-                                            },
-                                            "&:hover": {
-                                                color: "primary",
-                                            },
-                                        }}
-                                    /> */}
                 </TabList>
               </Box>
               <TabPanel value="1">
-                {/* <BranchDoc
-                                    branchDocumentsData={branchDocumentsData}
-                                    fetchBranchDetails={fetchBranchDetails}
-                                /> */}
-                {/* <Ack
-                                    ackData={ackData}
-                                    fetchBranchDetails={fetchBranchDetails}
-                                /> */}
                 <Ack
                   acknowledgementData={acknowledgementData}
                   fetchAckDetails={fetchAckDetails}

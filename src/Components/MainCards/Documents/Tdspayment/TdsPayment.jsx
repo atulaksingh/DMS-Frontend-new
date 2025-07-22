@@ -13,7 +13,10 @@ import { useParams } from "react-router-dom";
 import TdsPaymentCreation from "./TdsPaymentCreation";
 import TdsPaymentCard from "./TdsPaymentCard";
 import TdsPaymentFileCreation from "./TdsPaymentFileCreation";
+// import TdsSectionCreationPayment from "./TdsSectionCreationPayment";
+// import TdsSectionPayments from "./TdsSectionPayments";
 import axios from "axios";
+import TdsSectionPayments from "./TdsSectionPayments";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const muiCache = createCache({
@@ -33,7 +36,7 @@ const styleCreateMOdal = {
   p: 4,
   borderRadius: "10px",
 };
-function TdsPayment({ tdsPaymentData }) {
+function TdsPayment({ tdsPaymentData, tdsSectionData }) {
 
   const { id } = useParams();
   const calculateTableBodyHeight = () => {
@@ -233,7 +236,8 @@ function TdsPayment({ tdsPaymentData }) {
             TDS Payment Details
           </div>
           <div className="flex align-middle items-center gap-2">
-            <TdsPaymentFileCreation />
+            <TdsSectionPayments tdsSectionData={tdsSectionData} />
+            <TdsPaymentFileCreation/>
             <TdsPaymentCreation allTdsSectionData={allTdsSectionData} fetchAllTdsSectionDetails={fetchAllTdsSectionDetails} />
           </div>
         </div>

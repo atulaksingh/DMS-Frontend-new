@@ -75,6 +75,18 @@ function ZipFile({zipFileData}) {
         }),
       },
     },
+    {
+      name: "type_of_data",
+      label: "Type of Data",
+      options: {
+        setCellHeaderProps: () => ({
+          style: {
+            backgroundColor: "#366FA1",
+            color: "#ffffff",
+          },
+        }),
+      },
+    },
    
     {
       name: "files",

@@ -164,7 +164,7 @@ export default function OthersCard({ rowId }) {
 
             // API request
             const response = await axios.post(
-                `${API_URL}/api/edit-others/${id}/${rowId}`,
+                `http://127.0.0.1:8000/api/edit-others/${id}/${rowId}`,
                 formDataToSend,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
@@ -241,7 +241,7 @@ export default function OthersCard({ rowId }) {
     const handleDeleteID = async () => {
         try {
             const response = await axios.delete(
-                `${API_URL}/api/delete-others/${id}/${deleteId}`
+                `http://127.0.0.1:8000/api/delete-others/${id}/${deleteId}`
             );
             // console.log("res-----air---->", response);
             setOpenDeleteModal(false);
@@ -274,7 +274,7 @@ export default function OthersCard({ rowId }) {
 
         try {
             const response = await axios.get(
-                `${API_URL}/api/edit-others/${id}/${rowId}`
+                `http://127.0.0.1:8000/api/edit-others/${id}/${rowId}`
             );
             const data = response.data;
 
@@ -304,7 +304,7 @@ export default function OthersCard({ rowId }) {
         const fetchAirDetails = async () => {
             try {
                 const response = await axios.get(
-                    `${API_URL}/api/single-others/${id}/${rowId}`
+                    `http://127.0.0.1:8000/api/single-others/${id}/${rowId}`
                 );
                 setOthersData(response.data);
                 setLoading(false);
@@ -532,10 +532,10 @@ export default function OthersCard({ rowId }) {
                                             color="blue-gray"
                                             className="block  font-semibold  mb-1"
                                         >
-                                            Text
+                                            Nature of Report
                                         </Typography>
                                     </label>
-                                    <Select
+                                    {/* <Select
                                         value={options.find((option) => option.value === formData.text)}
                                         // onChange={handleChange}
                                         onChange={(selectedOption) => {
@@ -548,7 +548,22 @@ export default function OthersCard({ rowId }) {
                                         options={options}
                                         placeholder="Choose..."
 
-                                    />
+                                    /> */}
+                                    <div className="">
+                                        <Input
+                                            type="text"
+                                            size="lg"
+                                            name="text"
+                                            placeholder="Nature of Report"
+                                            value={formData.text}
+                                            onChange={handleInputChange}
+                                            className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                                            labelProps={{
+                                                className: "hidden",
+                                            }}
+                                            containerProps={{ className: "min-w-full" }}
+                                        />
+                                    </div>
                                 </div>
 
                                 <div className="col-span-2">

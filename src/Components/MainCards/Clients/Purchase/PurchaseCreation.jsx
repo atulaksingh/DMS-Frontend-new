@@ -328,6 +328,108 @@ function PurchaseCreation({
     }));
   };
 
+  const handleGstNoChange = (event, newValue1) => {
+    setIsGstNoEmpty(!newValue1);
+
+    if (!newValue1) {
+      setVendorData({
+        vendorID: "",
+        gst_no: "",
+        name: "",
+        pan: "",
+        vendor_address: "",
+        customer: false,
+        vendor: false,
+        email: "",
+        contact: "",
+      });
+      return;
+    }
+
+    const matchedCustomer = customerData.find(
+      (customer) =>
+        (typeof newValue1 === "string" && customer.gst_no === newValue1) ||
+        (typeof newValue1 === "object" && customer.gst_no === newValue1.gst_no)
+    );
+
+    if (matchedCustomer) {
+      setVendorData({
+        vendorID: matchedCustomer.id,
+        gst_no: matchedCustomer.gst_no,
+        name: matchedCustomer.name,
+        pan: matchedCustomer.pan,
+        vendor_address: matchedCustomer.address,
+        customer: matchedCustomer.customer,
+        vendor: matchedCustomer.vendor,
+        contact: matchedCustomer.contact,
+        email: matchedCustomer.email,
+      });
+    } else {
+      // If it's a new GST entry, clear all other fields
+      setVendorData({
+        vendorID: "",
+        gst_no: typeof newValue1 === "string" ? newValue1 : "",
+        name: "",
+        pan: "",
+        vendor_address: "",
+        customer: false,
+        vendor: false,
+        email: "",
+        contact: "",
+      });
+    }
+  };
+
+  const handleNameChange = (event, newValue2) => {
+    if (!newValue2) {
+      setVendorData((prev) => ({
+        ...prev,
+        vendorID: "",
+        name: "",
+        pan: "",
+        vendor_address: "",
+        customer: false,
+        vendor: false,
+        email: "",
+        contact: "",
+      }));
+      return;
+    }
+
+    const matchedCustomer = customerData.find(
+      (customer) =>
+        (typeof newValue2 === "string" && customer.name === newValue2) ||
+        (typeof newValue2 === "object" && customer.name === newValue2.name)
+    );
+
+    if (matchedCustomer) {
+      setVendorData({
+        vendorID: matchedCustomer.id,
+        gst_no: matchedCustomer.gst_no,
+        name: matchedCustomer.name,
+        pan: matchedCustomer.pan,
+        vendor_address: matchedCustomer.address,
+        customer: matchedCustomer.customer,
+        vendor: matchedCustomer.vendor,
+        contact: matchedCustomer.contact,
+        email: matchedCustomer.email,
+      });
+    } else {
+      // If it's a new Name entry, clear all other fields except gst_no
+      setVendorData((prev) => ({
+        ...prev,
+        name: typeof newValue2 === "string" ? newValue2 : "",
+        vendorID: "",
+        pan: "",
+        vendor_address: "",
+        customer: false,
+        vendor: false,
+        email: "",
+        contact: "",
+      }));
+    }
+  };
+
   const [selectedLocation, setSelectedLocation] = useState("");
   const [productID, setProductID] = useState("");
   const [selectedGstNo, setSelectedGstNo] = useState("");
@@ -423,77 +525,77 @@ function PurchaseCreation({
     }
   };
 
-  const handleGstNoChange = (event, newValue1) => {
-    // If user clears the input
-    setIsGstNoEmpty(!newValue1);
-    if (!newValue1) {
-      setVendorData((prevVendorData) => ({
-        ...prevVendorData,
-        vendorID: "",
-        gst_no: "",
-        name: "",
-        pan: "",
-        vendor_address: "",
-        customer: false,
-        vendor: false,
-        email: "",
-        contact: ""
-      }));
-      return;
-    }
+  // const handleGstNoChange = (event, newValue1) => {
+  //   // If user clears the input
+  //   setIsGstNoEmpty(!newValue1);
+  //   if (!newValue1) {
+  //     setVendorData((prevVendorData) => ({
+  //       ...prevVendorData,
+  //       vendorID: "",
+  //       gst_no: "",
+  //       name: "",
+  //       pan: "",
+  //       vendor_address: "",
+  //       customer: false,
+  //       vendor: false,
+  //       email: "",
+  //       contact: ""
+  //     }));
+  //     return;
+  //   }
 
-    if (typeof newValue1 === "string") {
-      const matchedCustomer = customerData.find(
-        (customer) => customer.gst_no === newValue1
-      );
+  //   if (typeof newValue1 === "string") {
+  //     const matchedCustomer = customerData.find(
+  //       (customer) => customer.gst_no === newValue1
+  //     );
 
-      if (matchedCustomer) {
-        setVendorData((prevVendorData) => ({
-          ...prevVendorData,
+  //     if (matchedCustomer) {
+  //       setVendorData((prevVendorData) => ({
+  //         ...prevVendorData,
 
-          vendorID: matchedCustomer.id,
-          gst_no: matchedCustomer.gst_no,
-          name: matchedCustomer.name,
-          pan: matchedCustomer.pan,
-          vendor_address: matchedCustomer.address,
-          customer: matchedCustomer.customer,
-          vendor: matchedCustomer.vendor,
-          contact: matchedCustomer.contact,
-          email: matchedCustomer.email,
-        }));
-      } else {
-        setVendorData((prevVendorData) => ({
-          ...prevVendorData,
-          vendorID: "",
-          gst_no: newValue1,
-          name: "",
-          pan: "",
-          vendor_address: "",
-          customer: false,
-          vendor: false,
-          email: "",
-          contact: ""
-        }));
-      }
-      return;
-    }
+  //         vendorID: matchedCustomer.id,
+  //         gst_no: matchedCustomer.gst_no,
+  //         name: matchedCustomer.name,
+  //         pan: matchedCustomer.pan,
+  //         vendor_address: matchedCustomer.address,
+  //         customer: matchedCustomer.customer,
+  //         vendor: matchedCustomer.vendor,
+  //         contact: matchedCustomer.contact,
+  //         email: matchedCustomer.email,
+  //       }));
+  //     } else {
+  //       setVendorData((prevVendorData) => ({
+  //         ...prevVendorData,
+  //         vendorID: "",
+  //         gst_no: newValue1,
+  //         name: "",
+  //         pan: "",
+  //         vendor_address: "",
+  //         customer: false,
+  //         vendor: false,
+  //         email: "",
+  //         contact: ""
+  //       }));
+  //     }
+  //     return;
+  //   }
 
-    if (newValue1 && newValue1.gst_no) {
-      setVendorData((prevVendorData) => ({
-        ...prevVendorData,
-        vendorID: newValue1.id,
-        gst_no: newValue1.gst_no,
-        name: newValue1.name || "",
-        pan: newValue1.pan || "",
-        email: newValue1.email || "",
-        contact: newValue1.contact || "",
-        vendor_address: newValue1.address || "",
-        customer: newValue1.customer || false,
-        vendor: newValue1.vendor || false,
+  //   if (newValue1 && newValue1.gst_no) {
+  //     setVendorData((prevVendorData) => ({
+  //       ...prevVendorData,
+  //       vendorID: newValue1.id,
+  //       gst_no: newValue1.gst_no,
+  //       name: newValue1.name || "",
+  //       pan: newValue1.pan || "",
+  //       email: newValue1.email || "",
+  //       contact: newValue1.contact || "",
+  //       vendor_address: newValue1.address || "",
+  //       customer: newValue1.customer || false,
+  //       vendor: newValue1.vendor || false,
 
-      }));
-    }
-  };
+  //     }));
+  //   }
+  // };
 
   const handleProductChange = async (index, newValue) => {
     if (newValue) {
@@ -1894,7 +1996,7 @@ function PurchaseCreation({
                                         ? option
                                         : option.name || ""
                                     }
-                                    onChange={handleGstNoChange}
+                                    onChange={handleNameChange}
                                     value={vendorData.name || ""} // Bind value to formData.gst_no
                                     renderOption={(props, option) => (
                                       <li {...props} key={option.id}>
@@ -1908,7 +2010,7 @@ function PurchaseCreation({
                                         name="name"
                                         value={vendorData.name || ""} // Reset input value when formData.gst_no changes
                                         onChange={(e) =>
-                                          handleGstNoChange(e, e.target.value)
+                                          handleNameChange(e, e.target.value)
                                         } // Update input value on type
                                         placeholder="Enter or select Name"
                                         sx={{

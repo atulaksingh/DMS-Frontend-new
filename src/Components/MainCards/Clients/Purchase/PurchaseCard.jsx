@@ -533,6 +533,77 @@ export default function PurchaseCard({
     }
   };
 
+  // const handleGstNoChange = (event, newValue1) => {
+  //   // If user clears the input
+  //   setIsGstNoEmpty(!newValue1);
+  //   if (!newValue1) {
+  //     setVendorData((prevVendorData) => ({
+  //       ...prevVendorData,
+  //       vendorID: "",
+  //       gst_no: "",
+  //       name: "",
+  //       pan: "",
+  //       email: "",
+  //       contact: "",
+  //       vendor_address: "",
+  //       customer: false,
+  //       vendor: false,
+  //     }));
+  //     return;
+  //   }
+
+  //   if (typeof newValue1 === "string") {
+  //     const matchedCustomer = customerData.find(
+  //       (customer) => customer.gst_no === newValue1
+  //     );
+
+  //     if (matchedCustomer) {
+  //       setVendorData((prevVendorData) => ({
+  //         ...prevVendorData,
+
+  //         vendorID: matchedCustomer.id,
+  //         gst_no: matchedCustomer.gst_no,
+  //         name: matchedCustomer.name,
+  //         pan: matchedCustomer.pan,
+  //         email: matchedCustomer.email,
+  //         contact: matchedCustomer.contact,
+  //         vendor_address: matchedCustomer.address,
+  //         customer: matchedCustomer.customer,
+  //         vendor: matchedCustomer.vendor,
+  //       }));
+  //     } else {
+  //       setVendorData((prevVendorData) => ({
+  //         ...prevVendorData,
+  //         vendorID: "",
+  //         gst_no: newValue1,
+  //         name: "",
+  //         pan: "",
+  //         email: "",
+  //         contact: "",
+  //         vendor_address: "",
+  //         customer: false,
+  //         vendor: false,
+  //       }));
+  //     }
+  //     return;
+  //   }
+
+  //   if (newValue1 && newValue1.gst_no) {
+  //     setVendorData((prevVendorData) => ({
+  //       ...prevVendorData,
+  //       vendorID: newValue1.id,
+  //       gst_no: newValue1.gst_no,
+  //       name: newValue1.name || "",
+  //       pan: newValue1.pan || "",
+  //       email: newValue1.email || "",
+  //       contact: newValue1.contact || "",
+  //       vendor_address: newValue1.address || "",
+  //       customer: newValue1.customer || false,
+  //       vendor: newValue1.vendor || false,
+  //     }));
+  //   }
+  // };
+
   const handleGstNoChange = (event, newValue1) => {
     // If user clears the input
     setIsGstNoEmpty(!newValue1);
@@ -594,6 +665,77 @@ export default function PurchaseCard({
         vendorID: newValue1.id,
         gst_no: newValue1.gst_no,
         name: newValue1.name || "",
+        pan: newValue1.pan || "",
+        email: newValue1.email || "",
+        contact: newValue1.contact || "",
+        vendor_address: newValue1.address || "",
+        customer: newValue1.customer || false,
+        vendor: newValue1.vendor || false,
+      }));
+    }
+  };
+
+  const handleNameChange = (event, newValue1) => {
+    // If user clears the input
+    setIsNameEmpty(!newValue1);
+    if (!newValue1) {
+      setVendorData((prevVendorData) => ({
+        ...prevVendorData,
+        vendorID: "",
+        gst_no: "",
+        name: "",
+        pan: "",
+        email: "",
+        contact: "",
+        vendor_address: "",
+        customer: false,
+        vendor: false,
+      }));
+      return;
+    }
+
+    if (typeof newValue1 === "string") {
+      const matchedCustomer = customerData.find(
+        (customer) => customer.name === newValue1
+      );
+
+      if (matchedCustomer) {
+        setVendorData((prevVendorData) => ({
+          ...prevVendorData,
+
+          vendorID: matchedCustomer.id,
+          gst_no: matchedCustomer.gst_no,
+          name: matchedCustomer.name,
+          pan: matchedCustomer.pan,
+          email: matchedCustomer.email,
+          contact: matchedCustomer.contact,
+          vendor_address: matchedCustomer.address,
+          customer: matchedCustomer.customer,
+          vendor: matchedCustomer.vendor,
+        }));
+      } else {
+        setVendorData((prevVendorData) => ({
+          ...prevVendorData,
+          vendorID: "",
+          gst_no: "",
+          name: newValue1,
+          pan: "",
+          email: "",
+          contact: "",
+          vendor_address: "",
+          customer: false,
+          vendor: false,
+        }));
+      }
+      return;
+    }
+
+    if (newValue1 && newValue1.gst_no) {
+      setVendorData((prevVendorData) => ({
+        ...prevVendorData,
+        vendorID: newValue1.id,
+        gst_no: newValue1.gst_no || "",
+        name: newValue1.name,
         pan: newValue1.pan || "",
         email: newValue1.email || "",
         contact: newValue1.contact || "",
@@ -2118,7 +2260,7 @@ export default function PurchaseCard({
                                         ? option
                                         : option.name || ""
                                     }
-                                    onChange={handleGstNoChange}
+                                    onChange={handleNameChange}
                                     value={vendorData.name || ""} // Bind value to formData.gst_no
                                     renderOption={(props, option) => (
                                       <li {...props} key={option.id}>
@@ -2132,7 +2274,7 @@ export default function PurchaseCard({
                                         name="name"
                                         value={vendorData.name || ""} // Reset input value when formData.gst_no changes
                                         onChange={(e) =>
-                                          handleGstNoChange(e, e.target.value)
+                                          handleNameChange(e, e.target.value)
                                         } // Update input value on type
                                         placeholder="Enter or select Name"
                                         sx={{

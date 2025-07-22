@@ -61,7 +61,7 @@ function ClientUpdate() {
           // 'http://127.0.0.1:8000/api/edit-client/${id}'
         );
         const data = response.data;
-        // console.log("ressss", response.data);
+        console.log("prepopulatedFiles", response.data);
         // Set formData with the fetched client data
         setFormData({
           client_name: data.client_name,
@@ -112,9 +112,49 @@ function ClientUpdate() {
     setSelectedFiles(files);
   };
 
+  // const handleFileSave = () => {
+  //   if (fileName && selectedFiles.length > 0) {
+  //     const newFiles = {
+  //       document_type: fileName,
+  //       login,
+  //       password,
+  //       remark,
+  //       files: selectedFiles,
+  //     };
+
+  //     if (currentFileIndex !== null) {
+  //       // Update existing file
+  //       setFilesList((prevFiles) =>
+  //         prevFiles.map((file, index) =>
+  //           index === currentFileIndex ? newFiles : file
+  //         )
+  //       );
+  //       toast.success("File updated successfully!");
+  //     } else {
+  //       // Add new file
+  //       setFilesList((prevFiles) => [...prevFiles, newFiles]);
+  //       toast.success("Files uploaded successfully!");
+  //     }
+
+  //     // Reset fields
+  //     setFileName("");
+  //     setSelectedFiles([]);
+  //     setLogin("");
+  //     setPassword("");
+  //     setRemark("");
+  //     handleClose();
+  //   } else {
+  //     toast.error(
+  //       "Please provide all details and select at least one file!",
+  //       "error"
+  //     );
+  //   }
+  // };
+
   const handleFileSave = () => {
     if (fileName && selectedFiles.length > 0) {
       const newFiles = {
+        id: currentFileIndex !== null ? filesList[currentFileIndex].id : undefined, // ✅ Include ID
         document_type: fileName,
         login,
         password,
@@ -129,14 +169,14 @@ function ClientUpdate() {
             index === currentFileIndex ? newFiles : file
           )
         );
-        setNotify("File updated successfully!");
+        toast.success("File updated successfully!");
       } else {
         // Add new file
         setFilesList((prevFiles) => [...prevFiles, newFiles]);
-        setNotify("Files uploaded successfully!");
+        toast.success("Files uploaded successfully!");
       }
 
-      // Reset fields
+      // Reset
       setFileName("");
       setSelectedFiles([]);
       setLogin("");
@@ -144,17 +184,17 @@ function ClientUpdate() {
       setRemark("");
       handleClose();
     } else {
-      setNotify(
-        "Please provide all details and select at least one file!",
-        "error"
-      );
+      toast.error("Please provide all details and select at least one file!");
     }
   };
+
+  const [deleteIndex, setDeleteIndex] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const handleFileDelete = (index) => {
     setFilesList((prevFiles) => {
       const updatedFiles = prevFiles.filter((_, i) => i !== index);
-      notify("File info deleted successfully!");
+      toast.success("File info deleted successfully!");
       return updatedFiles;
     });
   };
@@ -176,18 +216,39 @@ function ClientUpdate() {
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
+  // const handleOpen = (index = null) => {
+  //   // console.log("index", index);
+  //   if (index !== null) {
+  //     setCurrentFileIndex(index); // Set the index of the file being edited
+  //     const fileInfo = filesList[index];
+  //     setFileName(fileInfo.document_type);
+  //     setLogin(fileInfo.login);
+  //     setPassword(fileInfo.password);
+  //     setRemark(fileInfo.remark);
+  //     setSelectedFiles(fileInfo.files);
+  //   } else {
+  //     // Reset fields for new file
+  //     setFileName("");
+  //     setSelectedFiles([]);
+  //     setLogin("");
+  //     setPassword("");
+  //     setRemark("");
+  //   }
+  //   setOpen(true);
+  // };
+
   const handleOpen = (index = null) => {
-    // console.log("index", index);
-    if (index !== null) {
-      setCurrentFileIndex(index); // Set the index of the file being edited
+    if (index !== null && filesList[index]) {
       const fileInfo = filesList[index];
-      setFileName(fileInfo.document_type);
-      setLogin(fileInfo.login);
-      setPassword(fileInfo.password);
-      setRemark(fileInfo.remark);
-      setSelectedFiles(fileInfo.files);
+      setCurrentFileIndex(index);
+      setFileName(fileInfo.document_type || "");
+      setLogin(fileInfo.login || "");
+      setPassword(fileInfo.password || "");
+      setRemark(fileInfo.remark || "");
+      setSelectedFiles(fileInfo.files || []);
     } else {
       // Reset fields for new file
+      setCurrentFileIndex(null);
       setFileName("");
       setSelectedFiles([]);
       setLogin("");
@@ -222,11 +283,26 @@ function ClientUpdate() {
         data.append(`fileinfos[${index}].password`, fileinfo.password || '');
         data.append(`fileinfos[${index}].remark`, fileinfo.remark || '');
 
+
         // Append the files for this fileinfo
+        // fileinfo.files.forEach((file) => {
+        //   data.append(`fileinfos[${index}].files`, file); // No need to use [] here, just append files
+        // });
         fileinfo.files.forEach((file) => {
-          data.append(`fileinfos[${index}].files`, file); // No need to use [] here, just append files
+          if (!(typeof file === "string" || file?.url)) {
+            data.append(`fileinfos[${index}].files`, file); // Only append new ones
+          }
         });
+
+        for (let pair of data.entries()) {
+          console.log(pair[0] + ', ' + pair[1]);
+        }
+
       });
+
+      for (let pair of data.entries()) {
+        console.log(pair[0] + ', ' + pair[1]);
+      }
 
       // console.log("Data to send:", data);
 
@@ -241,7 +317,7 @@ function ClientUpdate() {
         }
       );
 
-      console.log("response", response);
+      console.log("prepopulatedFiles", response);
       // toast.success("Client updated successfully!", {
       //   position: "top-right",
       //   autoClose: 2000,
@@ -464,7 +540,17 @@ function ClientUpdate() {
               </div>
               {selectedFiles.length > 0 && (
                 <Typography className="text-sm mt-2 text-blue-gray">
-                  {selectedFiles.map((file) => file.name).join(", ")}
+                  {/* {selectedFiles.map((file) => file.name).join(", ")} */}
+                  {selectedFiles.length > 0 && (
+                    <Typography className="text-sm mt-2 text-blue-gray">
+                      {selectedFiles.map((file) =>
+                        typeof file === "string"
+                          ? file.split("/").pop() // show just filename from URL
+                          : file.name || (file.files?.split("/").pop() ?? "Unnamed")
+                      ).join(", ")}
+                    </Typography>
+                  )}
+
                 </Typography>
               )}
             </div>
@@ -856,7 +942,7 @@ function ClientUpdate() {
                       className="hidden"
                       accept="image/*,application/pdf"
                       onClick={handleOpen}
-                      required
+                    // required
                     />
                   </div>
                 ) : null}
@@ -866,7 +952,7 @@ function ClientUpdate() {
                   <div className="flex align-middle">
                     <ul className="list-disc mr-5 w-full">
                       {filesList.map((file, index) => (
-                        <div onClick={() => handleOpen(index)}>
+                        <div key={index} onClick={() => handleOpen(index)}>
                           <li
                             key={index}
                             className="flex items-center justify-between mb-2 bg-[#366FA1] p-2 rounded-md text-white"
@@ -876,11 +962,20 @@ function ClientUpdate() {
                               {file.files.length})
                             </span>
                             <div className="flex items-center space-x-2">
-                              <DeleteIcon
+                              {/* <DeleteIcon
                                 color="white"
                                 className="cursor-pointer"
                                 onClick={() => handleFileDelete(index)}
+                              /> */}
+                              <DeleteIcon
+                                color="white"
+                                className="cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation(); // ✅ Prevent parent click (modal open)
+                                  handleFileDelete(index); // ✅ Only run delete
+                                }}
                               />
+
                             </div>
                           </li>
                         </div>

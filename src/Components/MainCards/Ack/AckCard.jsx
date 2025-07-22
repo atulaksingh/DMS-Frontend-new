@@ -53,7 +53,7 @@ const styleCreateMOdal = {
 };
 const ITEM_HEIGHT = 48;
 
-export default function AckCard({ rowId, fetchAckDetails }) {
+export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
     const { id } = useParams();
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -308,20 +308,54 @@ export default function AckCard({ rowId, fetchAckDetails }) {
         setOpenDeleteModal(true);
         setAnchorEl(null);
     };
+    // const handleDeleteID = async () => {
+    //     try {
+    //         const response = await axios.delete(
+    //             `${API_URL}/api/delete-acknowledgement/${id}/${deleteId}`
+    //         );
+    //         // console.log("res-----bank---->", response);
+    //         // dispatch(fetchClientDetails(id));
+    //         setOpenDeleteModal(false);
+    //         if (response.status === 200 || response.status === 201) {
+    //             toast.success(`${response.data.message}`, {
+    //                 position: "top-right",
+    //                 autoClose: 2000,
+    //             });
+    //             fetchAckDetails();
+    //         } else {
+    //             toast.error("Failed to delete bank. Please try again.", {
+    //                 position: "top-right",
+    //                 autoClose: 2000,
+    //             });
+    //         }
+    //     } catch (error) {
+    //         console.error("Error deleting bank data:", error);
+    //         toast.error("Failed to delete bank. Please try again.", {
+    //             position: "top-right",
+    //             autoClose: 2000,
+    //         });
+    //     }
+    // };
+
     const handleDeleteID = async () => {
         try {
             const response = await axios.delete(
                 `${API_URL}/api/delete-acknowledgement/${id}/${deleteId}`
             );
-            // console.log("res-----bank---->", response);
-            // dispatch(fetchClientDetails(id));
+
             setOpenDeleteModal(false);
+
             if (response.status === 200 || response.status === 201) {
                 toast.success(`${response.data.message}`, {
                     position: "top-right",
                     autoClose: 2000,
                 });
-                fetchAckDetails();
+
+                // ✅ re-fetch all acknowledgement data
+                await fetchAckDetails();
+
+                // ✅ reset selected tab index (if needed)
+                setTabIndex(0); // <-- Add this in the parent (Ack.jsx)
             } else {
                 toast.error("Failed to delete bank. Please try again.", {
                     position: "top-right",
@@ -510,7 +544,7 @@ export default function AckCard({ rowId, fetchAckDetails }) {
             alert("Failed to download the files. Please try again.");
         }
     };
-  
+
     // const downloadReturnFile = async () => {
     //     try {
     //         const response = await axios.get(`${API_URL}/api/download-return-file/${id}/${rowId}`);
@@ -1300,8 +1334,8 @@ export default function AckCard({ rowId, fetchAckDetails }) {
 
 
 
-                                       
-                                     
+
+
                                 >
                                     <span>Cancel</span>
                                 </Button>

@@ -121,7 +121,7 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
                   },
                 }}
               />
-              <Tab
+              {/* <Tab
                 label="TDS Section"
                 value="7"
                 fontWeight="bold"
@@ -135,7 +135,7 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
                     color: "primary",
                   },
                 }}
-              />
+              /> */}
               <Tab
                 label="Others"
                 value="8"
@@ -159,9 +159,9 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
           <TabPanel value="2"><TaxAudit taxAuditData={taxAuditData} /></TabPanel>
           <TabPanel value="3"><Air airData={airData} /></TabPanel>
           <TabPanel value="4"><Sft sftData={sftData} /></TabPanel>
-          <TabPanel value="5"><TdsPayment tdsPaymentData={tdsPaymentData} /></TabPanel>
+          <TabPanel value="5"><TdsPayment tdsPaymentData={tdsPaymentData} tdsSectionData={tdsSectionData} /></TabPanel>
           <TabPanel value="6"><TdsReturn tdsReturnData={tdsReturnData} /></TabPanel>
-          <TabPanel value="7"><TdsSection tdsSectionData={tdsSectionData} /> </TabPanel>
+          {/* <TabPanel value="7"><TdsSection tdsSectionData={tdsSectionData} /> </TabPanel> */}
           <TabPanel value="8"><Others othersData={othersData} /></TabPanel>
         </TabContext>
       </Box>

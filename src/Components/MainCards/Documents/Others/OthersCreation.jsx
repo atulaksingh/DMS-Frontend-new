@@ -93,69 +93,6 @@ function OthersCreation() {
         }));
     };
 
-    // Handle form submission
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-
-    //     if (formData.files.length === 0) {
-    //         toast.error("Please upload at least one file before submitting.", {
-    //             position: "top-right",
-    //             autoClose: 2000,
-    //         });
-    //         return; // Stop form submission
-    //     }
-
-    //     try {
-    //         const formDataToSend = new FormData();
-    //         formDataToSend.append("financial_year", formData.financial_year);
-    //         formDataToSend.append("month", formData.month);
-    //         formDataToSend.append("text", formData.text);
-    //         formData.files.forEach((file) => formDataToSend.append("files", file));
-
-    //         // Make a POST request to your API
-    //         const response = await axios.post(
-    //             `${API_URL}/api/create-others/${id}`,
-    //             formDataToSend,
-    //             {
-    //                 headers: { "Content-Type": "multipart/form-data" },
-    //             }
-    //         );
-
-    //         if (response.status === 200 || response.status === 201) {
-    //             toast.success(`${response.data.message}`, {
-    //                 position: "top-right",
-    //                 autoClose: 2000,
-    //             });
-    //             dispatch(fetchClientDetails(id));
-    //             // Optionally close the modal and reset form
-    //             handleCreateClose();
-
-    //             // Clear the form data after successful response
-    //             setFormData({
-    //                 financial_year: "",
-    //                 text: "",
-    //                 month: "",
-    //                 files: [],
-    //             });
-
-    //             // Clear the selected dates
-    //             setSelectedOption(null);
-    //             setSelectedYear(null);
-    //             setSelectedMonth(null);
-    //         } else {
-    //             toast.error(`Failed to create air. ${response.data.error_message}`, {
-    //                 position: "top-right",
-    //                 autoClose: 2000,
-    //             });
-    //         }
-    //     } catch (error) {
-    //         console.error("Error submitting data:", error);
-    //         toast.error(`Failed to create air details. Please try again.  ${response.data?.error_message || "Unknown error"}`, {
-    //             position: "top-right",
-    //             autoClose: 2000,
-    //         });
-    //     }
-    // };
     const handleSubmit = async (e) => {
         e.preventDefault();
         console.log("Final Form Data Before Submit:", formData); // Debugging log
@@ -178,7 +115,7 @@ function OthersCreation() {
             console.log("FormData being sent:", formDataToSend.get("text")); // Check if text is included
 
             const response = await axios.post(
-                `${API_URL}/api/create-others/${id}`,
+                `http://127.0.0.1:8000/api/create-others/${id}`,
                 formDataToSend,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
@@ -281,16 +218,32 @@ function OthersCreation() {
                                         color="blue-gray"
                                         className="block  font-semibold  mb-1"
                                     >
-                                        Text
+                                        Nature of Report
                                     </Typography>
                                 </label>
-                                <Select
+                                {/* <Select
                                     value={selectedOption}
                                     onChange={handleChange}
                                     options={options}
                                     placeholder="Choose..."
                                     isClearable
-                                />
+                                /> */}
+                                <div className="">
+                                    <Input
+                                        type="text"
+                                        size="lg"
+                                        name="text"
+                                        placeholder="Nature of Report"
+                                        value={formData.text}
+                                        // onChange={handleInputChange}
+                                        onChange={(e) => handleInputChange(e.target.name, e.target.value)}
+                                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                                        labelProps={{
+                                            className: "hidden",
+                                        }}
+                                        containerProps={{ className: "min-w-full" }}
+                                    />
+                                </div>
                             </div>
                             <div className="col-span-2">
                                 <Typography
