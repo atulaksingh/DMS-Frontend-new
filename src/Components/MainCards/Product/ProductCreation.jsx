@@ -39,7 +39,7 @@ function ProductCreation({ fetchClients }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/create-product`
+          `${API_URL}/api/create-product`
         );
         // console.log("fffff",response.data)
         setCustomerData(response.data);
@@ -75,7 +75,7 @@ function ProductCreation({ fetchClients }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-product`,
+        `${API_URL}/api/create-product`,
         formDataToSend
       );
 

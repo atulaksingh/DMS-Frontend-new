@@ -39,7 +39,7 @@ function ProductDescriptionCreation({ fetchClients }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/create-product-description`
+          `${API_URL}/api/create-product-description`
         );
         // console.log("fffff",response.data)
         setCustomerData(response.data);
@@ -78,7 +78,7 @@ function ProductDescriptionCreation({ fetchClients }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-product-description`,
+        `${API_URL}/api/create-product-description`,
         formDataToSend
       );
       // console.log("ss",response.data)

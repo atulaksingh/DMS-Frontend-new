@@ -81,7 +81,7 @@ export default function HsnCard({ rowId, fetchClients }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-hsn/${rowId}`,
+        `${API_URL}/api/edit-hsn/${rowId}`,
         formDataToSend
       );
 
@@ -131,7 +131,7 @@ export default function HsnCard({ rowId, fetchClients }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-hsn/${rowId}`
+        `${API_URL}/api/delete-hsn/${rowId}`
       );
       // console.log("res-----hsn---->", response);
       setOpenDeleteModal(false);
@@ -161,7 +161,7 @@ export default function HsnCard({ rowId, fetchClients }) {
     setAnchorEl(null);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-hsn/${rowId}`
+        `${API_URL}/api/edit-hsn/${rowId}`
       );
       setHsnData(response.data);
       setLoading(false);
@@ -179,7 +179,7 @@ export default function HsnCard({ rowId, fetchClients }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-hsn/${rowId}`
+        `${API_URL}/api/edit-hsn/${rowId}`
       );
       //   console.log("dd", response.data);
       setFormData(response.data);

@@ -58,7 +58,7 @@ function HsnCreation({ fetchClients }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/create-hsn`,
+        `${API_URL}/api/create-hsn`,
         formDataToSend
       );
 

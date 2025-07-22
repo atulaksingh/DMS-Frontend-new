@@ -79,7 +79,7 @@ export default function ProductCard({ rowId, fetchClients }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-product/${rowId}`
+        `${API_URL}/api/delete-product/${rowId}`
       );
       // console.log("res-----product---->", response);
       await fetchClients()
@@ -109,7 +109,7 @@ export default function ProductCard({ rowId, fetchClients }) {
     setAnchorEl(null);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-product/${rowId}`
+        `${API_URL}/api/edit-product/${rowId}`
       );
       setProductData(response.data);
       setLoading(false);
@@ -127,7 +127,7 @@ export default function ProductCard({ rowId, fetchClients }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-product/${rowId}`
+        `${API_URL}/api/edit-product/${rowId}`
       );
       // console.log("dd", response.data);
       setFormData(response.data);
@@ -157,7 +157,7 @@ export default function ProductCard({ rowId, fetchClients }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/create-product`
+          `${API_URL}/api/create-product`
         );
         // console.log("fffff",response.data)
         setCustomerData(response.data);
@@ -188,7 +188,7 @@ export default function ProductCard({ rowId, fetchClients }) {
 
       // Make a POST request to edit the product
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-product/${rowId}`,
+        `${API_URL}/api/edit-product/${rowId}`,
         formDataToSend
       );
 

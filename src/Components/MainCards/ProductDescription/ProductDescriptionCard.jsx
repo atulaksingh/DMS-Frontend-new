@@ -74,7 +74,7 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `http://127.0.0.1:8000/api/delete-product-description/${rowId}`
+        `${API_URL}/api/delete-product-description/${rowId}`
       );
       // console.log("res-----product---->", response);
       setOpenDeleteModal(false);
@@ -104,7 +104,7 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
     setAnchorEl(null);
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-product-description/${rowId}`
+        `${API_URL}/api/edit-product-description/${rowId}`
       );
       setProductData(response.data);
       setLoading(false);
@@ -122,7 +122,7 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
 
     try {
       const response = await axios.get(
-        `http://127.0.0.1:8000/api/edit-product-description/${rowId}`
+        `${API_URL}/api/edit-product-description/${rowId}`
       );
       // console.log("dd", response.data);
       setFormData(response.data);
@@ -152,7 +152,7 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `http://127.0.0.1:8000/api/create-product-description`
+          `${API_URL}/api/create-product-description`
         );
         // console.log("fffff",response.data)
         setCustomerData(response.data);
@@ -184,7 +184,7 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
 
       // Make a POST request to your API
       const response = await axios.post(
-        `http://127.0.0.1:8000/api/edit-product-description/${rowId}`,
+        `${API_URL}/api/edit-product-description/${rowId}`,
         formDataToSend
       );
 

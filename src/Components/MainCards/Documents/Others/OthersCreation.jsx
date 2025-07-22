@@ -115,7 +115,7 @@ function OthersCreation() {
             console.log("FormData being sent:", formDataToSend.get("text")); // Check if text is included
 
             const response = await axios.post(
-                `http://127.0.0.1:8000/api/create-others/${id}`,
+                `api/create-others/${id}`,
                 formDataToSend,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
