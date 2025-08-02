@@ -14,6 +14,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { Autocomplete } from "@mui/material";
 import { TextField } from "@mui/material";
@@ -78,7 +79,7 @@ export default function ProductCard({ rowId, fetchClients }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-product/${rowId}`
       );
       // console.log("res-----product---->", response);
@@ -108,7 +109,7 @@ export default function ProductCard({ rowId, fetchClients }) {
     setOpenViewModal(true);
     setAnchorEl(null);
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-product/${rowId}`
       );
       setProductData(response.data);
@@ -126,7 +127,7 @@ export default function ProductCard({ rowId, fetchClients }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-product/${rowId}`
       );
       // console.log("dd", response.data);
@@ -156,7 +157,7 @@ export default function ProductCard({ rowId, fetchClients }) {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/create-product`
         );
         // console.log("fffff",response.data)
@@ -187,7 +188,7 @@ export default function ProductCard({ rowId, fetchClients }) {
       formDataToSend.append("hsn", formData.hsn);
 
       // Make a POST request to edit the product
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-product/${rowId}`,
         formDataToSend
       );

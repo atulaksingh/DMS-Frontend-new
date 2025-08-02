@@ -16,6 +16,8 @@ import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import axiosInstance from "/src/utils/axiosInstance";
+
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -80,7 +82,7 @@ export default function HsnCard({ rowId, fetchClients }) {
       formDataToSend.append("gst_rate", formData.gst_rate);
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-hsn/${rowId}`,
         formDataToSend
       );
@@ -130,7 +132,7 @@ export default function HsnCard({ rowId, fetchClients }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-hsn/${rowId}`
       );
       // console.log("res-----hsn---->", response);
@@ -160,7 +162,7 @@ export default function HsnCard({ rowId, fetchClients }) {
     setOpenViewModal(true);
     setAnchorEl(null);
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-hsn/${rowId}`
       );
       setHsnData(response.data);
@@ -178,7 +180,7 @@ export default function HsnCard({ rowId, fetchClients }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-hsn/${rowId}`
       );
       //   console.log("dd", response.data);

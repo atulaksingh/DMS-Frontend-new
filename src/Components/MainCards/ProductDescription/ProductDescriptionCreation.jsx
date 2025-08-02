@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -38,7 +39,7 @@ function ProductDescriptionCreation({ fetchClients }) {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/create-product-description`
         );
         // console.log("fffff",response.data)
@@ -77,7 +78,7 @@ function ProductDescriptionCreation({ fetchClients }) {
       formDataToSend.append("rate", formData.rate);
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-product-description`,
         formDataToSend
       );
