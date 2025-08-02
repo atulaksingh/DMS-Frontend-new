@@ -30,6 +30,7 @@ import DebitNote from "./Components/MainCards/Clients/DebitNote/DebitNote";
 import IncomeDebitNote from "./Components/MainCards/Clients/IncomeDebitNote/IncomeDebitNote";
 import ExpenseCreditNote from "./Components/MainCards/Clients/ExpenseCreditNote/ExpenseCreditNote";
 // import AckCreation from "./Components/MainCards/Ack/AckCreation";
+import { logout } from "./pages/Logout";
 import AckDetails from "./Components/MainCards/Ack/AckDetails";
 function App() {
   const [count, setCount] = useState(0);
@@ -45,10 +46,11 @@ function App() {
           <Route path="/product-details" element={<ProductDetails />} />
           <Route path="/product-description" element={<ProductDesc />} />
           {/* //////////////////////////////////////////////// */}
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Login />} />
           <Route path="/master" element={<Master />} />
-          <Route path="/login/:id" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          {/* <Route path="/logout" element={<Logout />} /> */}
           <Route path="/client" element={<ClientCreation />} />
           <Route path="/clientUpdate/:id" element={<ClientUpdate />} />
           <Route path="/clientDetails/:id" element={<ClientDetails />} />

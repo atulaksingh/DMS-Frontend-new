@@ -291,6 +291,12 @@ function IncomeDebitNote() {
     }),
   ];
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No incomedebitnote data available !!
+    </div>
+  );
+
 
 
 
@@ -349,11 +355,15 @@ function IncomeDebitNote() {
             <IncomeDNCreation fetchInvoiceDetails={fetchInvoiceDetails} />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={invoiceData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(invoiceData) && invoiceData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable data={invoiceData} columns={columns} options={options} />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

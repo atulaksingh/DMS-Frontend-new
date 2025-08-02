@@ -214,6 +214,12 @@ function CV({ cvData }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No customer or vendor data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -227,11 +233,15 @@ function CV({ cvData }) {
             <CVCreation />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={cvData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(cvData) && cvData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable data={cvData} columns={columns} options={options} />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

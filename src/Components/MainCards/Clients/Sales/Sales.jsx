@@ -263,6 +263,12 @@ function Sales({ salesInvoiceData }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No sales data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -279,11 +285,15 @@ function Sales({ salesInvoiceData }) {
             <SalesCreation allLocationBranchProductData={allLocationBranchProductData} fetchAllLocBranchDetails={fetchAllLocBranchDetails} />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={salesInvoiceData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(salesInvoiceData) && salesInvoiceData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable data={salesInvoiceData} columns={columns} options={options} />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

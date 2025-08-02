@@ -225,6 +225,12 @@ function Branch({ branchData }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No Branch data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -238,15 +244,19 @@ function Branch({ branchData }) {
             <BranchCreation />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable
-              data={branchData}
-              columns={columns}
-              options={options}
-            />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(branchData) && branchData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable
+                data={branchData}
+                columns={columns}
+                options={options}
+              />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

@@ -180,6 +180,12 @@ function CompanyDocuments({ companyDocData }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No company document data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -193,15 +199,19 @@ function CompanyDocuments({ companyDocData }) {
             <DocumentCreation />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable
-              data={companyDocData}
-              columns={columns}
-              options={options}
-            />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(companyDocData) && companyDocData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable
+                data={companyDocData}
+                columns={columns}
+                options={options}
+              />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

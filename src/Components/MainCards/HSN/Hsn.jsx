@@ -201,6 +201,11 @@ function Hsn({ hsnData , fetchClients }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No HSN data available !!
+    </div>
+  );
   return (
     <>
       {/* <ToastContainer /> */}
@@ -223,11 +228,15 @@ function Hsn({ hsnData , fetchClients }) {
             <HsnCreation fetchClients={fetchClients}/>
           </div>
         </div>
+        {Array.isArray(hsnData) && hsnData.length > 0 ? (
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable data={hsnData} columns={columns} options={options} />
           </ThemeProvider>
         </CacheProvider>
+        ):(
+          renderNoData()
+        )}
       </div>
     </>
   );

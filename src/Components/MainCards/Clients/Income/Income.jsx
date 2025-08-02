@@ -270,6 +270,12 @@ function Income({ incomeInvoiceData }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No income data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -287,11 +293,15 @@ function Income({ incomeInvoiceData }) {
             <IncomeCreation allLocationBranchProductData={allLocationBranchProductData} fetchAllLocBranchDetails={fetchAllLocBranchDetails} />
           </div>
         </div>
+        {Array.isArray(incomeInvoiceData) && incomeInvoiceData.length > 0 ? (
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable data={incomeInvoiceData} columns={columns} options={options} />
           </ThemeProvider>
         </CacheProvider>
+        ):(
+          renderNoData()
+        )}
       </div>
     </>
   );

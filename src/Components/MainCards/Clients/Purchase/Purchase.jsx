@@ -255,6 +255,12 @@ function Purchase({ purchaseInvoiceData, }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No purchase data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -272,11 +278,15 @@ function Purchase({ purchaseInvoiceData, }) {
             <PurchaseCreation allLocationBranchProductData={allLocationBranchProductData} fetchAllLocBranchDetails={fetchAllLocBranchDetails} />
           </div>
         </div>
+        {Array.isArray(purchaseInvoiceData) && purchaseInvoiceData.length > 0 ? (
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable data={purchaseInvoiceData} columns={columns} options={options} />
           </ThemeProvider>
         </CacheProvider>
+        ):(
+          renderNoData()
+        )}
       </div>
     </>
   );

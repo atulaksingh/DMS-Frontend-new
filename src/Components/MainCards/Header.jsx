@@ -40,6 +40,7 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 // profile menu component
 const profileMenuItems = [
   {
@@ -166,118 +167,6 @@ function NavListMenuMaster() {
     <>
       <ToastContainer />
       <React.Fragment>
-        {/* <Menu
-          open={isMenuOpen}
-          handler={setIsMenuOpen}
-          placement="bottom"
-          allowHover={true}
-        >
-          <MenuHandler>
-            <Typography as="div" variant="small" className="font-medium ">
-              <Link to={"/master"}>
-                <ListItem
-                  className="flex items-center gap-2 py-2 pr-4  font-medium text-white"
-                  selected={isMenuOpen || isMobileMenuOpen}
-                  onClick={() => setIsMobileMenuOpen((cur) => !cur)}
-                >
-                  Master
-                  <ChevronDownIcon
-                    strokeWidth={2.5}
-                    className={`hidden h-3 w-3 transition-transform lg:block ${
-                      isMenuOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                  <ChevronDownIcon
-                    strokeWidth={2.5}
-                    className={`block h-3 w-3 transition-transform lg:hidden ${
-                      isMobileMenuOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </ListItem>
-              </Link>
-            </Typography>
-          </MenuHandler>
-          <MenuList className="hidden rounded-xl lg:block ">
-         
-            <MenuItem onClick={handleCreateOpen}>Upload Invoice</MenuItem>
-         
-            <Link to="/master?tab=hsn">
-              <MenuItem>HSN</MenuItem>
-            </Link>
-            <Link to="/master?tab=product">
-              <MenuItem>Product</MenuItem>
-            </Link>
-            <Link to="/master?tab=description">
-              <MenuItem>Description</MenuItem>
-            </Link>
-          </MenuList>
-        </Menu> */}
-        {/* <Menu
-          open={isMenuOpen1}
-          handler={setIsMenuOpen1}
-          placement="bottom"
-          allowHover={true}
-        >
-          <MenuHandler>
-            <Typography as="div" variant="small" className="font-medium ">
-              <Link to={"/master"}>
-                <div
-                  className={`flex items-center gap-2 py-2 pr-4 transition-colors duration-200 
-        text-white/70 hover:text-white bg-transparent cursor-pointer`}
-                  selected={isMenuOpen1 || isMobileMenuOpen}
-                  onClick={() => setIsMobileMenuOpen((cur) => !cur)}
-                >
-                  Master
-                  <ChevronDownIcon
-                    strokeWidth={2.5}
-                    className={`hidden h-3 w-3 transition-transform lg:block ${
-                      isMenuOpen1 ? "rotate-180" : ""
-                    }`}
-                  />
-                  <ChevronDownIcon
-                    strokeWidth={2.5}
-                    className={`block h-3 w-3 transition-transform lg:hidden ${
-                      isMobileMenuOpen ? "rotate-180" : ""
-                    }`}
-                  />
-                </div>
-              </Link>
-            </Typography>
-          </MenuHandler>
-          <MenuList className="hidden rounded-xl lg:block ">
-            <MenuItem onClick={handleCreateOpen}>Upload Invoice</MenuItem>
-
-            <Link to="/master?tab=hsn">
-              <MenuItem>HSN</MenuItem>
-            </Link>
-            <Link to="/master?tab=product">
-              <MenuItem>Product</MenuItem>
-            </Link>
-            <Link to="/master?tab=description">
-              <MenuItem>Description</MenuItem>
-            </Link>
-          </MenuList>
-        </Menu> */}
-        {/* <Menu
-          open={isMenuOpen1}
-          handler={setIsMenuOpen1}
-          placement="bottom"
-          allowHover={true}
-        >
-          <MenuHandler>
-            <Typography as="div" variant="small" className="font-medium ">
-              <Link to={"/master"}>
-                <div
-                  className={`flex items-center gap-2 py-2 pr-4 transition-colors duration-200 
-        text-white/70 hover:text-white bg-transparent cursor-pointer`}
-                >
-                  HSN
-                </div>
-              </Link>
-            </Typography>
-          </MenuHandler>
-        </Menu> */}
-
         <Link to="/client-details">
           <div
             className="flex items-center gap-2 py-2 text-sm pr-4 transition-colors duration-200 
@@ -415,9 +304,8 @@ function ProfileMenu() {
           />
           <ChevronDownIcon
             strokeWidth={2.5}
-            className={`h-3 w-3 transition-transform ${
-              isMenuOpen ? "rotate-180" : ""
-            }`}
+            className={`h-3 w-3 transition-transform ${isMenuOpen ? "rotate-180" : ""
+              }`}
           />
         </Button>
       </MenuHandler>
@@ -428,11 +316,10 @@ function ProfileMenu() {
             <MenuItem
               key={label}
               onClick={closeMenu}
-              className={`flex items-center gap-2 rounded ${
-                isLastItem
-                  ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
-                  : ""
-              }`}
+              className={`flex items-center gap-2 rounded ${isLastItem
+                ? "hover:bg-red-500/10 focus:bg-red-500/10 active:bg-red-500/10"
+                : ""
+                }`}
             >
               {React.createElement(icon, {
                 className: `h-4 w-4 ${isLastItem ? "text-red-500" : ""}`,
@@ -572,9 +459,52 @@ function NavList() {
 }
 
 function Header() {
+  const navigate = useNavigate();
   const [isNavOpen, setIsNavOpen] = React.useState(false);
 
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
+
+  // const handleLogout = () => {
+  //   // 1. Remove token from localStorage
+  //   localStorage.removeItem("user");
+
+  //   // 2. Show a toast (optional)
+  //   toast.success("Logged out successfully!", {
+  //     position: "top-right",
+  //     autoClose: 2000,
+  //   });
+
+  //   // 3. Navigate to login page
+  //   navigate("/login");
+  // };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);  // Clear user from state
+    toast.success("Logged out successfully!", {
+      position: "top-right",
+      autoClose: 2000,
+    });
+    navigate("/login");
+  };
+
+  const [user, setUser] = React.useState(null);
+
+  React.useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
+    // Listen for login event
+    window.addEventListener("userLoggedIn", () => {
+      const updatedUser = localStorage.getItem("user");
+      if (updatedUser) setUser(JSON.parse(updatedUser));
+    });
+  }, []);
+
+
+
 
   React.useEffect(() => {
     window.addEventListener(
@@ -596,9 +526,15 @@ function Header() {
             />
           </Link>
           {/* </Typography> */}
-          <div className="hidden lg:block pl-10">
+          {/* <div className="hidden lg:block pl-10">
             <NavList />
-          </div>
+          </div> */}
+          {user && (
+            <div className="hidden lg:block pl-10">
+              <NavList />
+            </div>
+          )}
+
           <IconButton
             size="sm"
             color="blue-gray"
@@ -609,19 +545,45 @@ function Header() {
             <Bars2Icon className="h-6 w-6" />
           </IconButton>
 
-          <ProfileMenu />
-          {/* <Button size="sm" variant="text" color="blue">
-          <span>Log In</span>
-        </Button> */}
-
-          <Link to="/login/1">
-            <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85]">
+          {/* <ProfileMenu />
+          <Link to="/login">
+            <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85] mr-2">
               Login
             </Button>
           </Link>
+          <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85]" onClick={handleLogout}>
+            Logout
+          </Button> */}
+
+          {user ? (
+            <>
+              <div className="ml-12 font-semibold text-white">
+                {user.username} {/* or user.name or user.email depending on your backend */}
+              </div>
+              <Button
+                size="sm"
+                className="bg-[#788c9e] hover:bg-[#2d5e85]"
+                onClick={handleLogout}
+              >
+                Logout
+              </Button>
+            </>
+          ) : (
+            <Link to="/login">
+              <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85] mr-2">
+                Login
+              </Button>
+            </Link>
+          )}
+
+
+
         </div>
-        <Collapse open={isNavOpen} className="overflow-scroll">
+        {/* <Collapse open={isNavOpen} className="overflow-scroll">
           <NavList />
+        </Collapse> */}
+        <Collapse open={isNavOpen} className="overflow-scroll">
+          {user && <NavList />}
         </Collapse>
       </Navbar>
     </>

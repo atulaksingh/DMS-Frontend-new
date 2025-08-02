@@ -37,10 +37,10 @@ const styleCreateMOdal = {
   p: 4,
   borderRadius: "10px",
 };
-function ZipFile({zipFileData}) {
+function ZipFile({ zipFileData }) {
   const calculateTableBodyHeight = () => {
-    const rowHeight = 80; 
-    const maxHeight = 525; 
+    const rowHeight = 80;
+    const maxHeight = 525;
     const calculatedHeight = zipFileData.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
@@ -87,7 +87,7 @@ function ZipFile({zipFileData}) {
         }),
       },
     },
-   
+
     {
       name: "files",
       label: "Attachments",
@@ -102,30 +102,30 @@ function ZipFile({zipFileData}) {
           if (value) {
             // Extracting the file name from the URL
             const fileName = value.split('/').pop();
-    
-            return (
-             <>
 
-             <a
-                href={`https://admin.dms.zacoinfotech.com${value}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: "none", color: "#366FA1" }}
-              >
-               <div className="flex gap-2">
-               <ImFilePicture size={20} color="#366FA1" style={{ marginRight: 8 }} />
-               {fileName}
-               </div>
-              </a>
-             </>
+            return (
+              <>
+
+                <a
+                  href={`https://admin.dms.zacoinfotech.com${value}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ textDecoration: "none", color: "#366FA1" }}
+                >
+                  <div className="flex gap-2">
+                    <ImFilePicture size={20} color="#366FA1" style={{ marginRight: 8 }} />
+                    {fileName}
+                  </div>
+                </a>
+              </>
             );
           }
           return null;
         },
       },
-    },    
-    
-    
+    },
+
+
     {
       name: "date",
       label: "Date",
@@ -148,45 +148,45 @@ function ZipFile({zipFileData}) {
         },
       },
     }
-    
-,    
-{
-  name: "date",
-  label: " Time",
-  options: {
-    setCellHeaderProps: () => ({
-      style: {
-        backgroundColor: "#366FA1",
-        color: "#ffffff",
+
+    ,
+    {
+      name: "date",
+      label: " Time",
+      options: {
+        setCellHeaderProps: () => ({
+          style: {
+            backgroundColor: "#366FA1",
+            color: "#ffffff",
+          },
+        }),
+        customBodyRender: (value) => {
+          if (value) {
+            const date = new Date(value);
+
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+
+            return ` ${hours}:${minutes}:${seconds}`;
+          }
+          return ""; // Return an empty string for null or invalid values
+        },
       },
-    }),
-    customBodyRender: (value) => {
-      if (value) {
-        const date = new Date(value);
-       
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
+    }
+    ,
 
-    return ` ${hours}:${minutes}:${seconds}`;
-      }
-      return ""; // Return an empty string for null or invalid values
-    },
-  },
-}
-,    
 
-   
-   
+
     {
       name: "Actions",
       options: {
         customBodyRenderLite: (dataIndex) => {
           const rowData = zipFileData[dataIndex];
-          return <div>{/* <BankCard rowId={rowData.id} /> */} 
-          {/* <PurchaseCard rowId={rowData.id} fileData={purchaseInvoiceData.attach_e_way_bill}/>  */}
-          {/* <IncomeCard rowId={rowData.id} fileData={zipFileData.attach_e_way_bill} /> */}
-          <ZipFileCard rowId={rowData.id}/>
+          return <div>{/* <BankCard rowId={rowData.id} /> */}
+            {/* <PurchaseCard rowId={rowData.id} fileData={purchaseInvoiceData.attach_e_way_bill}/>  */}
+            {/* <IncomeCard rowId={rowData.id} fileData={zipFileData.attach_e_way_bill} /> */}
+            <ZipFileCard rowId={rowData.id} />
           </div>;
         },
         setCellHeaderProps: () => ({
@@ -249,6 +249,12 @@ function ZipFile({zipFileData}) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No ZipFile data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -258,18 +264,22 @@ function ZipFile({zipFileData}) {
           <div className="text-2xl text-gray-800 font-semibold">
             Zip File Upload Details
           </div>
-      
+
           <div className="flex align-middle items-center gap-2">
-          
-           
+
+
             <ZipFileCreation />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={zipFileData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(zipFileData) && zipFileData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable data={zipFileData} columns={columns} options={options} />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

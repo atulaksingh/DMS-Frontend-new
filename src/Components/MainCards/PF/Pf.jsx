@@ -938,6 +938,12 @@ function Pf({ PfData }) {
       totals[key] = data.reduce((sum, row) => sum + (row[key] || 0), 0);
     }
   });
+
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No PF data available !!
+    </div>
+  );
   return (
     <>
       <ToastContainer />
@@ -952,14 +958,18 @@ function Pf({ PfData }) {
             <PfCreation fetchPfTotals={fetchPfTotals} />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <div style={{ overflowX: "auto" }}>
-              <MUIDataTable data={PfData} columns={columns} options={options} />
-            </div>
+        {Array.isArray(PfData) && PfData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <div style={{ overflowX: "auto" }}>
+                <MUIDataTable data={PfData} columns={columns} options={options} />
+              </div>
 
-          </ThemeProvider>
-        </CacheProvider>
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

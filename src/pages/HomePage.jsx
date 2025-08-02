@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import MuiTable from "../Components/MainCards/MuiTable";
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+import axiosInstance from "../utils/axiosInstance";
 
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 // console.log("API_URL", API_URL);
 function HomePage() {
@@ -12,7 +13,7 @@ function HomePage() {
   const fetchClients = async () => {
     try {
       // const response = await axios.get("http://127.0.0.1:8000/api/list-client");
-      const response = await axios.get(`${API_URL}/api/list-client`);
+      const response = await axiosInstance.get(`${API_URL}/api/list-client`);
       console.log("res", response.data)
       // http://127.0.0.1:8000/api/create-client
       setClients(response?.data?.clients); // Assuming the data is returned in the response body

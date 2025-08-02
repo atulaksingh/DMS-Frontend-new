@@ -277,6 +277,12 @@ function Expenses({ expensesInvoiceData }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No Expenses data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -297,11 +303,15 @@ function Expenses({ expensesInvoiceData }) {
 
           </div>
         </div>
+        {Array.isArray(expensesInvoiceData) && expensesInvoiceData.length > 0 ? (
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable data={expensesInvoiceData} columns={columns} options={options} />
           </ThemeProvider>
         </CacheProvider>
+        ):(
+          renderNoData()
+        )}
       </div>
     </>
   );

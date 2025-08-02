@@ -2,10 +2,12 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 // Async thunk to fetch client details
+import axiosInstance from "../../utils/axiosInstance";
+
 export const fetchClientDetails = createAsyncThunk(
   "client/fetchDetails",
   async (id) => {
-    const response = await axios.get(`${API_URL}/api/detail-client/${id}`);
+    const response = await axiosInstance.get(`${API_URL}/api/detail-client/${id}`);
     return response.data;
   }
 );

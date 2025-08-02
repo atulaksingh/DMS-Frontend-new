@@ -34,7 +34,7 @@ const styleCreateMOdal = {
   p: 4,
   borderRadius: "10px",
 };
-function ProductDescription({ productDescriptionData , fetchClients}) {
+function ProductDescription({ productDescriptionData, fetchClients }) {
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
@@ -142,7 +142,7 @@ function ProductDescription({ productDescriptionData , fetchClients}) {
             <div>
               {/* <HsnCard rowId={rowData.id} /> */}
               {/* <ProductCard rowId={rowData.id}/> */}
-              <ProductDescriptionCard rowId={rowData.id} fetchClients={fetchClients}/>
+              <ProductDescriptionCard rowId={rowData.id} fetchClients={fetchClients} />
             </div>
           );
         },
@@ -156,29 +156,29 @@ function ProductDescription({ productDescriptionData , fetchClients}) {
     },
   ];
 
-const options = {
-  responsive: responsive,
-  search: searchBtn,
-  download: downloadBtn,
-  print: printBtn,
-  viewColumns: viewColumnBtn,
-  filter: filterBtn,
-  filterType: "dropdown",
-  selectableRows: "none",
-  rowsPerPage: 13,
-  rowsPerPageOptions: [13, 25, 50, 100],
-  page: 0,
+  const options = {
+    responsive: responsive,
+    search: searchBtn,
+    download: downloadBtn,
+    print: printBtn,
+    viewColumns: viewColumnBtn,
+    filter: filterBtn,
+    filterType: "dropdown",
+    selectableRows: "none",
+    rowsPerPage: 13,
+    rowsPerPageOptions: [13, 25, 50, 100],
+    page: 0,
 
-  // 👇👇 Set these two blank or undefined
-  tableBodyHeight: "",
-  tableBodyMaxHeight: "",
+    // 👇👇 Set these two blank or undefined
+    tableBodyHeight: "",
+    tableBodyMaxHeight: "",
 
-  // Optional: log actions
-  onTableChange: (action, state) => {
-    console.log(action);
-    console.dir(state);
-  },
-};
+    // Optional: log actions
+    onTableChange: (action, state) => {
+      console.log(action);
+      console.dir(state);
+    },
+  };
 
 
   const theme = createTheme({
@@ -210,6 +210,12 @@ const options = {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No product description data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -217,19 +223,23 @@ const options = {
       <div>
         <div className="flex justify-between align-middle items-center mb-5">
           <div className="text-2xl text-gray-800 font-semibold">
-          Product Description Details
+            Product Description Details
           </div>
           <div >
-      
+
             {/* <ProductCreation /> */}
-            <ProductDescriptionCreation  fetchClients={fetchClients}/>
+            <ProductDescriptionCreation fetchClients={fetchClients} />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={productDescriptionData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(productDescriptionData) && productDescriptionData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable data={productDescriptionData} columns={columns} options={options} />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

@@ -203,6 +203,12 @@ function Others({ othersData }) {
         },
     });
 
+    const renderNoData = () => (
+        <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+            No others data available !!
+        </div>
+    );
+
     return (
         <>
             <ToastContainer />
@@ -224,15 +230,19 @@ function Others({ othersData }) {
                         <OthersCreation />
                     </div>
                 </div>
-                <CacheProvider value={muiCache}>
-                    <ThemeProvider theme={theme}>
-                        <MUIDataTable
-                            data={othersData}
-                            columns={columns}
-                            options={options}
-                        />
-                    </ThemeProvider>
-                </CacheProvider>
+                {Array.isArray(othersData) && othersData.length > 0 ? (
+                    <CacheProvider value={muiCache}>
+                        <ThemeProvider theme={theme}>
+                            <MUIDataTable
+                                data={othersData}
+                                columns={columns}
+                                options={options}
+                            />
+                        </ThemeProvider>
+                    </CacheProvider>
+                ) : (
+                    renderNoData()
+                )}
             </div>
         </>
     );

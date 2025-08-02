@@ -246,7 +246,7 @@ function Acknowledgement({ ackData }) {
 
     const startMonth = monthMap[startMonthName];   // in this line we r storing the number which is mapped to month which is store in startMonthName variable in a "startMonth" variable
 
-    if (startMonth >= 4) {                        
+    if (startMonth >= 4) {
       return `${startYear}-${startYear + 1}`;       // in this line we r checking if the startMonth number is greater than or equal to 4 the it will return startYear and startYear + 1 
     } else {
       return `${startYear - 1}-${startYear}`;      // in this line we r checking if the startMonth number is less than 4 than it will return startYear - 1 and startYear
@@ -254,11 +254,11 @@ function Acknowledgement({ ackData }) {
   };
 
   const groupByFinancialYear = (data) => {        // in this line we r now again creating a function with the following name and pass a parameter through it
-      const grouped = {};                         // now we create empty object with "grouped" name which will store grouped data in this formate 
-                                                  // grouped = {
-                                                  //   "2019-2020": [ item1, item2 ],
-                                                  //   "2020-2021": [ item3, item4 ],
-                                                  // }
+    const grouped = {};                         // now we create empty object with "grouped" name which will store grouped data in this formate 
+    // grouped = {
+    //   "2019-2020": [ item1, item2 ],
+    //   "2020-2021": [ item3, item4 ],
+    // }
     data.forEach(item => {                                       // now we r using forEach loop to go through each item from the data we got
       const [startStr] = item.return_period.split(" - ");        // in this line the data  we got we r splitting it based on "-" the first value after spliting got now we r sending it to  startStr
       const key = getFinancialYearKey(startStr);             // now we r calling the function we created above and passing the startStr value to it and storing the return value in key variable
@@ -296,7 +296,11 @@ function Acknowledgement({ ackData }) {
 
   // const groupedAckData = groupByFinancialYear(ackData || []);
 
-
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No owner data available !!
+    </div>
+  );
 
   return (
     <>
@@ -313,11 +317,15 @@ function Acknowledgement({ ackData }) {
             <AcknowledgementCreation />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={ackData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(ackData) && ackData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable data={ackData} columns={columns} options={options} />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
         <div>
           {/* <Accordion
           expanded={expanded}
@@ -420,7 +428,7 @@ function Acknowledgement({ ackData }) {
             </Accordion>
           ))}*/}
 
-        </div> 
+        </div>
 
         <div>
           {/* {Object.entries(groupedAckData).map(([yearRange, dataForYear]) => (

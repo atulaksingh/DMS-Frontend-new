@@ -162,6 +162,12 @@ function Bank({ bankData }) {
     rowsPerPage: 13,
     rowsPerPageOptions: [13, 25, 50, 100],
     page: 0,
+
+    textLabels: {
+      body: {
+        noMatch: "😔 No bank data available", // Plain string only!
+      },
+    },
   };
 
   const theme = createTheme({
@@ -192,6 +198,12 @@ function Bank({ bankData }) {
       },
     },
   });
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+       No bank data available !!
+    </div>
+  );
+
 
   return (
     <>
@@ -207,11 +219,25 @@ function Bank({ bankData }) {
             <BankCreation />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
+        {/* <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable data={bankData} columns={columns} options={options} />
           </ThemeProvider>
-        </CacheProvider>
+        </CacheProvider> */}
+        {Array.isArray(bankData) && bankData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable
+                title={"Bank Details"}
+                data={bankData}
+                columns={columns}
+                options={options}
+              />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

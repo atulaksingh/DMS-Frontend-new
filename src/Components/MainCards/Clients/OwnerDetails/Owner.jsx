@@ -169,27 +169,29 @@ function Owner({ ownerData }) {
 
 
     } catch (error) {
-      setErrorMessage("Error submitting data. Please try again.");
-      console.error("Error submitting data:1111", error);
-      // toast.error(` ${error.response.data.error_message && error.response.data.message}`, {
-      //   position: "top-right",
-      //   autoClose: 2000,
-      // });
-      const backendMessage = error.response?.data?.message || error.response?.data?.error_message || "An error occurred";
-      const backendErrors = error.response?.data?.error_message;
+      console.error("Error submitting data:", error);
 
-      // If error_message is an object (like { email: [...] }), extract and join all messages
+      const backendError = error.response?.data?.error_message;
+      const fallbackMessage = "Error submitting data. Please try again.";
+
       let detailedErrors = "";
-      if (backendErrors && typeof backendErrors === "object") {
-        detailedErrors = Object.entries(backendErrors)
+
+      // If error_message is an object, format it into a string
+      if (backendError && typeof backendError === "object") {
+        detailedErrors = Object.entries(backendError)
           .map(([field, messages]) => `${field}: ${messages.join(", ")}`)
           .join(" | ");
+      } else if (typeof backendError === "string") {
+        detailedErrors = backendError;
       }
-      toast.error(`${backendMessage}${detailedErrors ? ` | ${detailedErrors}` : ""}`, {
+
+      toast.error(detailedErrors || fallbackMessage, {
         position: "top-right",
-        autoClose: 2000,
+        autoClose: 3000,
       });
-      // Handle error here, show a notification if necessary
+
+      // Optional: update UI state
+      setErrorMessage(detailedErrors || fallbackMessage);
     }
   };
 
@@ -201,7 +203,7 @@ function Owner({ ownerData }) {
       ? `${maxHeight}px`
       : `${calculatedHeight}px`;
   };
-  const [errorMessage, setErrorMessage] = useState("");
+
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState(
     calculateTableBodyHeight
@@ -395,6 +397,12 @@ function Owner({ ownerData }) {
       },
     },
   });
+
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No owner data available !!
+    </div>
+  );
 
   return (
     <>
@@ -750,15 +758,19 @@ function Owner({ ownerData }) {
             </Button>
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable
-              data={ownerData}
-              columns={columns}
-              options={options}
-            />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(ownerData) && ownerData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable
+                data={ownerData}
+                columns={columns}
+                options={options}
+              />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

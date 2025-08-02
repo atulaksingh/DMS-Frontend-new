@@ -208,6 +208,12 @@ function TdsSection({ tdsSectionData }) {
   });
   console.log('tds', tdsSectionData);
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No TDS Section data available !!
+    </div>
+  );
+
   return (
     <>
       {/* <ToastContainer /> */}
@@ -223,11 +229,15 @@ function TdsSection({ tdsSectionData }) {
             <TdsSectionCreation />
           </div>
         </div>
+        {Array.isArray(tdsSectionData) && tdsSectionData.length > 0 ?(
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable data={tdsSectionData} columns={columns} options={options} />
           </ThemeProvider>
         </CacheProvider>
+        ):(
+          renderNoData()
+        )}
       </div>
     </>
   );

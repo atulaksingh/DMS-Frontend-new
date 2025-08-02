@@ -32,7 +32,7 @@ const styleCreateMOdal = {
   p: 4,
   borderRadius: "10px",
 };
-function Product({ productData , fetchClients}) {
+function Product({ productData, fetchClients }) {
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
@@ -139,7 +139,7 @@ function Product({ productData , fetchClients}) {
           return (
             <div>
               {/* <HsnCard rowId={rowData.id} /> */}
-              <ProductCard rowId={rowData.id}  fetchClients={fetchClients}/>
+              <ProductCard rowId={rowData.id} fetchClients={fetchClients} />
             </div>
           );
         },
@@ -203,6 +203,12 @@ function Product({ productData , fetchClients}) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No Product data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -213,15 +219,19 @@ function Product({ productData , fetchClients}) {
             Product Details
           </div>
           <div >
-      
-            <ProductCreation  fetchClients={fetchClients}/>
+
+            <ProductCreation fetchClients={fetchClients} />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={productData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(productData) && productData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable data={productData} columns={columns} options={options} />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

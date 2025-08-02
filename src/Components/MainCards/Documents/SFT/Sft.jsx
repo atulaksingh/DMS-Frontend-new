@@ -201,6 +201,11 @@ function Sft({ sftData }) {
       },
     },
   });
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No SFT data available !!
+    </div>
+  );
 
   return (
     <>
@@ -223,6 +228,7 @@ function Sft({ sftData }) {
         <SftCreation />
           </div>
         </div>
+        {Array.isArray(sftData) && sftData.length > 0 ?(
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable
@@ -232,6 +238,9 @@ function Sft({ sftData }) {
             />
           </ThemeProvider>
         </CacheProvider>
+        ):(
+          renderNoData()
+        )}
       </div>
     </>
   );

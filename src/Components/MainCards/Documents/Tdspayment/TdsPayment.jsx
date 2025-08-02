@@ -226,6 +226,12 @@ function TdsPayment({ tdsPaymentData, tdsSectionData }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No TDS Payment data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -241,6 +247,7 @@ function TdsPayment({ tdsPaymentData, tdsSectionData }) {
             <TdsPaymentCreation allTdsSectionData={allTdsSectionData} fetchAllTdsSectionDetails={fetchAllTdsSectionDetails} />
           </div>
         </div>
+        {Array.isArray(tdsPaymentData) && tdsPaymentData.length > 0 ? (
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable
@@ -250,6 +257,9 @@ function TdsPayment({ tdsPaymentData, tdsSectionData }) {
             />
           </ThemeProvider>
         </CacheProvider>
+        ):(
+          renderNoData()
+        )}
       </div>
     </>
   );

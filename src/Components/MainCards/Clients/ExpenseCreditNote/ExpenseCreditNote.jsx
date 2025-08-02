@@ -296,6 +296,12 @@ function ExpenseCreditNote() {
     }),
   ];
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No expensescreditnote data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -347,6 +353,7 @@ function ExpenseCreditNote() {
             <ExpensesCNCreation fetchInvoiceDetails={fetchInvoiceDetails} />
           </div>
         </div>
+        {Array.isArray(creditNoteData) && creditNoteData.length > 0 ? (
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable
@@ -356,6 +363,9 @@ function ExpenseCreditNote() {
             />
           </ThemeProvider>
         </CacheProvider>
+        ):(
+          renderNoData()
+        )}
       </div>
     </>
   );

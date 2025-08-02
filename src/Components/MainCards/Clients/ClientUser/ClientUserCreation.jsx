@@ -67,63 +67,63 @@ function ClientUserCreation() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault(); // Prevent default form submission
 
-    try {
-      // Create a FormData object
-      const formDataToSend = new FormData();
+  //   try {
+  //     // Create a FormData object
+  //     const formDataToSend = new FormData();
 
-      // Append text fields to FormData
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("customer", formData.customer);
-      formDataToSend.append("email", formData.email);
-      // formDataToSend.append("password", formData.password);
+  //     // Append text fields to FormData
+  //     formDataToSend.append("name", formData.name);
+  //     formDataToSend.append("customer", formData.customer);
+  //     formDataToSend.append("email", formData.email);
+  //     // formDataToSend.append("password", formData.password);
 
-      // Make a POST request to your API
-      const response = await axios.post(
-        `${API_URL}/api/user-clientform/${id}`,
-        formDataToSend
-      );
-      console.log(response);
+  //     // Make a POST request to your API
+  //     const response = await axios.post(
+  //       `${API_URL}/api/create-clientuser/${id}`,
+  //       formDataToSend
+  //     );
+  //     console.log(response);
 
-      // Check if the response is successful
-      if (response.status === 200) {
-        // Handle success response
-        handleCreateClose();
+  //     // Check if the response is successful
+  //     if (response.status === 200) {
+  //       // Handle success response
+  //       handleCreateClose();
 
-        // Show success toast
-        toast.success(response?.data?.message || "User-client form created successfully.", {
-          position: "top-right",
-          autoClose: 5000,
-        });
+  //       // Show success toast
+  //       toast.success(response?.data?.message || "User-client form created successfully.", {
+  //         position: "top-right",
+  //         autoClose: 5000,
+  //       });
 
-        // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
+  //       // Dispatch fetchClientDetails action
+  //       dispatch(fetchClientDetails(id));
 
-        // Optionally close the modal and reset form
-        setFormData({
-          name: "",
-          customer: "",
-          email: "",
-          // password: "",
-        });
-      } else {
-        throw new Error("Failed to create user-client form.");
-      }
-    } catch (error) {
-      console.error("Error submitting data:", error);
+  //       // Optionally close the modal and reset form
+  //       setFormData({
+  //         name: "",
+  //         customer: "",
+  //         email: "",
+  //         // password: "",
+  //       });
+  //     } else {
+  //       throw new Error("Failed to create user-client form.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error submitting data:", error);
 
-      // Show error toast
-      toast.error(
-        error.response?.data?.error_message || "Failed to create user-client details. Please try again.",
-        {
-          position: "top-right",
-          autoClose: 2000,
-        }
-      );
-    }
-  };
+  //     // Show error toast
+  //     toast.error(
+  //       error.response?.data?.error_message || "Failed to create user-client details. Please try again.",
+  //       {
+  //         position: "top-right",
+  //         autoClose: 2000,
+  //       }
+  //     );
+  //   }
+  // };
 
   // const [showPassword, setShowPassword] = useState(false);
 
@@ -131,6 +131,43 @@ function ClientUserCreation() {
   //   setShowPassword(!showPassword);
   // };
 
+
+
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+
+    setSubmitting(true);
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("name", formData.name);
+      formDataToSend.append("customer", formData.customer);
+      formDataToSend.append("email", formData.email);
+
+      const response = await axios.post(
+        `${API_URL}/api/create-clientuser/${id}`,
+        formDataToSend
+      );
+
+      if (response.status === 200) {
+        handleCreateClose();
+        toast.success(response?.data?.message || "User-client form created successfully.");
+        dispatch(fetchClientDetails(id));
+        setFormData({ name: "", customer: "", email: "" });
+      } else {
+        throw new Error("Failed to create user-client form.");
+      }
+    } catch (error) {
+      console.error("Error submitting data:", error);
+      toast.error(
+        error.response?.data?.error_message || "Failed to create user-client details.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
 
   const handleCustomerChange = (event, newValue) => {

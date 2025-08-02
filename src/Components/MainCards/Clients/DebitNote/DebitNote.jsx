@@ -283,6 +283,12 @@ function DebitNote() {
     }),
   ];
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No debitnote data available !!
+    </div>
+  );
+
 
   return (
     <>
@@ -333,11 +339,15 @@ function DebitNote() {
             <NewDCreation fetchInvoiceDetails={fetchInvoiceDetails} />
           </div>
         </div>
+        {Array.isArray(invoiceData) && invoiceData.length > 0 ? (
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable data={invoiceData} columns={columns} options={options} />
           </ThemeProvider>
         </CacheProvider>
+        ):(
+          renderNoData()
+        )}
       </div>
     </>
   );

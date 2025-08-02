@@ -287,6 +287,12 @@ function CreditNote() {
       return { name: segment.charAt(0).toUpperCase() + segment.slice(1), path };
     }),
   ];
+
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No creditnote data available !!
+    </div>
+  );
   return (
     <>
       <ToastContainer />
@@ -335,15 +341,19 @@ function CreditNote() {
             <NewCreditNoteCreation fetchInvoiceDetails={fetchInvoiceDetails} />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable
-              data={creditNoteData}
-              columns={columns}
-              options={options}
-            />
-          </ThemeProvider>
-        </CacheProvider>
+        {Array.isArray(creditNoteData) && creditNoteData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable
+                data={creditNoteData}
+                columns={columns}
+                options={options}
+              />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );
