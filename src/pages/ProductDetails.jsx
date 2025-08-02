@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Product from "../Components/MainCards/Product/Product";
+import axiosInstance from "/src/utils/axiosInstance";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ProductDetails() {
@@ -11,7 +12,7 @@ function ProductDetails() {
   const [loading, setLoading] = useState(true);
   const fetchClients = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/list-client`);
+      const response = await axiosInstance.get(`${API_URL}/api/list-client`);
       // console.log("response",response.data)
       setProductData(response.data.product); // Assuming the data is returned in the response body
       setLoading(false);
