@@ -12,6 +12,7 @@ import Owner from "./MainCards/Clients/OwnerDetails/Owner";
 import Bank from "./MainCards/Clients/BankDetails/Bank";
 import Branch from "./MainCards/Clients/BranchDetails/Branch";
 import ClientUser from "./MainCards/Clients/ClientUser/ClientUser";
+import CustomerUser from "./MainCards/Clients/CustomerUser/CustomerUser";
 import CompanyDocuments from "./MainCards/Clients/CompanyDocuments/CompanyDocuments";
 import CV from "./MainCards/Clients/CorV/CV";
 import Documents from "./MainCards/Documents/Documents";
@@ -38,6 +39,7 @@ function ReduxCard() {
     bankData,
     branchData,
     clientUserData,
+    customerUserData,
     companyDocData,
     CVData,
     PfData,
@@ -330,6 +332,7 @@ function ReduxCard() {
               </TabPanel>
               <TabPanel value="4">
                 <ClientUser clientUserData={clientUserData} />
+                <CustomerUser customerUserData={customerUserData} />
               </TabPanel>
               <TabPanel value="5">
                 <CompanyDocuments companyDocData={companyDocData} />
@@ -338,7 +341,7 @@ function ReduxCard() {
                 <CV cvData={CVData} />
               </TabPanel>
               <TabPanel value="7">
-                
+
                 <Documents
                   PfData={PfData}
                   taxAuditData={taxAuditData}
@@ -350,10 +353,10 @@ function ReduxCard() {
 
               </TabPanel>
               <TabPanel value="8">
-                <Purchase salesInvoiceData={salesInvoiceData}/>
+                <Purchase salesInvoiceData={salesInvoiceData} />
               </TabPanel>
               <TabPanel value="9">
-                <Sales salesInvoiceData={salesInvoiceData}/>
+                <Sales salesInvoiceData={salesInvoiceData} />
               </TabPanel>
             </TabContext>
           </Box>

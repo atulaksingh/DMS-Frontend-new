@@ -485,6 +485,7 @@ function Header() {
       position: "top-right",
       autoClose: 2000,
     });
+    
     navigate("/login");
   };
 

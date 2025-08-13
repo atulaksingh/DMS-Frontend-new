@@ -19,7 +19,6 @@ import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 import { Autocomplete, TextField } from "@mui/material";
 import { is } from "date-fns/locale/is";
-import Signup from "../../../../pages/ForgetPassword";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
@@ -51,7 +50,7 @@ const styleCreateMOdal = {
 };
 const ITEM_HEIGHT = 48;
 
-export default function ClientUserCard({ rowId }) {
+export default function CustomerUserCard({ rowId }) {
   const { id } = useParams();
   const dispatch = useDispatch();
   // console.log("rowIdClientUser", rowId);
@@ -61,10 +60,8 @@ export default function ClientUserCard({ rowId }) {
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [openResetModal, setOpenResetModal] = React.useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const [customers, setCustomers] = useState([]);
   const [formData, setFormData] = useState({
     name: "",
-    // customer: "",
     email: "",
     password: "",
     is_active: " ",
@@ -87,15 +84,6 @@ export default function ClientUserCard({ rowId }) {
 
     try {
       const dataToSubmit = new FormData();
-      // Create a FormData object
-      // Extract only the customer id from the selected customer object
-      // const customerId = formData.customer?.id || formData.customer; // Ensure we're sending the customer id
-
-      // Prepare the data to submit, making sure only the customer ID is included
-      // const dataToSubmit = {
-      //   ...formData,
-      //   customer: customerId, // Send only the customer id (not the full object)
-      // };
       dataToSubmit.append("email", formData.email);
       dataToSubmit.append("name", formData.name);
       dataToSubmit.append("password", formData.password);
@@ -104,7 +92,7 @@ export default function ClientUserCard({ rowId }) {
       console.log("Data to submit:", dataToSubmit); // Check the final data being sent
 
       const response = await axios.post(
-        `${API_URL}/api/edit-clientuser/${id}/${rowId}`,
+        `${API_URL}/api/edit-customeruser/${id}/${rowId}`,
         dataToSubmit
       );
       console.log("ss", response);
@@ -222,7 +210,7 @@ export default function ClientUserCard({ rowId }) {
   const handleDeleteID = async () => {
     try {
       const response = await axios.delete(
-        `${API_URL}/api/delete-clientuser/${id}/${deleteId}`
+        `${API_URL}/api/delete-customeruser/${id}/${deleteId}`
       );
       // console.log("res-----ClientUser---->123", response);
       setOpenDeleteModal(false);
@@ -262,9 +250,9 @@ export default function ClientUserCard({ rowId }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/api/single-clientuser/${id}/${rowId}`
+          `${API_URL}/api/single-customeruser/${id}/${rowId}`
         );
-        setClientUser(response.data);
+        setCustomerUser(response.data);
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -282,7 +270,7 @@ export default function ClientUserCard({ rowId }) {
 
     try {
       const response = await axios.get(
-        `${API_URL}/api/edit-clientuser/${id}/${rowId}`
+        `${API_URL}/api/edit-customeruser/${id}/${rowId}`
       );
       console.log("previous", formData.password);
 
@@ -307,7 +295,8 @@ export default function ClientUserCard({ rowId }) {
 
   const handleCreateClose = () => setOpenCreateModal(false);
   const handleResetClose = () => setOpenResetModal(false);
-  const [clientUser, setClientUser] = useState(null);
+  // const [clientUser, setClientUser] = useState(null);
+  const [customerUser, setCustomerUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -315,10 +304,10 @@ export default function ClientUserCard({ rowId }) {
     const fetchBankDetails = async () => {
       try {
         const response = await axios.get(
-          `${API_URL}/api/edit-clientuser/${id}/${rowId}`
+          `${API_URL}/api/edit-customeruser/${id}/${rowId}`
         );
 
-        setClientUser(response.data);
+        setCustomerUser(response.data);
         setLoading(false);
       } catch (error) {
         setError(error);
@@ -375,7 +364,7 @@ export default function ClientUserCard({ rowId }) {
                 Details View
               </Typography>
 
-              {clientUser && (
+              {customerUser && (
                 <>
                   <div>
                     <form className=" my-5 w-full ">
@@ -391,7 +380,7 @@ export default function ClientUserCard({ rowId }) {
                               Name :
                             </Typography>
                             <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.name}
+                              {customerUser.name}
                             </div>
                           </div>
                           <div className="w-full flex gap-3">
@@ -402,82 +391,12 @@ export default function ClientUserCard({ rowId }) {
                             >
                               Email :
                             </Typography>
-                            {/* {clientUser.customer.name} */}
+                            {/* {customerUser.customer.name} */}
                             <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.email}
+                              {customerUser.email}
                             </div>
                           </div>
                         </div>
-
-                        {/* <div className="flex gap-6   p-2">
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=""
-                              size="sm"
-                            >
-                              Type :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.customer.customer && clientUser.customer.vendor
-                                ? "Customer and Vendor"
-                                : clientUser.customer.customer
-                                  ? "Customer"
-                                  : clientUser.customer.vendor
-                                    ? "Vendor"
-                                    : ""}
-                            </div>
-                          </div>
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=""
-                              size="sm"
-                            >
-                              {clientUser.customer.customer && clientUser.customer.vendor
-                                ? "Customer and Vendor :"
-                                : clientUser.customer.customer
-                                  ? "Customer Name :"
-                                  : clientUser.customer.vendor
-                                    ? "Vendor Name:"
-                                    : ""}
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.customer.name}
-                            </div>
-                          </div>
-                        </div> */}
-
-                        {/* <div className="flex gap-6  p-2">
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className="mb-1"
-                              size="sm"
-                            >
-                              IFSC Code :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.ifsc}
-                            </div>
-                          </div>
-                          <div className="w-full flex gap-3 align-middle items-center">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className="mb-1"
-                              size="sm"
-                            >
-                              Attachment :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.attachment}
-                            </div>
-                          </div>
-                        </div> */}
                       </div>
                     </form>
                   </div>

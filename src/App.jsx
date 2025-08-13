@@ -9,7 +9,7 @@ import Header from "./Components/MainCards/Header";
 import MenuBar from "./Components/MainCards/MenuBar";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+// import Signup from "./pages/ForgetPassword";
 import HomePage from "./pages/HomePage";
 import ClientCreation from "./Components/MainCards/Clients/ClientCreation";
 // import { ToastContainer } from "react-toastify";
@@ -29,7 +29,9 @@ import CreditNote from "./Components/MainCards/Clients/Credit Note/CreditNote";
 import DebitNote from "./Components/MainCards/Clients/DebitNote/DebitNote";
 import IncomeDebitNote from "./Components/MainCards/Clients/IncomeDebitNote/IncomeDebitNote";
 import ExpenseCreditNote from "./Components/MainCards/Clients/ExpenseCreditNote/ExpenseCreditNote";
+import Resetpassword from "./pages/ResetPassword";
 // import AckCreation from "./Components/MainCards/Ack/AckCreation";
+import Forgetpassword from "./pages/ForgetPassword";
 import { logout } from "./pages/Logout";
 import AckDetails from "./Components/MainCards/Ack/AckDetails";
 function App() {
@@ -49,7 +51,10 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/master" element={<Master />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          {/* <Route path="/reset" element={<Resetpassword />} /> */}
+          <Route path="/reset-password/:uidb64/:token" element={<Resetpassword />} />
+
+          <Route path="/forgetpassword" element={<Forgetpassword />} />
           {/* <Route path="/logout" element={<Logout />} /> */}
           <Route path="/client" element={<ClientCreation />} />
           <Route path="/clientUpdate/:id" element={<ClientUpdate />} />

@@ -21,6 +21,7 @@ const clientSlice = createSlice({
     bankData: null,
     branchData: null,
     clientUserData: null,
+    customerUserData: null,
     companyDocData: null,
     CVData: null,
     PfData: null,
@@ -55,6 +56,7 @@ const clientSlice = createSlice({
         state.bankData = action?.payload?.Bank;
         state.branchData = action?.payload?.Branch;
         state.clientUserData = action?.payload?.ClientUser;
+        state.customerUserData = action?.payload?.CustomerUser;
         state.companyDocData = action?.payload?.Company_Document;
         state.CVData = action?.payload?.Customer_or_Vendor;
         state.PfData = action?.payload?.PF;

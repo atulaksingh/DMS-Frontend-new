@@ -94,26 +94,33 @@ function Login() {
       }
 
     } catch (error) {
-      console.error("Error submitting data:", error);
+      console.error("Full error:", error);
 
-      if (error.response && error.response.status === 400 || error.response.status === 401) {
-        toast.error(`${error.response.data.error_message}`, {
-          position: "top-right",
-          autoClose: 2000,
-        });
-      } else {
-        toast.error("Something went wrong. Please try again.", {
-          position: "top-right",
-          autoClose: 2000,
-        });
+      let errorMsg = "Something went wrong. Please try again.";
+
+      if (error.response?.data?.error_message) {
+        const message = error.response.data.error_message;
+
+        // If it's an array (like yours), take the first item
+        if (Array.isArray(message)) {
+          errorMsg = message[0];
+        } else if (typeof message === "string") {
+          errorMsg = message;
+        }
       }
-      setErrorMessage("Error submitting data. Please try again.");
 
+      toast.error(errorMsg, {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      setErrorMessage(errorMsg);
     }
   }
 
   return (
     <>
+      <ToastContainer />
       <div className="bg-image">
 
         <div className="container mx-auto ">
@@ -208,35 +215,20 @@ function Login() {
                         className="absolute top-3 right-3"
                       >
                         {showPassword ? (
-                          <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-                        ) : (
                           <EyeIcon className="h-5 w-5 text-gray-500" />
+                        ) : (
+                          <EyeSlashIcon className="h-5 w-5 text-gray-500" />
                         )}
                       </button>
                     </div>
                   </div>
-                  {/* <Checkbox
-                    className="h-4 w-4 py-0"
-                    label={
-                      <div>
-                        <Typography
-                          color="blue-gray"
-                          className="font-medium text-sm "
-                        >
-                          Remember Me
-                        </Typography>
-                      </div>
-                    }
-                  /> */}
+                  
                   <Button size="md" className="bg-[#366FA1] text-white" fullWidth type="submit">
                     Continue
                   </Button>
                 </form>
-                <div className="text-[15px] font-semibold my-2.5 text-center">
-                  <Link to="/signup">Creat Account?</Link>
-                </div>
-
-                <div className="flex justify-center align-middle items-center gap-3">
+                
+                {/* <div className="flex justify-center align-middle items-center gap-3 mt-4">
                   <div className="bg-[#366FA1] w-fit  rounded-full p-1.5 cursor-pointer">
                     <FacebookOutlinedIcon className="text-white " />
                   </div>
@@ -246,15 +238,15 @@ function Login() {
                   <div className="bg-[#F46A6A] w-fit  rounded-full p-1.5 cursor-pointer">
                     <GoogleIcon className="text-white h-4 w-4" />
                   </div>
-                </div>
+                </div> */}
 
-                <div className="flex justify-center align-middle items-center gap-1 my-1">
+                <div className="flex justify-center align-middle items-center mt-6 gap-1 my-1">
                   <div>
                     <LockIcon fontSize="" className="text-[13px] mb-1" />
                   </div>
-                  <div className="text-[14px] font-medium cursor-pointer">
+                  <Link to="/forgetpassword"><div className="text-[14px] font-medium cursor-pointer">
                     Forgot your password?
-                  </div>
+                  </div></Link>
                 </div>
               </CardBody>
             </Card>

@@ -47,6 +47,12 @@ function Owner({ ownerData }) {
     setShowPassword(!showPassword);
   };
 
+  const [showUserPassword, setShowUserPassword] = useState(false);
+
+  const toggleUserPasswordVisibility = () => {
+    setShowUserPassword(!showUserPassword);
+  };
+
 
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -59,6 +65,7 @@ function Owner({ ownerData }) {
     it_password: "",
     mobile: "",
     username: "",
+    user_password: "",
     isadmin: false,
     is_active: true,
   });
@@ -153,6 +160,7 @@ function Owner({ ownerData }) {
           it_password: "",
           mobile: "",
           username: "",
+          user_password: "",
           // isadmin: "",
           // is_active: "",
         });
@@ -638,9 +646,9 @@ function Owner({ ownerData }) {
                           className="absolute top-3 right-3"
                         >
                           {showPassword ? (
-                            <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-                          ) : (
                             <EyeIcon className="h-5 w-5 text-gray-500" />
+                          ) : (
+                            <EyeSlashIcon className="h-5 w-5 text-gray-500" />
                           )}
                         </button>
                       </div>
@@ -671,6 +679,47 @@ function Owner({ ownerData }) {
                         }}
                         containerProps={{ className: "min-w-full" }}
                       />
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label htmlFor="it_password">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="block font-semibold mb-2"
+                      >
+                        User Password
+                      </Typography>
+                    </label>
+
+                    <div className="">
+                      <div className="relative">
+                        <Input
+                          type={showUserPassword ? "text" : "password"}
+                          size="lg"
+                          name="user_password"
+                          placeholder="User Password"
+                          value={formData.user_password}
+                          onChange={handleInputChange}
+                          className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                          labelProps={{
+                            className: "hidden",
+                          }}
+                          containerProps={{ className: "min-w-full" }}
+                        />
+                        {/* Toggle visibility button */}
+                        <button
+                          type="button"
+                          onClick={toggleUserPasswordVisibility}
+                          className="absolute top-3 right-3"
+                        >
+                          {showUserPassword ? (
+                            <EyeIcon className="h-5 w-5 text-gray-500" />
+                          ) : (
+                            <EyeSlashIcon className="h-5 w-5 text-gray-500" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <div className="col-span-2">

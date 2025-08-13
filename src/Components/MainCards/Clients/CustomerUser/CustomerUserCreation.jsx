@@ -31,7 +31,7 @@ const styleCreateMOdal = {
   p: 4,
   borderRadius: "10px",
 };
-function ClientUserCreation() {
+function CustomerUserCreation() {
   const { id } = useParams();
   const dispatch = useDispatch();
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
@@ -41,20 +41,9 @@ function ClientUserCreation() {
     setOpenCreateModal(true);
     setAnchorEl(null);
   };
-  const [customers, setCustomers] = useState([]);
-
-  // Fetch Data from API
-  // useEffect(() => {
-  //   fetch("${API_URL}/api/user-clientform/1")
-  //     .then((response) => response.json())
-  //     .then((data) => setCustomers(data))
-  //     .catch((error) => console.error("Error fetching customers:", error));
-  // }, []);
-
   const handleCreateClose = () => setOpenCreateModal(false);
   const [formData, setFormData] = useState({
     name: "",
-    customer: "",
     email: "",
     password: "",
   });
@@ -66,71 +55,8 @@ function ClientUserCreation() {
       [name]: value,
     }));
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault(); // Prevent default form submission
-
-  //   try {
-  //     // Create a FormData object
-  //     const formDataToSend = new FormData();
-
-  //     // Append text fields to FormData
-  //     formDataToSend.append("name", formData.name);
-  //     formDataToSend.append("customer", formData.customer);
-  //     formDataToSend.append("email", formData.email);
-  //     // formDataToSend.append("password", formData.password);
-
-  //     // Make a POST request to your API
-  //     const response = await axios.post(
-  //       `${API_URL}/api/create-clientuser/${id}`,
-  //       formDataToSend
-  //     );
-  //     console.log(response);
-
-  //     // Check if the response is successful
-  //     if (response.status === 200) {
-  //       // Handle success response
-  //       handleCreateClose();
-
-  //       // Show success toast
-  //       toast.success(response?.data?.message || "User-client form created successfully.", {
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //       });
-
-  //       // Dispatch fetchClientDetails action
-  //       dispatch(fetchClientDetails(id));
-
-  //       // Optionally close the modal and reset form
-  //       setFormData({
-  //         name: "",
-  //         customer: "",
-  //         email: "",
-  //         // password: "",
-  //       });
-  //     } else {
-  //       throw new Error("Failed to create user-client form.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting data:", error);
-
-  //     // Show error toast
-  //     toast.error(
-  //       error.response?.data?.error_message || "Failed to create user-client details. Please try again.",
-  //       {
-  //         position: "top-right",
-  //         autoClose: 2000,
-  //       }
-  //     );
-  //   }
-  // };
-
-  // const [showPassword, setShowPassword] = useState(false);
-
-  // const togglePasswordVisibility = () => {
-  //   setShowPassword(!showPassword);
-  // };
-
+  const [openPasswordModal, setOpenPasswordModal] = useState(false);
+  const [generatedPassword, setGeneratedPassword] = useState("");
 
 
   const [submitting, setSubmitting] = useState(false);
@@ -143,12 +69,11 @@ function ClientUserCreation() {
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
-      formDataToSend.append("customer", formData.customer);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("password", formData.password);
 
       const response = await axios.post(
-        `${API_URL}/api/create-clientuser/${id}`,
+        `${API_URL}/api/create-customeruser/${id}`,
         formDataToSend
       );
 
@@ -170,21 +95,11 @@ function ClientUserCreation() {
     }
   };
 
-
-  const handleCustomerChange = (event, newValue) => {
-    // When a user selects a customer, update the formData with the selected customer
-    setFormData((prev) => ({
-      ...prev,
-      customer: newValue ? newValue.id : "", // Assuming `id` is what you want to store
-    }));
-  };
-
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
 
 
 
@@ -205,7 +120,7 @@ function ClientUserCreation() {
               component="h2"
               className="text-center border-b-2 border-[#366FA1] pb-3"
             >
-              Create ClientUser Details
+              Create User Details
             </Typography>
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
@@ -237,11 +152,6 @@ function ClientUserCreation() {
                       />
                     </div>
                   </div>
-
-
-
-
-
                   <div className="col-span-2">
                     <label htmlFor="email">
                       <Typography
@@ -269,7 +179,6 @@ function ClientUserCreation() {
                       />
                     </div>
                   </div>
-
                   <div className="col-span-2">
                     <label htmlFor="password">
                       <Typography
@@ -324,67 +233,6 @@ function ClientUserCreation() {
                       </button>
                     </div>
                   </div>
-
-
-
-                  {/* <div className="col-span-2">
-                    <label htmlFor="password">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Select Customer or Vendor
-                      </Typography>
-                    </label>
-
-
-
-
-                    <Autocomplete
-                      sx={{ width: 300 }}
-                      freeSolo
-                      id="gst-no-autocomplete"
-                      disableClearable
-                      options={customers}
-                      getOptionLabel={(option) =>
-                        typeof option === "string" ? option : option.name || ""
-                      }
-                      onChange={handleCustomerChange}  // Use the custom handler
-                      value={customers.find((customer) => customer.id === formData.customer) || null} // Bind value to formData.customer
-                      renderOption={(props, option) => (
-                        <li {...props} key={option.id}>
-                          {option.gst_no} ({option.name})
-                        </li>
-                      )}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          size="small"
-                          name="customer"
-                          value={formData.customer || ""} // Reset input value when formData.customer changes
-                          onChange={handleInputChange} // Update input value on type
-                          placeholder="Enter or select GST No."
-                          sx={{
-                            "& .MuiInputBase-root": {
-                              height: 34, // Set your desired height here
-                              padding: "4px 6px", // Adjust padding to make it smaller
-                            },
-                            "& .MuiOutlinedInput-input": {
-                              padding: "14px 16px", // Input padding
-                            },
-                          }}
-                          slotProps={{
-                            input: {
-                              ...params.InputProps,
-                              type: "search",
-                            },
-                          }}
-                        />
-                      )}
-                    />
-                  </div> */}
-
                 </div>
               </div>
               <DialogFooter>
@@ -422,4 +270,4 @@ function ClientUserCreation() {
   );
 }
 
-export default ClientUserCreation;
+export default CustomerUserCreation;
