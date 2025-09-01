@@ -12,6 +12,7 @@ import { DialogFooter, Button } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -41,6 +42,7 @@ const ITEM_HEIGHT = 48;
 
 export default function Card({ rowId, fetchClients }) {
   // console.log("rowId", rowId);
+  const role = getUserRole();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [deleteId, setDeleteId] = useState(null);
@@ -62,7 +64,7 @@ export default function Card({ rowId, fetchClients }) {
   const handleCreateClose = () => setOpenCreateModal(false);
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `http://127.0.0.1:8000/api/delete-client/${deleteId}`
       );
       // console.log("response",response)
@@ -195,7 +197,11 @@ export default function Card({ rowId, fetchClients }) {
             <MenuItem>Update</MenuItem>
           </Link>
           {/* <MenuItem onClick={openCreateModal}>Delete</MenuItem> */}
-          <MenuItem onClick={handleCreateOpen}>Delete</MenuItem>
+          {/* <MenuItem onClick={handleCreateOpen}>Delete</MenuItem>
+           */}
+          {role === "superuser" && (
+            <MenuItem onClick={handleCreateOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

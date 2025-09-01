@@ -12,6 +12,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
@@ -53,6 +54,8 @@ const ITEM_HEIGHT = 48;
 export default function CustomerUserCard({ rowId }) {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const role = getUserRole();
+  console.log("Role from token:", getUserRole());
   // console.log("rowIdClientUser", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -91,10 +94,10 @@ export default function CustomerUserCard({ rowId }) {
 
       console.log("Data to submit:", dataToSubmit); // Check the final data being sent
 
-      const response = await axios.post(
-        `${API_URL}/api/edit-customeruser/${id}/${rowId}`,
-        dataToSubmit
-      );
+      // const response = await axiosInstance.post(
+      //   `${API_URL}/api/edit-customeruser/${id}/${rowId}`,
+      //   dataToSubmit
+      // );
       console.log("ss", response);
       // Check if the response is successful
       if (response.status === 200) {
@@ -157,7 +160,7 @@ export default function CustomerUserCard({ rowId }) {
 
       console.log("Data to submit:", dataToSubmit); // Check the final data being sent
 
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/reset-password/${id}/${rowId}`,
         dataToSubmit
       );
@@ -209,7 +212,7 @@ export default function CustomerUserCard({ rowId }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-customeruser/${id}/${deleteId}`
       );
       // console.log("res-----ClientUser---->123", response);
@@ -264,30 +267,30 @@ export default function CustomerUserCard({ rowId }) {
 
   const handleDeleteClose = () => setOpenDeleteModal(false);
   const handleViewClose = () => setOpenViewModal(false);
-  const handleCreateOpen = async () => {
-    setOpenCreateModal(true);
-    setAnchorEl(null);
+  // const handleCreateOpen = async () => {
+  //   setOpenCreateModal(true);
+  //   setAnchorEl(null);
 
-    try {
-      const response = await axios.get(
-        `${API_URL}/api/edit-customeruser/${id}/${rowId}`
-      );
-      console.log("previous", formData.password);
+  //   try {
+  //     const response = await axiosInstance.get(
+  //       `${API_URL}/api/edit-customeruser/${id}/${rowId}`
+  //     );
+  //     console.log("previous", formData.password);
 
-      const { data } = response;
-      //   console.log("dd", response.data);
-      setFormData({
-        ...data,
-        // customer: data.customer.name, // Ensure the customer object is set properly here
-      });
-    } catch (error) {
-      console.error("Error fetching ClientUser data:", error);
-      toast.error("Failed to load ClientUser data. Please try again.", {
-        position: "top-right",
-        autoClose: 2000,
-      });
-    }
-  };
+  //     const { data } = response;
+  //     //   console.log("dd", response.data);
+  //     setFormData({
+  //       ...data,
+  //       // customer: data.customer.name, // Ensure the customer object is set properly here
+  //     });
+  //   } catch (error) {
+  //     console.error("Error fetching ClientUser data:", error);
+  //     toast.error("Failed to load ClientUser data. Please try again.", {
+  //       position: "top-right",
+  //       autoClose: 2000,
+  //     });
+  //   }
+  // };
   const handleResetOpen = async () => {
     setOpenResetModal(true);
     setAnchorEl(null);
@@ -300,22 +303,22 @@ export default function CustomerUserCard({ rowId }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const fetchBankDetails = async () => {
-      try {
-        const response = await axios.get(
-          `${API_URL}/api/edit-customeruser/${id}/${rowId}`
-        );
+  // useEffect(() => {
+  //   const fetchBankDetails = async () => {
+  //     try {
+  //       const response = await axiosInstance.get(
+  //         `${API_URL}/api/edit-customeruser/${id}/${rowId}`
+  //       );
 
-        setCustomerUser(response.data);
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-      }
-    };
-    fetchBankDetails();
-  }, [id, rowId]);
+  //       setCustomerUser(response.data);
+  //       setLoading(false);
+  //     } catch (error) {
+  //       setError(error);
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchBankDetails();
+  // }, [id, rowId]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswords, setShowPasswords] = useState(false);
@@ -927,8 +930,12 @@ export default function CustomerUserCard({ rowId }) {
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           {/* <MenuItem onClick={handleCreateOpen}>Update</MenuItem> */}
-          <MenuItem onClick={handleResetOpen}>Reset Password</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {(role === "superuser" || role === "clientuser") && (
+            <MenuItem onClick={handleResetOpen}>Reset Password</MenuItem>
+          )}
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

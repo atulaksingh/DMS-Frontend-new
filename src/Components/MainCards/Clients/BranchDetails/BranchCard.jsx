@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { Country, State, City } from "country-state-city";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 import { Autocomplete, Stack } from "@mui/material";
@@ -53,6 +54,7 @@ const ITEM_HEIGHT = 48;
 export default function BranchCard({ rowId }) {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const role = getUserRole();
   // console.log("rowIdBranch", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -195,7 +197,7 @@ export default function BranchCard({ rowId }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-branch/${id}/${deleteId}`
       );
       // console.log("res-----Branch---->", response);
@@ -940,7 +942,7 @@ export default function BranchCard({ rowId }) {
           }}
           anchorEl={anchorEl}
           open={open}
-          onClose={handleClose} 
+          onClose={handleClose}
           slotProps={{
             paper: {
               style: {
@@ -955,7 +957,9 @@ export default function BranchCard({ rowId }) {
             <MenuItem>View</MenuItem>
           </Link>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

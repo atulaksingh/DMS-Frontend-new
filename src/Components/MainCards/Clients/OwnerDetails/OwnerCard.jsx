@@ -17,6 +17,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const options = ["None", "Atria", "Callisto"];
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
@@ -51,6 +52,8 @@ const ITEM_HEIGHT = 48;
 export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const role = getUserRole();
+  console.log("Role from token:", getUserRole());
   // console.log("rowIdowner", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -100,7 +103,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-owner/${id}/${rowId}`,
         formData
       );
@@ -161,7 +164,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
 
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-owner/${id}/${deleteId}`
       );
       // console.log("res-----owner---->", response);
@@ -221,7 +224,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-owner/${id}/${rowId}`
       );
       setFormData(response.data);
@@ -831,8 +834,13 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
           }}
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
-          <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {((role === "superuser" || role === "clientuser")) && (
+            <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
+          )}
+          {/* <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem> */}
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

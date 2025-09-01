@@ -10,6 +10,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 import { RxSlash } from "react-icons/rx";
@@ -122,7 +123,7 @@ function NewCreditNoteCreation({ fetchInvoiceDetails }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-creditnote-invoice/${id}/${purchID}/${deleteId}`
       );
       // console.log("res-----bank---->", response);

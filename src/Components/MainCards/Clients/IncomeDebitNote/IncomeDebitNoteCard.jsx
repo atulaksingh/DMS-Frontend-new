@@ -14,6 +14,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 const options = ["None", "Atria", "Callisto"];
@@ -93,6 +94,7 @@ const ITEM_HEIGHT = 48;
 
 export default function IncomeDebitNoteCard({ rowId, fileData, fetchInvoiceDetails }) {
   const { id, incomeID } = useParams();
+  const role = getUserRole();
   //   const incomeID = rowId;
   //   console.log("use",useParams())
   const dispatch = useDispatch();
@@ -122,7 +124,7 @@ export default function IncomeDebitNoteCard({ rowId, fileData, fetchInvoiceDetai
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-incomedebitnote/${id}/${incomeID}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -2822,7 +2824,9 @@ export default function IncomeDebitNoteCard({ rowId, fileData, fetchInvoiceDetai
 
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
           {/* <Link to={`/debitNote/${id}/${rowId}`}>
             <MenuItem>Debit Note</MenuItem>
           </Link> */}

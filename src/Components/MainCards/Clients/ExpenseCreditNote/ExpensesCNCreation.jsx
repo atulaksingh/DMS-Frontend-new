@@ -10,6 +10,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 import { RxSlash } from "react-icons/rx";
@@ -121,7 +122,7 @@ function ExpensesCNCreation({ fetchInvoiceDetails }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-creditnote-invoice/${id}/${purchID}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -2264,7 +2265,7 @@ function ExpensesCNCreation({ fetchInvoiceDetails }) {
                                   </div>
                                   <div className="col-span-8 h-7">
                                     <div className="">
-                                       <TextField
+                                      <TextField
                                         value={vendorData.contact}
                                         disabled
                                         onChange={(e) =>

@@ -12,6 +12,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { Country, State, City } from "country-state-city";
 import { ToastContainer, toast } from "react-toastify";
 import { Autocomplete, Stack, TextField } from "@mui/material";
@@ -49,6 +50,7 @@ const ITEM_HEIGHT = 48;
 
 export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
   const { clientID, branchID } = useParams();
+  const role = getUserRole();
   // console.log("rowIdOffice Location", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -188,7 +190,7 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-officelocation/${clientID}/${branchID}/${deleteId}`
       );
       // console.log("res-----Office Location---->", response);
@@ -1159,7 +1161,9 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

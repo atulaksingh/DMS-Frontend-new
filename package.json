@@ -29,6 +29,7 @@
     "flowbite": "^3.1.2",
     "formik": "^2.4.6",
     "jquery": "^3.7.1",
+    "jwt-decode": "^4.0.0",
     "lodash.debounce": "^4.0.8",
     "mui-datatables": "^4.3.0",
     "react": "^18.3.1",

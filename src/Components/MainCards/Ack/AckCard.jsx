@@ -13,6 +13,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { FaFileAlt } from "react-icons/fa";
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
@@ -55,6 +56,7 @@ const ITEM_HEIGHT = 48;
 
 export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
     const { id } = useParams();
+    const role = getUserRole();
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -310,7 +312,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
     };
     // const handleDeleteID = async () => {
     //     try {
-    //         const response = await axios.delete(
+    //         const response = await axiosInstance.delete(
     //             `${API_URL}/api/delete-acknowledgement/${id}/${deleteId}`
     //         );
     //         // console.log("res-----bank---->", response);
@@ -339,7 +341,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
 
     const handleDeleteID = async () => {
         try {
-            const response = await axios.delete(
+            const response = await axiosInstance.delete(
                 `${API_URL}/api/delete-acknowledgement/${id}/${deleteId}`
             );
 
@@ -1458,7 +1460,9 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                     <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
                     <MenuItem onClick={downloadComputationFile}>Computation File</MenuItem>
                     <MenuItem onClick={downloadReturnFile}>Return File</MenuItem>
-                    <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+                    {role === "superuser" && (
+                        <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+                    )}
                 </Menu>
             </div>
         </>

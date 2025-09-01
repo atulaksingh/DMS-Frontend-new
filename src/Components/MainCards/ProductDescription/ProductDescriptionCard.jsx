@@ -12,7 +12,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
-import axiosInstance from "/src/utils/axiosInstance";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { Autocomplete } from "@mui/material";
 import { TextField } from "@mui/material";
@@ -48,6 +48,7 @@ const ITEM_HEIGHT = 48;
 
 export default function ProductDescriptionCard({ rowId, fetchClients }) {
   const { id } = useParams();
+  const role = getUserRole();
   //   console.log("rowIdproduct", rowId);
   const [openViewModal, setOpenViewModal] = React.useState(false);
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
@@ -635,7 +636,9 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

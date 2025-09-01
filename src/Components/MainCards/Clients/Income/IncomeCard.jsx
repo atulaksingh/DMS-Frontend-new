@@ -10,6 +10,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 import DatePicker from "react-datepicker";
@@ -94,8 +95,7 @@ const ITEM_HEIGHT = 48;
 export default function IncomeCard({ rowId, allLocationBranchProductData, fetchAllLocBranchDetails }) {
   const { id } = useParams();
   const incomeID = rowId;
-
-
+  const role = getUserRole();
   const offData = allLocationBranchProductData?.serializer || [];
   const customerData = allLocationBranchProductData?.serializer_customer || [];
   const product_ser_Data = allLocationBranchProductData?.product_serializer || [];
@@ -134,7 +134,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = (
         `${API_URL}/api/delete-income/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -613,7 +613,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
       }));
     }
   };
-  
+
   const handleProductChange = async (index, newValue) => {
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
@@ -3295,7 +3295,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
 
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
           <Link to={`/clientDetails/incomeDebitNote/${id}/${incomeID}`}>
             <MenuItem>Debit Note</MenuItem>
           </Link>

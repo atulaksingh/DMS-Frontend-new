@@ -13,6 +13,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
@@ -55,6 +56,7 @@ const ITEM_HEIGHT = 48;
 export default function CompanyDocumentCard({ rowId }) {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const role = getUserRole();
   // console.log("rowIdbank", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -187,7 +189,7 @@ export default function CompanyDocumentCard({ rowId }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-companydoc/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -1078,7 +1080,9 @@ export default function CompanyDocumentCard({ rowId }) {
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

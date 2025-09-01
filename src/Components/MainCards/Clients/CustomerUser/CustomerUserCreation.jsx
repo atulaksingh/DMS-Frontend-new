@@ -9,6 +9,7 @@ import React, { useEffect } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -33,6 +34,8 @@ const styleCreateMOdal = {
 };
 function CustomerUserCreation() {
   const { id } = useParams();
+  const role = getUserRole();
+  console.log("Role from token:", getUserRole());
   const dispatch = useDispatch();
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -72,7 +75,7 @@ function CustomerUserCreation() {
       formDataToSend.append("email", formData.email);
       formDataToSend.append("password", formData.password);
 
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-customeruser/${id}`,
         formDataToSend
       );
@@ -258,14 +261,16 @@ function CustomerUserCreation() {
           </Box>
         </Modal>
       </div>
-      <Button
-        conained="conained"
-        size="md"
-        className="bg-primary hover:bg-[#2d5e85]"
-        onClick={handleCreateOpen}
-      >
-        Create
-      </Button>
+      {(role === "superuser" || role === "clientuser") && (
+        <Button
+          conained="conained"
+          size="md"
+          className="bg-primary hover:bg-[#2d5e85]"
+          onClick={handleCreateOpen}
+        >
+          Create
+        </Button>
+      )}
     </>
   );
 }

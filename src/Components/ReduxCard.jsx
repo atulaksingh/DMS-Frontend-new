@@ -7,6 +7,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 
 import Owner from "./MainCards/Clients/OwnerDetails/Owner";
 import Bank from "./MainCards/Clients/BankDetails/Bank";

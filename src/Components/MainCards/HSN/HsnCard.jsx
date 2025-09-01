@@ -16,7 +16,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
-import axiosInstance from "/src/utils/axiosInstance";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 
 const options = ["None", "Atria", "Callisto"];
 const style = {
@@ -50,6 +50,7 @@ const ITEM_HEIGHT = 48;
 
 export default function HsnCard({ rowId, fetchClients }) {
   const { id } = useParams();
+  const role = getUserRole();
   //   console.log("rowIdhsn", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -489,7 +490,9 @@ export default function HsnCard({ rowId, fetchClients }) {
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

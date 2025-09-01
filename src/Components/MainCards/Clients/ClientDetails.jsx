@@ -274,7 +274,7 @@ function ClientDetails() {
                 </div>
 
                 {/* Dropdown for Users Creation */}
-                {item.name === "Users Creation" && selectedTab === "Users Creation" && (
+                {/* {item.name === "Users Creation" && selectedTab === "Users Creation" && (
                   <div className="absolute z-10 bg-white border border-gray-200 shadow-md mt-1 rounded w-40">
                     {item.subItems.map((subItem) => (
                       <div
@@ -287,7 +287,7 @@ function ClientDetails() {
                       </div>
                     ))}
                   </div>
-                )}
+                )} */}
               </div>
             ))}
 

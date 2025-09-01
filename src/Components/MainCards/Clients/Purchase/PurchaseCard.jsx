@@ -10,6 +10,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 import DatePicker from "react-datepicker";
@@ -95,6 +96,7 @@ export default function PurchaseCard({
   fetchAllLocBranchDetails,
 }) {
   const { id } = useParams();
+  const role = getUserRole();
   const purchID = rowId;
   const offData = allLocationBranchProductData?.serializer || [];
   const customerData = allLocationBranchProductData?.serializer_customer || [];
@@ -188,7 +190,7 @@ export default function PurchaseCard({
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-purchase-invoice/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -3600,7 +3602,9 @@ export default function PurchaseCard({
             <MenuItem>View</MenuItem>
           </Link>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
           <Link to={`/clientDetails/creditNote/${id}/${purchID}`}>
             <MenuItem>Credit Note</MenuItem>
           </Link>

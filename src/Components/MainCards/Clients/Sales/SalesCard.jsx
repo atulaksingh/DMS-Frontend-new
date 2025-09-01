@@ -10,6 +10,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 const options = ["None", "Atria", "Callisto"];
@@ -96,6 +97,7 @@ export default function SalesCard({
   fetchAllLocBranchDetails,
 }) {
   const { id } = useParams();
+  const role = getUserRole();
   const salesID = rowId;
   const offData = allLocationBranchProductData?.serializer || [];
   const customerData = allLocationBranchProductData?.serializer_customer || [];
@@ -130,7 +132,7 @@ export default function SalesCard({
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-sales-invoice/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -3302,7 +3304,9 @@ export default function SalesCard({
             <MenuItem>View</MenuItem>
           </Link>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
           <Link to={`/clientDetails/debitNote/${id}/${salesID}`}>
             <MenuItem>Debit Note</MenuItem>
           </Link>

@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { FaFileAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
@@ -64,6 +65,7 @@ const generateYearRanges = (startYear, count) => {
 export default function TaxAuditCard({ rowId }) {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const role = getUserRole();
   // console.log("rowIdtaxAudit", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -75,7 +77,7 @@ export default function TaxAuditCard({ rowId }) {
   const [fileDetails, setFileDetails] = useState([]); // State for file details
   const [formData, setFormData] = useState({
     financial_year: "",
-    month: "",  
+    month: "",
     files: [],
   });
   console.log('tttt', formData)
@@ -194,7 +196,7 @@ export default function TaxAuditCard({ rowId }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-taxaudit/${id}/${deleteId}`
       );
       // console.log("res-----taxAudit---->", response);
@@ -640,7 +642,9 @@ export default function TaxAuditCard({ rowId }) {
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

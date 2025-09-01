@@ -77,7 +77,7 @@ function SftCreation() {
         autoClose: 2000,
       });
       return; // Stop form submission
-    }
+    } 
 
     try {
       const formDataToSend = new FormData();

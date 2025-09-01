@@ -13,6 +13,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { FaFileAlt } from "react-icons/fa";
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
@@ -308,7 +309,7 @@ export default function AcknowledgementCard({ rowId }) {
     };
     const handleDeleteID = async () => {
         try {
-            const response = await axios.delete(
+            const response = await axiosInstance.delete(
                 `http://127.0.0.1:8000/api/delete-acknowledgement/${id}/${deleteId}`
             );
             // console.log("res-----bank---->", response);
@@ -1245,7 +1246,9 @@ export default function AcknowledgementCard({ rowId }) {
                 >
                     <MenuItem onClick={handleViewOpen}>View</MenuItem>
                     <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-                    <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+                    {role === "superuser" && (
+                        <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+                    )}
                 </Menu>
             </div>
         </>

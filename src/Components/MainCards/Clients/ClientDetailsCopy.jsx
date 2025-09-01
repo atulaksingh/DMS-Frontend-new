@@ -25,97 +25,97 @@ import Ack from "../Ack/Ack";
 import { HomeIcon } from "@heroicons/react/16/solid";
 import AckDetails from "../Ack/AckDetails";
 const navItems = [
-    { name: "Client Details" },
-    { name: "Owner Details" },
-    { name: "Bank Details" },
-    { name: "Branch Details" },
-    { name: "Client Users" },
-    { name: "Company Documents" },
-    { name: "Documents" },
-    { name: "Customer&Vendor" },
-    { name: "Purchase" },
-    { name: "Sales" },
-    { name: "Income" },
-    { name: "Expenses" },
-    { name: "Zipfile Upload" },
-    { name: "Acknowledgement" },
+  { name: "Client Details" },
+  { name: "Owner Details" },
+  { name: "Bank Details" },
+  { name: "Branch Details" },
+  { name: "Client Users" },
+  { name: "Company Documents" },
+  { name: "Documents" },
+  { name: "Customer&Vendor" },
+  { name: "Purchase" },
+  { name: "Sales" },
+  { name: "Income" },
+  { name: "Expenses" },
+  { name: "Zipfile Upload" },
+  { name: "Acknowledgement" },
 ];
 function ClientDetails() {
-    // const id = 1;
-    const { id } = useParams();
-    const [value, setValue] = React.useState("1");
-    const [selectedTab, setSelectedTab] = useState(navItems[0].name);
-    const [loading, setLoading] = useState(true);
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
-    };
+  // const id = 1;
+  const { id } = useParams();
+  const [value, setValue] = React.useState("1");
+  const [selectedTab, setSelectedTab] = useState(navItems[0].name);
+  const [loading, setLoading] = useState(true);
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+  };
 
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    // Select data from Redux store
-    const {
-        clientData,
-        ownerData,
-        bankData,
-        branchData,
-        clientUserData,
-        companyDocData,
-        CVData,
-        PfData,
-        taxAuditData,
-        airData,
-        sftData,
-        tdsReturnData,
-        tdsPaymentData,
-        tdsSectionData,
-        othersData,
-        salesInvoiceData,
-        purchaseInvoiceData,
-        incomeInvoiceData,
-        expensesInvoiceData,
-        zipFileData,
-        ackData,
-        acksData,
-        status,
-        error,
-    } = useSelector((state) => state.client);
+  // Select data from Redux store
+  const {
+    clientData,
+    ownerData,
+    bankData,
+    branchData,
+    clientUserData,
+    companyDocData,
+    CVData,
+    PfData,
+    taxAuditData,
+    airData,
+    sftData,
+    tdsReturnData,
+    tdsPaymentData,
+    tdsSectionData,
+    othersData,
+    salesInvoiceData,
+    purchaseInvoiceData,
+    incomeInvoiceData,
+    expensesInvoiceData,
+    zipFileData,
+    ackData,
+    acksData,
+    status,
+    error,
+  } = useSelector((state) => state.client);
 
-    // Fetch data on component mount
-    useEffect(() => {
-        // console.log(id)
-        dispatch(fetchClientDetails(id));
-    }, [id, dispatch]);
+  // Fetch data on component mount
+  useEffect(() => {
+    // console.log(id)
+    dispatch(fetchClientDetails(id));
+  }, [id, dispatch]);
 
-    //   if (status === "loading") {
-    //     return <div>Loading...</div>;
-    //   }
+  //   if (status === "loading") {
+  //     return <div>Loading...</div>;
+  //   }
 
-    //   if (status === "failed") {
-    //     return <div>Error: {error}</div>;
-    //   }
+  //   if (status === "failed") {
+  //     return <div>Error: {error}</div>;
+  //   }
 
-    //   if (loading) {
-    //     return <div>Loading...</div>;
-    //   }
+  //   if (loading) {
+  //     return <div>Loading...</div>;
+  //   }
 
-    //   if (error) {
-    //     return <div>Error loading client details: {error.message}</div>;
-    //   }
-    const location = useLocation(); // Get the current location object
-    const pathnames = location.pathname
-        .split("/")
-        .filter((x) => x && isNaN(Number(x))); // Split the URL into path segments
+  //   if (error) {
+  //     return <div>Error loading client details: {error.message}</div>;
+  //   }
+  const location = useLocation(); // Get the current location object
+  const pathnames = location.pathname
+    .split("/")
+    .filter((x) => x && isNaN(Number(x))); // Split the URL into path segments
 
-    const breadcrumbItems = [
-        { name: "Home", path: "/master" }, // Hardcoded Home breadcrumb
-        ...pathnames.map((segment, index) => {
-            const path = `/${pathnames.slice(0, index + 1).join("/")}`;
-            return { name: segment.charAt(0).toUpperCase() + segment.slice(1), path };
-        }),
-    ];
-    return (
-        <>
-            {/* <div className="pt-20 px-32 ">
+  const breadcrumbItems = [
+    { name: "Home", path: "/master" }, // Hardcoded Home breadcrumb
+    ...pathnames.map((segment, index) => {
+      const path = `/${pathnames.slice(0, index + 1).join("/")}`;
+      return { name: segment.charAt(0).toUpperCase() + segment.slice(1), path };
+    }),
+  ];
+  return (
+    <>
+      {/* <div className="pt-20 px-32 ">
         <div>
           <nav className="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md w-fit mb-1">
             {breadcrumbItems.map((item, index) => (
@@ -227,138 +227,138 @@ function ClientDetails() {
         </div>
       </div> */}
 
-            {/* <div class="text-sm md:text-lg lg:text-xl">Responsive Text</div> */}
+      {/* <div class="text-sm md:text-lg lg:text-xl">Responsive Text</div> */}
 
-            {/* <!-- Sub-navbar below main navbar --> */}
+      {/* <!-- Sub-navbar below main navbar --> */}
 
-            {/* Navbar */}
+      {/* Navbar */}
 
-            {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
+      {/* //////////////////////////////////////////////////////////////////////////////////////////////////////////////// */}
 
-            <div className="w-full">
-                {/* Horizontal Nav */}
-                <div className="bg-white border-b border-gray-200 shadow-sm w-full overflow-x-auto">
-                    <div className="flex flex-nowrap gap-4 px-4 py-2 text-sm text-gray-700 min-w-max">
-                        {navItems.map((item) => (
-                            <div
-                                key={item.name}
-                                className={`cursor-pointer whitespace-nowrap px-2 py-1  ${selectedTab === item.name
-                                    ? "text-blue-600 font-semibold border-b-2 border-blue-600"
-                                    : "hover:text-blue-500"
-                                    }`}
-                                onClick={() => setSelectedTab(item.name)}
-                            >
-                                {item.name}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+      <div className="w-full">
+        {/* Horizontal Nav */}
+        <div className="bg-white border-b border-gray-200 shadow-sm w-full overflow-x-auto">
+          <div className="flex flex-nowrap gap-4 px-4 py-2 text-sm text-gray-700 min-w-max">
+            {navItems.map((item) => (
+              <div
+                key={item.name}
+                className={`cursor-pointer whitespace-nowrap px-2 py-1  ${selectedTab === item.name
+                  ? "text-blue-600 font-semibold border-b-2 border-blue-600"
+                  : "hover:text-blue-500"
+                  }`}
+                onClick={() => setSelectedTab(item.name)}
+              >
+                {item.name}
+              </div>
+            ))}
+          </div>
+        </div>
 
-                {/* Content Section */}
-                <div className="p-6">
-                    {/* <h2 className="text-xl font-bold text-gray-800 mb-4">
+        {/* Content Section */}
+        <div className="p-6">
+          {/* <h2 className="text-xl font-bold text-gray-800 mb-4">
             {selectedTab}
           </h2> */}
 
-                    {selectedTab === "Client Details" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                {/* <p>📊 This is Dashboard content</p> */}
-                                {clientData ? (
-                                    <>
+          {selectedTab === "Client Details" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                {/* <p>📊 This is Dashboard content</p> */}
+                {clientData ? (
+                  <>
 
-                                        <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
-                                            <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
-                                                🧾 Client Details
-                                            </h2>
+                    <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
+                      <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
+                        🧾 Client Details
+                      </h2>
 
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[15px] text-gray-800">
-                                                <div className="flex">
-                                                    <span className="text-gray-500 text-sm min-w-[150px]">
-                                                        Client Name:
-                                                    </span>
-                                                    <span className="font-medium"> {clientData.client_name}</span>
-                                                </div>
-                                                <div className="flex">
-                                                    <span className="text-gray-500 text-sm min-w-[150px]">
-                                                        Entity Type:
-                                                    </span>
-                                                    <span className="font-medium"> {clientData.entity_type}</span>
-                                                </div>
-                                                <div className="flex">
-                                                    <span className="text-gray-500 text-sm min-w-[150px]">
-                                                        Date of Incorporation:
-                                                    </span>
-                                                    <span className="font-medium"> {clientData.date_of_incorporation}</span>
-                                                </div>
-                                                <div className="flex">
-                                                    <span className="text-gray-500 text-sm min-w-[150px]">
-                                                        Contact Person:
-                                                    </span>
-                                                    <span className="font-medium"> {clientData.contact_person}</span>
-                                                </div>
-                                                <div className="flex">
-                                                    <span className="text-gray-500 text-sm min-w-[150px]">
-                                                        Designation:
-                                                    </span>
-                                                    <span className="font-medium"> {clientData.designation}</span>
-                                                </div>
-                                                <div className="flex">
-                                                    <span className="text-gray-500 text-sm min-w-[150px]">
-                                                        Contact No:
-                                                    </span>
-                                                    <span className="font-medium"> {clientData.contact_no_1}</span>
-                                                </div>
-                                                <div className="flex">
-                                                    <span className="text-gray-500 text-sm min-w-[150px]">
-                                                        Another No:
-                                                    </span>
-                                                    <span className="font-medium">{clientData.contact_no_2}</span>
-                                                </div>
-                                                <div className="flex">
-                                                    <span className="text-gray-500 text-sm min-w-[150px]">
-                                                        Status:
-                                                    </span>
-                                                    <span className="font-medium capitalize text-green-600">
-                                                        {clientData.status}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="flex mr-2 mt-6">
-                                                <span className="text-gray-500 text-sm min-w-[150px]">
-                                                    Email:
-                                                </span>
-                                                <span className="font-medium text-gray-800">
-                                                    {clientData.email}
-                                                </span>
-                                            </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[15px] text-gray-800">
+                        <div className="flex">
+                          <span className="text-gray-500 text-sm min-w-[150px]">
+                            Client Name:
+                          </span>
+                          <span className="font-medium"> {clientData.client_name}</span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-gray-500 text-sm min-w-[150px]">
+                            Entity Type:
+                          </span>
+                          <span className="font-medium"> {clientData.entity_type}</span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-gray-500 text-sm min-w-[150px]">
+                            Date of Incorporation:
+                          </span>
+                          <span className="font-medium"> {clientData.date_of_incorporation}</span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-gray-500 text-sm min-w-[150px]">
+                            Contact Person:
+                          </span>
+                          <span className="font-medium"> {clientData.contact_person}</span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-gray-500 text-sm min-w-[150px]">
+                            Designation:
+                          </span>
+                          <span className="font-medium"> {clientData.designation}</span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-gray-500 text-sm min-w-[150px]">
+                            Contact No:
+                          </span>
+                          <span className="font-medium"> {clientData.contact_no_1}</span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-gray-500 text-sm min-w-[150px]">
+                            Another No:
+                          </span>
+                          <span className="font-medium">{clientData.contact_no_2}</span>
+                        </div>
+                        <div className="flex">
+                          <span className="text-gray-500 text-sm min-w-[150px]">
+                            Status:
+                          </span>
+                          <span className="font-medium capitalize text-green-600">
+                            {clientData.status}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex mr-2 mt-6">
+                        <span className="text-gray-500 text-sm min-w-[150px]">
+                          Email:
+                        </span>
+                        <span className="font-medium text-gray-800">
+                          {clientData.email}
+                        </span>
+                      </div>
 
-                                            <div className="mt-6">
-                                                <span className="text-gray-500 text-sm block mb-1">
-                                                    Business Details
-                                                </span>
-                                                <div className="bg-gray-50 p-4 rounded-md text-sm leading-relaxed text-gray-700 border">
-                                                    {clientData.business_detail}
-                                                </div>
-                                            </div>
+                      <div className="mt-6">
+                        <span className="text-gray-500 text-sm block mb-1">
+                          Business Details
+                        </span>
+                        <div className="bg-gray-50 p-4 rounded-md text-sm leading-relaxed text-gray-700 border">
+                          {clientData.business_detail}
+                        </div>
+                      </div>
 
-                                        </div>
+                    </div>
 
-                                        {/* <Owner ownerData={ownerData} /> */}
-                                    </>
-                                ) : (
-                                    <div>No Client data available</div>
-                                )}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Owner Details" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                {/* <p>📊 This is Dashboard content</p> */}
-                                {ownerData ? (
-                                    <>
-                                        {/* <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
+                    {/* <Owner ownerData={ownerData} /> */}
+                  </>
+                ) : (
+                  <div>No Client data available</div>
+                )}
+              </div>
+            </>
+          )}
+          {selectedTab === "Owner Details" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                {/* <p>📊 This is Dashboard content</p> */}
+                {ownerData ? (
+                  <>
+                    {/* <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
                       <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
                         🧾 Client Details
                       </h2>
@@ -431,7 +431,7 @@ function ClientDetails() {
                         </div>
                       </div>
                     </div> */}
-                                        {/* <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
+                    {/* <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
                       <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
                         🧾 Client Details
                       </h2>
@@ -500,128 +500,128 @@ function ClientDetails() {
                       </div>
                     </div> */}
 
-                                        <Owner ownerData={ownerData} />
-                                    </>
-                                )
-                                    : (
-                                        <div>No owner data available</div>
-                                    )
-                                }
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Bank Details" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <Bank bankData={bankData} />
-                                {/* <p>🏦 Bank details content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Branch Details" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <Branch branchData={branchData} />
-                                {/* <p>📜 Branch Details content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Client Users" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <ClientUser clientUserData={clientUserData} />
+                    <Owner ownerData={ownerData} />
+                  </>
+                )
+                  : (
+                    <div>No owner data available</div>
+                  )
+                }
+              </div>
+            </>
+          )}
+          {selectedTab === "Bank Details" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <Bank bankData={bankData} />
+                {/* <p>🏦 Bank details content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Branch Details" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <Branch branchData={branchData} />
+                {/* <p>📜 Branch Details content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Client Users" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <ClientUser clientUserData={clientUserData} />
 
-                                {/* <p>👥 Client users content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Company Documents" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <CompanyDocuments companyDocData={companyDocData} />
-                                {/* <p>📁 Company documents content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Documents" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <Documents
-                                    PfData={PfData}
-                                    taxAuditData={taxAuditData}
-                                    airData={airData}
-                                    sftData={sftData}
-                                    tdsReturnData={tdsReturnData}
-                                    tdsPaymentData={tdsPaymentData}
-                                    tdsSectionData={tdsSectionData}
-                                    othersData={othersData}
-                                />
-                                {/* <p>📄 General documents content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Customer&Vendor" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <CV cvData={CVData} />
-                                {/* <p>🧾 Customer & Vendor content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Purchase" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <Purchase purchaseInvoiceData={purchaseInvoiceData} />
-                                {/* <p>🛒 Purchase section content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Sales" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <Sales salesInvoiceData={salesInvoiceData} />
-                                {/* <p>💼 Sales section content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Income" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <Income incomeInvoiceData={incomeInvoiceData} />
-                                {/* <p>💰 Income-related content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Expenses" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <Expenses expensesInvoiceData={expensesInvoiceData} />
-                                {/* <p>📉 Expenses-related content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Zipfile Upload" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                <ZipFile zipFileData={zipFileData} />
-                                {/* <p>📦 Zip file upload area content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                    {selectedTab === "Acknowledgement" && (
-                        <>
-                            <div className=" px-20 py-6 rounded-md ">
-                                {/* <Ack acksData={acksData} /> */}
-                                <AckDetails />
-                                {/* <p>✅ Acknowledgement content goes here.</p> */}
-                            </div>
-                        </>
-                    )}
-                </div>
-            </div>
+                {/* <p>👥 Client users content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Company Documents" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <CompanyDocuments companyDocData={companyDocData} />
+                {/* <p>📁 Company documents content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Documents" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <Documents
+                  PfData={PfData}
+                  taxAuditData={taxAuditData}
+                  airData={airData}
+                  sftData={sftData}
+                  tdsReturnData={tdsReturnData}
+                  tdsPaymentData={tdsPaymentData}
+                  tdsSectionData={tdsSectionData}
+                  othersData={othersData}
+                />
+                {/* <p>📄 General documents content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Customer&Vendor" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <CV cvData={CVData} />
+                {/* <p>🧾 Customer & Vendor content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Purchase" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <Purchase purchaseInvoiceData={purchaseInvoiceData} />
+                {/* <p>🛒 Purchase section content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Sales" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <Sales salesInvoiceData={salesInvoiceData} />
+                {/* <p>💼 Sales section content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Income" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <Income incomeInvoiceData={incomeInvoiceData} />
+                {/* <p>💰 Income-related content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Expenses" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <Expenses expensesInvoiceData={expensesInvoiceData} />
+                {/* <p>📉 Expenses-related content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Zipfile Upload" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                <ZipFile zipFileData={zipFileData} />
+                {/* <p>📦 Zip file upload area content goes here.</p> */}
+              </div>
+            </>
+          )}
+          {selectedTab === "Acknowledgement" && (
+            <>
+              <div className=" px-20 py-6 rounded-md ">
+                {/* <Ack acksData={acksData} /> */}
+                <AckDetails />
+                {/* <p>✅ Acknowledgement content goes here.</p> */}
+              </div>
+            </>
+          )}
+        </div>
+      </div>
 
-            {/* //////////////////////////////////////////breadcrumb //////////////// */}
-            {/* <div className="pt-5 xl:pt-14 px-6 lg:px-14 2xl:px-32 ">
+      {/* //////////////////////////////////////////breadcrumb //////////////// */}
+      {/* <div className="pt-5 xl:pt-14 px-6 lg:px-14 2xl:px-32 ">
         <div>
           <nav className="flex flex-wrap items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-md w-fit mb-4">
             {breadcrumbItems.map((item, index) => (
@@ -761,7 +761,7 @@ function ClientDetails() {
 
 
 
-            {/* <div className="pt-5 xl:pt-14 px-6 lg:px-14 2xl:px-32">
+      {/* <div className="pt-5 xl:pt-14 px-6 lg:px-14 2xl:px-32">
         <div className="bg-secondary py-3 rounded-md shadow-lg">
           <Box sx={{ width: "100%", typography: "body1" }}>
             <TabContext value={value}>
@@ -1039,8 +1039,8 @@ function ClientDetails() {
           </Box>
         </div>
       </div> */}
-        </>
-    );
+    </>
+  );
 }
 
 export default ClientDetails;

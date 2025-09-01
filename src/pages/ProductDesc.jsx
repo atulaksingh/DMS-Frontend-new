@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import axiosInstance from "/src/utils/axiosInstance";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import ProductDescription from "../Components/MainCards/ProductDescription/ProductDescription";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 

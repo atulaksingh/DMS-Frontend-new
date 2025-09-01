@@ -16,6 +16,7 @@ import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
@@ -63,6 +64,7 @@ const generateYearRanges = (startYear, count) => {
 
 export default function SftCard({ rowId }) {
   const { id } = useParams();
+  const role = getUserRole();
   const dispatch = useDispatch();
   // console.log("rowIdSft", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -193,7 +195,7 @@ export default function SftCard({ rowId }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-sft/${id}/${deleteId}`
       );
       // console.log("res-----sft---->", response);
@@ -633,8 +635,10 @@ export default function SftCard({ rowId }) {
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
-        </Menu>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
+        </Menu> 
       </div>
     </>
   );

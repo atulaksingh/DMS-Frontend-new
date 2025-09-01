@@ -15,6 +15,7 @@ import OwnerCard from "./OwnerCard";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
@@ -55,6 +56,8 @@ function Owner({ ownerData }) {
 
 
   const { id } = useParams();
+  const role = getUserRole();
+  console.log("Role from token:", getUserRole());
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     owner_name: "",
@@ -108,7 +111,7 @@ function Owner({ ownerData }) {
 
   const createOwnerShare = async () => {
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/create-owner/${id}`,
         formData
       );
@@ -135,7 +138,7 @@ function Owner({ ownerData }) {
 
     try {
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-owner/${id}`,
         formData
       );
@@ -797,14 +800,16 @@ function Owner({ ownerData }) {
             Owner Details
           </div>
           <div>
-            <Button
-              variant="filled"
-              size="md"
-              className="bg-primary hover:bg-[#2d5e85]"
-              onClick={handleCreateOpen}
-            >
-              Create
-            </Button>
+            {((role === "superuser" || role === "clientuser")) && (
+              <Button
+                variant="filled"
+                size="md"
+                className="bg-primary hover:bg-[#2d5e85]"
+                onClick={handleCreateOpen}
+              >
+                Create
+              </Button>
+            )}
           </div>
         </div>
         {Array.isArray(ownerData) && ownerData.length > 0 ? (

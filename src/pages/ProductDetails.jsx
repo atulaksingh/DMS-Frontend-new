@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import Product from "../Components/MainCards/Product/Product";
-import axiosInstance from "/src/utils/axiosInstance";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 function ProductDetails() {

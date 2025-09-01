@@ -17,12 +17,13 @@ import { format } from "date-fns";
 
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { FaFileAlt } from "react-icons/fa";
 import "react-datepicker/dist/react-datepicker.css";
-import { parse } from "date-fns";  
+import { parse } from "date-fns";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const options = ["None", "Atria", "Callisto"];
@@ -66,6 +67,7 @@ const generateYearRanges = (startYear, count) => {
 export default function AirCard({ rowId }) {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const role = getUserRole();
   // console.log("rowIdair", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -209,7 +211,7 @@ export default function AirCard({ rowId }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-air/${id}/${deleteId}`
       );
       // console.log("res-----air---->", response);
@@ -656,7 +658,9 @@ export default function AirCard({ rowId }) {
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

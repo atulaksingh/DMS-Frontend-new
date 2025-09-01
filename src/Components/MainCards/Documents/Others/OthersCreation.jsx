@@ -114,10 +114,16 @@ function OthersCreation() {
 
             console.log("FormData being sent:", formDataToSend.get("text")); // Check if text is included
 
+            // const response = await axios.post(`api/create-others/${id}`, formDataToSend, {
+            //     headers: { "Content-Type": "multipart/form-data" }
+            // });
+
             const response = await axios.post(
-                `api/create-others/${id}`,
+                `${API_URL}/api/create-others/${id}`,
                 formDataToSend,
-                { headers: { "Content-Type": "multipart/form-data" } }
+                {
+                    headers: { "Content-Type": "multipart/form-data" },
+                }
             );
 
             if (response.status === 200 || response.status === 201) {
@@ -152,7 +158,6 @@ function OthersCreation() {
             });
         }
     };
-
 
     return (
         <>

@@ -16,6 +16,7 @@ import { FaFileAlt } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 // import "react-toastify/dist/ReactToastify.css";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
@@ -52,6 +53,8 @@ export default function BankCard({ rowId }) {
   const { id } = useParams();
   // console.log("rowIdbank", rowId);
   const dispatch = useDispatch();
+  const role = getUserRole();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
@@ -104,7 +107,7 @@ export default function BankCard({ rowId }) {
 
       // Make a POST request to your API
       console.log("Bank Updated Data", formData);
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-bank/${id}/${rowId}`,
         formDataToSend,
         {
@@ -175,7 +178,7 @@ export default function BankCard({ rowId }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-bank/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -226,7 +229,7 @@ export default function BankCard({ rowId }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-bank/${id}/${rowId}`
 
       );
@@ -795,8 +798,14 @@ export default function BankCard({ rowId }) {
           }}
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
-          <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {(role === "superuser" || role === "clientuser") && (
+            <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
+          )}
+          {/* <MenuItem onClick={handleCreateOpen}>Update</MenuItem> */}
+          {/* <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem> */}
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

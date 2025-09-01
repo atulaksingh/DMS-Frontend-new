@@ -11,6 +11,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 
@@ -57,6 +58,7 @@ export default function PfCard({ rowId, fetchPfTotals }) {
 
   const { id } = useParams();
   const dispatch = useDispatch();
+  const role = getUserRole();
   // console.log("rowIdbank", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -88,7 +90,7 @@ export default function PfCard({ rowId, fetchPfTotals }) {
 
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-pf/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -1831,7 +1833,9 @@ export default function PfCard({ rowId, fetchPfTotals }) {
         >
           {/* <MenuItem onClick={handleViewOpen}>View</MenuItem> */}
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

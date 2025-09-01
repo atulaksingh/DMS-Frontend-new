@@ -12,6 +12,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 import { FaFileAlt } from "react-icons/fa";
@@ -49,6 +50,7 @@ const ITEM_HEIGHT = 48;
 
 export default function BranchDocCard({ rowId, fetchBranchDetails }) {
   const { branchID } = useParams();
+  const role = getUserRole();
   // console.log("rowIdbranchDoc", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -175,7 +177,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-branchdoc/${branchID}/${deleteId}`
       );
       // console.log("res-----branchDoc---->", response);
@@ -802,7 +804,9 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

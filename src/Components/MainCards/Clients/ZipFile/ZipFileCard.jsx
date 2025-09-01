@@ -19,6 +19,7 @@ import { format } from "date-fns";
 
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
@@ -57,6 +58,7 @@ const ITEM_HEIGHT = 48;
 export default function ZipFileCard({ rowId }) {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const role = getUserRole();
   // console.log("rowIdSft", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -79,7 +81,7 @@ export default function ZipFileCard({ rowId }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-zipupload/${id}/${deleteId}`
       );
       // console.log("res-----sft---->", response);
@@ -215,7 +217,9 @@ export default function ZipFileCard({ rowId }) {
           }}
         >
 
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>

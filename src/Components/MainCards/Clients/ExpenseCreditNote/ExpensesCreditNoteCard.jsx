@@ -22,6 +22,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 const options = ["None", "Atria", "Callisto"];
@@ -101,6 +102,7 @@ const ITEM_HEIGHT = 48;
 
 export default function ExpensesCreditNoteCard({ rowId, fileData, fetchInvoiceDetails }) {
   const { id, expensesID } = useParams();
+  const role = getUserRole();
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -128,7 +130,7 @@ export default function ExpensesCreditNoteCard({ rowId, fileData, fetchInvoiceDe
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-expensescreditnote/${id}/${expensesID}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -1985,7 +1987,7 @@ export default function ExpensesCreditNoteCard({ rowId, fileData, fetchInvoiceDe
                                       color="blue-gray"
                                       className="block font-semibold mb-2"
                                     >
-                                      Customer Address 
+                                      Customer Address
                                     </Typography>
                                   </label>
                                 </div>
@@ -3019,7 +3021,9 @@ export default function ExpensesCreditNoteCard({ rowId, fileData, fetchInvoiceDe
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           {/* </Link> */}
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
 
         </Menu>
       </div>

@@ -12,6 +12,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
@@ -86,6 +87,7 @@ const ITEM_HEIGHT = 48;
 
 export default function SalesCard({ rowId, fileData }) {
   const { id } = useParams();
+  const role = getUserRole();
   // console.log("rowIdbank", fileData, rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -184,7 +186,7 @@ export default function SalesCard({ rowId, fileData }) {
   };
   const handleDeleteID = async () => {
     try {
-      const response = await axios.delete(
+      const response = await axiosInstance.delete(
         `http://127.0.0.1:8000/api/delete-bank/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
@@ -3110,7 +3112,9 @@ export default function SalesCard({ rowId, fileData }) {
             <MenuItem>View</MenuItem>
           </Link>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
-          <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          {role === "superuser" && (
+            <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
+          )}
         </Menu>
       </div>
     </>
