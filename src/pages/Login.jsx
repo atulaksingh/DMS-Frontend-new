@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { setUser } from "../Components/Redux/authSlice";
 
 // @components
 import {
@@ -66,8 +67,10 @@ function Login() {
       console.log(response.data);
 
       if (response.status === 200 || response.status === 201) {
+        dispatch(setUser(response.data));
 
-        localStorage.setItem("user", JSON.stringify(response.data));
+        // localStorage.setItem("user", JSON.stringify(response.data));
+        sessionStorage.setItem("user", JSON.stringify(response.data));
         window.dispatchEvent(new Event("storage"));
 
         toast.success(`${response.data.message}`, {
@@ -80,10 +83,11 @@ function Login() {
           password: "",
         });
 
-        setTimeout(() => {
-          navigate("/client-details");
-          window.location.reload();
-        }, 2500);
+        // setTimeout(() => {
+        //   navigate("/client-details");
+        //   // window.location.reload();
+        // }, 2500);
+        navigate("/client-details", { replace: true }); // ✅ navigate instantly
       } else {
         toast.error(`${response.data.error_message}`,
           {
@@ -222,12 +226,12 @@ function Login() {
                       </button>
                     </div>
                   </div>
-                  
+
                   <Button size="md" className="bg-[#366FA1] text-white" fullWidth type="submit">
                     Continue
                   </Button>
                 </form>
-                
+
                 {/* <div className="flex justify-center align-middle items-center gap-3 mt-4">
                   <div className="bg-[#366FA1] w-fit  rounded-full p-1.5 cursor-pointer">
                     <FacebookOutlinedIcon className="text-white " />

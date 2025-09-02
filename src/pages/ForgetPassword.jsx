@@ -81,7 +81,7 @@ function Forgetpassword() {
         });
 
         setTimeout(() => {
-          navigate("/login");
+          navigate("/client-details");
         }, 2500);
       } else {
         toast.error(`${response.data.error_message}`,

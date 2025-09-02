@@ -34,6 +34,7 @@ import Resetpassword from "./pages/ResetPassword";
 import Forgetpassword from "./pages/ForgetPassword";
 import { logout } from "./pages/Logout";
 import AckDetails from "./Components/MainCards/Ack/AckDetails";
+import ProtectedRoute from "./ProtectedRoute";
 function App() {
   const [count, setCount] = useState(0);
 
@@ -43,50 +44,150 @@ function App() {
         <Header />
         {/* <MenuBar /> */}
         <Routes>
-          <Route path="/client-details" element={<ClientDetailsMain />} />
-          <Route path="/hsn-details" element={<HsnDetails />} />
-          <Route path="/product-details" element={<ProductDetails />} />
-          <Route path="/product-description" element={<ProductDesc />} />
-          {/* //////////////////////////////////////////////// */}
+          {/* Public Links */}
           <Route path="/" element={<Login />} />
-          <Route path="/master" element={<Master />} />
-          <Route path="/login" element={<Login />} />
-          {/* <Route path="/reset" element={<Resetpassword />} /> */}
           <Route path="/reset-password/:uidb64/:token" element={<Resetpassword />} />
-
           <Route path="/forgetpassword" element={<Forgetpassword />} />
-          {/* <Route path="/logout" element={<Logout />} /> */}
-          <Route path="/client" element={<ClientCreation />} />
-          <Route path="/clientUpdate/:id" element={<ClientUpdate />} />
-          <Route path="/clientDetails/:id" element={<ClientDetails />} />
+          <Route path="/login" element={<Login />} />
+
+          {/* Protected Links */}
+          <Route
+            path="/client-details"
+            element={
+              <ProtectedRoute>
+                <ClientDetailsMain />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hsn-details"
+            element={
+              <ProtectedRoute>
+                <HsnDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/product-details"
+            element={
+              <ProtectedRoute>
+                <ProductDetails />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/product-description"
+            element={
+              <ProtectedRoute>
+                <ProductDesc />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/master"
+            element={
+              <ProtectedRoute>
+                <Master />
+              </ProtectedRoute>
+            }
+          />
+          {/* <Route path="/login" element={<Login />} /> */}
+          {/* <Route path="/reset-password/:uidb64/:token" element={<Resetpassword />} /> */}
+          {/* <Route
+            path="/forgetpassword"
+            element={
+              <ProtectedRoute>
+                <Forgetpassword />
+              </ProtectedRoute>
+            }
+          /> */}
+          <Route
+            path="/client"
+            element={
+              <ProtectedRoute>
+                <ClientCreation />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/clientUpdate/:id"
+            element={
+              <ProtectedRoute>
+                <ClientUpdate />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/clientDetails/:id"
+            element={
+              <ProtectedRoute>
+                <ClientDetails />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/clientDetails/branchDetails/:clientID/:branchID"
-            element={<BranchDetails />}
+            element={
+              <ProtectedRoute>
+                <BranchDetails />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/purchaseInvoice/:id/:rowId"
-            element={<PurchaseInvoice />}
+            element={
+              <ProtectedRoute>
+                <PurchaseInvoice />
+              </ProtectedRoute>
+            }
           />
-          <Route path="/salesInvoice/:id/:rowId" element={<SalesInvoice />} />
+          <Route
+            path="/salesInvoice/:id/:rowId"
+            element={
+              <ProtectedRoute>
+                <SalesInvoice />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/clientDetails/creditNote/:id/:purchID"
-            element={<CreditNote />}
+            element={
+              <ProtectedRoute>
+                <CreditNote />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/clientDetails/debitNote/:id/:salesID"
-            element={<DebitNote />}
+            element={
+              <ProtectedRoute>
+                <DebitNote />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/clientDetails/expensesCreditNote/:id/:expensesID"
-            element={<ExpenseCreditNote />}
+            element={
+              <ProtectedRoute>
+                <ExpenseCreditNote />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/clientDetails/incomeDebitNote/:id/:incomeID"
-            element={<IncomeDebitNote />}
+            element={
+              <ProtectedRoute>
+                <IncomeDebitNote />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/clientDetails/acknowledgement/:id"
-            element={<AckDetails />}
+            element={
+              <ProtectedRoute>
+                <AckDetails />
+              </ProtectedRoute>
+            }
           />
         </Routes>
         {/* <ToastContainer /> */}

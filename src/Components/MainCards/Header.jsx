@@ -41,6 +41,10 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { clearUser } from "../Redux/authSlice";
+
+
 // profile menu component
 const profileMenuItems = [
   {
@@ -458,54 +462,160 @@ function NavList() {
   );
 }
 
+// function Header() {
+//   const navigate = useNavigate();
+//   const [isNavOpen, setIsNavOpen] = React.useState(false);
+
+//   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
+
+//   // const handleLogout = () => {
+//   //   // 1. Remove token from localStorage
+//   //   localStorage.removeItem("user");
+
+//   //   // 2. Show a toast (optional)
+//   //   toast.success("Logged out successfully!", {
+//   //     position: "top-right",
+//   //     autoClose: 2000,
+//   //   });
+
+//   //   // 3. Navigate to login page
+//   //   navigate("/login");
+//   // };
+
+//   const handleLogout = () => {
+//     dispatch(clearUser());
+//     sessionStorage.removeItem("user");
+//     setUser(null);  // Clear user from state
+//     toast.success("Logged out successfully!", {
+//       position: "top-right",
+//       autoClose: 2000,
+//     });
+
+//     navigate("/login");
+//   };
+
+//   const [user, setUser] = React.useState(null);
+
+//   React.useEffect(() => {
+//     const storedUser = sessionStorage.getItem("user");
+//     if (storedUser) {
+//       setUser(JSON.parse(storedUser));
+//     }
+
+//     // Listen for login event
+//     window.addEventListener("userLoggedIn", () => {
+//       const updatedUser = sessionStorage.getItem("user");
+//       if (updatedUser) setUser(JSON.parse(updatedUser));
+//     });
+//   }, []);
+
+
+
+
+//   React.useEffect(() => {
+//     window.addEventListener(
+//       "resize",
+//       () => window.innerWidth >= 960 && setIsNavOpen(false)
+//     );
+//   }, []);
+
+//   return (
+//     <>
+//       <Navbar className="mx-auto max-w-full p-2  lg:pl-6 bg-[#366FA1] rounded-none bg-opacity-100 border-none py-0">
+//         <div className="relative mx-auto flex items-center justify-between  text-white ">
+//           {/* <Typography as="a"  className=""> */}
+//           <Link to="/client-details">
+//             <img
+//               src={logo}
+//               alt="Logo"
+//               className="mr-4 ml-2 h-16 w-28 cursor-pointer py-0.5"
+//             />
+//           </Link>
+//           {/* </Typography> */}
+//           {/* <div className="hidden lg:block pl-10">
+//             <NavList />
+//           </div> */}
+//           {user && (
+//             <div className="hidden lg:block pl-10">
+//               <NavList />
+//             </div>
+//           )}
+
+//           <IconButton
+//             size="sm"
+//             color="blue-gray"
+//             variant="text"
+//             onClick={toggleIsNavOpen}
+//             className="ml-auto mr-2 lg:hidden"
+//           >
+//             <Bars2Icon className="h-6 w-6" />
+//           </IconButton>
+
+//           {/* <ProfileMenu />
+//           <Link to="/login">
+//             <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85] mr-2">
+//               Login
+//             </Button>
+//           </Link>
+//           <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85]" onClick={handleLogout}>
+//             Logout
+//           </Button> */}
+
+//           {user ? (
+//             <>
+//               <div className="ml-12 font-semibold text-white">
+//                 {user.username} {/* or user.name or user.email depending on your backend */}
+//               </div>
+//               <Button
+//                 size="sm"
+//                 className="bg-[#788c9e] hover:bg-[#2d5e85]"
+//                 onClick={handleLogout}
+//               >
+//                 Logout
+//               </Button>
+//             </>
+//           ) : (
+//             <Link to="/login">
+//               <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85] mr-2">
+//                 Login
+//               </Button>
+//             </Link>
+//           )}
+
+
+
+//         </div>
+//         {/* <Collapse open={isNavOpen} className="overflow-scroll">
+//           <NavList />
+//         </Collapse> */}
+//         <Collapse open={isNavOpen} className="overflow-scroll">
+//           {user && <NavList />}
+//         </Collapse>
+//       </Navbar>
+//     </>
+//   );
+// }
+
+// export default Header;
+
 function Header() {
   const navigate = useNavigate();
-  const [isNavOpen, setIsNavOpen] = React.useState(false);
+  const dispatch = useDispatch();
 
+  // ✅ get user from redux
+  const user = useSelector((state) => state.auth.user);
+
+  const [isNavOpen, setIsNavOpen] = React.useState(false);
   const toggleIsNavOpen = () => setIsNavOpen((cur) => !cur);
 
-  // const handleLogout = () => {
-  //   // 1. Remove token from localStorage
-  //   localStorage.removeItem("user");
-
-  //   // 2. Show a toast (optional)
-  //   toast.success("Logged out successfully!", {
-  //     position: "top-right",
-  //     autoClose: 2000,
-  //   });
-
-  //   // 3. Navigate to login page
-  //   navigate("/login");
-  // };
-
   const handleLogout = () => {
-    localStorage.removeItem("user");
-    setUser(null);  // Clear user from state
+    dispatch(clearUser()); // ✅ clears redux + sessionStorage
     toast.success("Logged out successfully!", {
       position: "top-right",
       autoClose: 2000,
     });
-    
     navigate("/login");
   };
-
-  const [user, setUser] = React.useState(null);
-
-  React.useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-
-    // Listen for login event
-    window.addEventListener("userLoggedIn", () => {
-      const updatedUser = localStorage.getItem("user");
-      if (updatedUser) setUser(JSON.parse(updatedUser));
-    });
-  }, []);
-
-
-
 
   React.useEffect(() => {
     window.addEventListener(
@@ -515,79 +625,60 @@ function Header() {
   }, []);
 
   return (
-    <>
-      <Navbar className="mx-auto max-w-full p-2  lg:pl-6 bg-[#366FA1] rounded-none bg-opacity-100 border-none py-0">
-        <div className="relative mx-auto flex items-center justify-between  text-white ">
-          {/* <Typography as="a"  className=""> */}
-          <Link to="/client-details">
-            <img
-              src={logo}
-              alt="Logo"
-              className="mr-4 ml-2 h-16 w-28 cursor-pointer py-0.5"
-            />
-          </Link>
-          {/* </Typography> */}
-          {/* <div className="hidden lg:block pl-10">
+    <Navbar className="mx-auto max-w-full p-2 lg:pl-6 bg-[#366FA1] rounded-none bg-opacity-100 border-none py-0">
+      <div className="relative mx-auto flex items-center justify-between text-white">
+        <Link to="/client-details">
+          <img
+            src={logo}
+            alt="Logo"
+            className="mr-4 ml-2 h-16 w-28 cursor-pointer py-0.5"
+          />
+        </Link>
+
+        {/* show nav links only when logged in */}
+        {user && (
+          <div className="hidden lg:block pl-10">
             <NavList />
-          </div> */}
-          {user && (
-            <div className="hidden lg:block pl-10">
-              <NavList />
+          </div>
+        )}
+
+        <IconButton
+          size="sm"
+          color="blue-gray"
+          variant="text"
+          onClick={toggleIsNavOpen}
+          className="ml-auto mr-2 lg:hidden"
+        >
+          <Bars2Icon className="h-6 w-6" />
+        </IconButton>
+
+        {/* ✅ login/logout buttons */}
+        {user ? (
+          <>
+            <div className="ml-12 font-semibold text-white">
+              {user.username}
             </div>
-          )}
-
-          <IconButton
-            size="sm"
-            color="blue-gray"
-            variant="text"
-            onClick={toggleIsNavOpen}
-            className="ml-auto mr-2 lg:hidden"
-          >
-            <Bars2Icon className="h-6 w-6" />
-          </IconButton>
-
-          {/* <ProfileMenu />
+            <Button
+              size="sm"
+              className="bg-[#788c9e] hover:bg-[#2d5e85]"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          </>
+        ) : (
           <Link to="/login">
             <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85] mr-2">
               Login
             </Button>
           </Link>
-          <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85]" onClick={handleLogout}>
-            Logout
-          </Button> */}
+        )}
+      </div>
 
-          {user ? (
-            <>
-              <div className="ml-12 font-semibold text-white">
-                {user.username} {/* or user.name or user.email depending on your backend */}
-              </div>
-              <Button
-                size="sm"
-                className="bg-[#788c9e] hover:bg-[#2d5e85]"
-                onClick={handleLogout}
-              >
-                Logout
-              </Button>
-            </>
-          ) : (
-            <Link to="/login">
-              <Button size="sm" className="bg-[#788c9e] hover:bg-[#2d5e85] mr-2">
-                Login
-              </Button>
-            </Link>
-          )}
-
-
-
-        </div>
-        {/* <Collapse open={isNavOpen} className="overflow-scroll">
-          <NavList />
-        </Collapse> */}
-        <Collapse open={isNavOpen} className="overflow-scroll">
-          {user && <NavList />}
-        </Collapse>
-      </Navbar>
-    </>
+      <Collapse open={isNavOpen} className="overflow-scroll">
+        {user && <NavList />}
+      </Collapse>
+    </Navbar>
   );
 }
 
