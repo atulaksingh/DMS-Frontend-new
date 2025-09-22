@@ -83,6 +83,69 @@ export default function AirCard({ rowId }) {
     files: [],
   });
 
+  const [airErrors, setAirErrors] = useState({})
+
+  const airRules = {
+    financial_year: [
+      { test: (v) => v.length > 0, message: "Financial year is required" },
+      { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+      {
+        test: (v) => {
+          if (!/^\d{4}-\d{4}$/.test(v)) return false;
+          const [start, end] = v.split("-").map(Number);
+          return end === start + 1; // year should be consecutive
+        },
+        message: "Financial year must be consecutive (e.g., 2023-2024)",
+      },
+    ],
+
+    // month: [
+    //   { test: (v) => v.length > 0, message: "Month is required" },
+    //   {
+    //     test: (v) =>
+    //       [
+    //         "january", "february", "march", "april", "may", "june",
+    //         "july", "august", "september", "october", "november", "december",
+    //       ].includes(v.toLowerCase()),
+    //     message: "Month must be a valid month name (e.g., January)",
+    //   },
+    // ],
+
+    files: [
+      {
+        test: (v) => Array.isArray(v) && v.length > 0,
+        message: "At least one file is required",
+      },
+      // {
+      //   test: (v) =>
+      //     Array.isArray(v) &&
+      //     v.every(
+      //       (f) =>
+      //         f &&
+      //         typeof f === "object" &&
+      //         "type" in f &&
+      //         (
+      //           f.type === "application/pdf" ||
+      //           f.type.startsWith("image/") ||
+      //           f.type === "application/vnd.ms-excel" ||
+      //           f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      //           f.type === "text/plain"
+      //         )
+      //     ),
+      //   message: "Only PDF, Image, Excel, or TXT files are allowed",
+      // },
+    ],
+  };
+
+  const validateAir = (name, value) => {
+    const fieldRules = airRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -90,12 +153,18 @@ export default function AirCard({ rowId }) {
       [name]: value,
     }));
   };
+
   // Handle file input change
   const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // FileList → Array
+
     setFormData((prev) => ({
       ...prev,
-      files: Array.from(e.target.files), // Converts file list to an array
+      files: selectedFiles,  // store as array
     }));
+
+    const errorMsg = validateAir("files", selectedFiles);
+    setAirErrors((prev) => ({ ...prev, files: errorMsg }));
   };
 
   const yearOptions = generateYearRanges(2017, 33);
@@ -129,6 +198,19 @@ export default function AirCard({ rowId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateAir(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
+
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("financial_year", formData.financial_year);
@@ -141,7 +223,7 @@ export default function AirCard({ rowId }) {
       }
 
       // API request
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-air/${id}/${rowId}`,
         formDataToSend,
         { headers: { "Content-Type": "multipart/form-data" } }
@@ -244,7 +326,7 @@ export default function AirCard({ rowId }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-air/${id}/${rowId}`
       );
       const data = response.data;
@@ -272,7 +354,7 @@ export default function AirCard({ rowId }) {
     setAnchorEl(null);
     const fetchAirDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/single-air/${id}/${rowId}`
         );
         setAirData(response.data);
@@ -441,6 +523,7 @@ export default function AirCard({ rowId }) {
                   </Typography>
                   <Select
                     options={yearOptions}
+                    required
                     value={yearOptions.find((option) => option.value === formData.financial_year)}
                     onChange={(selectedOption) => {
                       setSelectedYear(selectedOption.value);
@@ -464,6 +547,7 @@ export default function AirCard({ rowId }) {
                   {isEditingMonth ? (
                     <DatePicker
                       selected={selectedMonth}
+                      required
                       onChange={handleMonthChange}
                       dateFormat="MMMM yyyy"
                       showMonthYearPicker

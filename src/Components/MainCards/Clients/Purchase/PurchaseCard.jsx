@@ -21,7 +21,6 @@ import { format, parse, isValid } from "date-fns";
 const options = ["None", "Atria", "Callisto"];
 import {
   Button,
-  // Checkbox,
   DialogFooter,
   Option,
   Radio,
@@ -50,7 +49,6 @@ import TabPanel from "@mui/lab/TabPanel";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import PurchaseInvoice from "./PurchaseInvoice";
-//   import { useEffect } from "react";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
@@ -59,10 +57,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 1000,
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
-  //   paddingTop: "17px",
-  //   paddingInline: "10px",
   marginBlock: "80px",
   borderRadius: "10px",
 };
@@ -72,24 +67,23 @@ const styleCreateModal = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: {
-    xs: "90%", // Mobile devices (extra-small screens)
-    sm: "90%", // Small screens (e.g., tablets)
-    md: "90%", // Medium screens
-    lg: "90%", // Large screens%
-    xl: "85%", // Large screens
+    xs: "90%", 
+    sm: "90%", 
+    md: "90%", 
+    lg: "90%", 
+    xl: "85%", 
   },
   bgcolor: "background.paper",
   boxShadow: 24,
   paddingTop: "17px",
   paddingInline: {
-    xs: "20px", // Smaller padding for smaller screens
-    sm: "30px", // Medium padding for small screens
-    md: "40px", // Default padding for medium and larger screens
+    xs: "20px", 
+    sm: "30px",
+    md: "40px", 
   },
   borderRadius: "10px",
 };
 const ITEM_HEIGHT = 48;
-
 export default function PurchaseCard({
   rowId,
   allLocationBranchProductData,
@@ -100,8 +94,7 @@ export default function PurchaseCard({
   const purchID = rowId;
   const offData = allLocationBranchProductData?.serializer || [];
   const customerData = allLocationBranchProductData?.serializer_customer || [];
-  const product_ser_Data =
-    allLocationBranchProductData?.product_serializer || [];
+  const product_ser_Data = allLocationBranchProductData?.product_serializer || [];
   const branch_ser_name = allLocationBranchProductData?.branch_serializer || [];
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -176,7 +169,6 @@ export default function PurchaseCard({
       files: e.target.files, // Handles multiple files
     }));
   };
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -193,7 +185,6 @@ export default function PurchaseCard({
       const response = await axiosInstance.delete(
         `${API_URL}/api/delete-purchase-invoice/${id}/${deleteId}`
       );
-      // console.log("res-----bank---->", response);
       setOpenDeleteModal(false);
       if (response.status === 200) {
         toast.success(response.data.message, {
@@ -215,27 +206,22 @@ export default function PurchaseCard({
       });
     }
   };
-
   const handleViewOpen = () => {
     setOpenViewModal(true);
     setAnchorEl(null);
   };
-
   const handleDeleteClose = () => setOpenDeleteModal(false);
   const handleViewClose = () => setOpenViewModal(false);
   const helloworld = () => setOpenViewModal(false);
-  // dj = new t
-  //   const handleCreateClose = () => setOpenCreateModal(false);
   const [bankData, setBankData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/purchase-view/${id}/${rowId}`
         );
-        // console.log("purch",response)
         setBankData(response.data);
         setLoading(false);
       } catch (error) {
@@ -245,22 +231,14 @@ export default function PurchaseCard({
     };
     fetchBankDetails();
   }, [id, rowId]);
-  // console.log("gggggggg", bankData);
-
-  ///////////////////////////////////////////////////////  PurchaseUpdate ////////////////////////////////////
-
   const [value, setValue] = React.useState("1");
   const [selectedValueInvoiceType, setSelectedValueInvoiceType] = useState("");
-
   const [showBranchInput, setShowBranchInput] = useState(false);
   const [branchNoGst, setBranchNoGst] = useState("");
-  //   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [selectedTDSTCSOption, setSelectedTDSTCSOption] = useState("");
   const [selectedTDSTCSRateOption, setSelectedTDSTCSRateOption] = useState("");
-  const [selectedTDSTCSectionOption, setSelectedTDSTCSectionOption] =
-    useState("");
-  // console.log("123456", selectedTDSTCSOption, selectedTDSTCSOption);
+  const [selectedTDSTCSectionOption, setSelectedTDSTCSectionOption] = useState("");
   const [shouldShowIGST, setShouldShowIGST] = useState(false);
   const [shouldShowCGSTSGST, setShouldShowCGSTSGST] = useState(false);
   const [isGstNoEmpty, setIsGstNoEmpty] = useState(true);
@@ -268,17 +246,10 @@ export default function PurchaseCard({
     "Unregistered Local",
     "Unregistered Non-Local",
   ]);
-  // const handleCreateOpen = () => {
-
-  //   setOpenCreateModal(true);
-  //   setAnchorEl(null);
-  // };
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setActiveTab(newValue);
   };
-
   const handleCreateClose = () => {
-    // console.log("Closing modal");
     setOpenCreateModal(false);
     resetFields();
   };
@@ -292,7 +263,6 @@ export default function PurchaseCard({
     country: "",
     branchID: "",
   });
-
   const [vendorData, setVendorData] = useState({
     vendorID: "",
     gst_no: "",
@@ -332,7 +302,6 @@ export default function PurchaseCard({
       totalall_gst: "",
       total_invoice_value: "",
       tds_tcs_rate: "",
-      // tds_tcs_section: "",
       tcs: "",
       tds: "",
       amount_receivable: "",
@@ -340,20 +309,14 @@ export default function PurchaseCard({
       utilise_edit: false,
     },
   ]);
-  // console.log("formdata", formData);
-  // console.log("vendorData", vendorData);
-  // console.log("rows", rows);
-  console.log("invoiceData", invoiceData);
-  // console.log("offfff", offData);
   const handleCreateOpen = async () => {
     setOpenCreateModal(true);
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/get-purchase-invoice/${id}/${rowId}`
       );
-      // console.log("dd123", response.data);
       setFormData(response?.data?.client_location);
       setVendorData(response?.data?.vendor);
       setRows(response?.data?.product_summaries);
@@ -361,7 +324,7 @@ export default function PurchaseCard({
         setInvoiceData([
           {
             ...response?.data?.purchase_invoice,
-            invoice_type: response?.data?.purchase_invoice?.invoice_type || "", // Ensure the field is populated
+            invoice_type: response?.data?.purchase_invoice?.invoice_type || "", 
           },
         ]);
       }
@@ -373,15 +336,14 @@ export default function PurchaseCard({
       });
     }
   };
-
   const handleInputChangeInvoiceData = (e) => {
-    const { name, value, type, checked } = e.target; // Include `checked`
+    const { name, value, type, checked } = e.target; 
     const fieldValue =
       type === "checkbox"
         ? checked
         : type === "file"
           ? e.target.files[0]
-          : value; // Handle checkbox, file, and others
+          : value; 
 
     setInvoiceData((prevData) => {
       const updatedData = Array.isArray(prevData) ? [...prevData] : [{}];
@@ -392,10 +354,9 @@ export default function PurchaseCard({
 
       let updatedEntry = {
         ...updatedData[0],
-        [name]: fieldValue, // Use fieldValue directly
+        [name]: fieldValue, 
       };
 
-      // Handle resetting related fields (if needed for TDS/TCS)
       if (name === "tcs") {
         updatedEntry.tds = "";
       } else if (name === "tds") {
@@ -415,7 +376,6 @@ export default function PurchaseCard({
       return updatedData;
     });
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -430,69 +390,46 @@ export default function PurchaseCard({
       [name]: value,
     }));
   };
-
   const [selectedLocation, setSelectedLocation] = useState("");
   const [productID, setProductID] = useState("");
   const [selectedGstNo, setSelectedGstNo] = useState("");
-
   const handleLocationChange = async (newValue, isBranch = false) => {
-    if (!newValue) return;
-
-    try {
-      if (isBranch && newValue?.branch_name) {
-
-        setBranchNoGst(newValue?.gst_no);
-        setFormData((prev) => ({
-          ...prev,
-          branchID: newValue?.id, // Store branch ID
-        }));
-      } else if (newValue?.location) {
-        const updatedFormData = {
-          offLocID: newValue?.id,
-          location: newValue?.location,
-          contact: newValue?.contact || "",
-          address: newValue?.address || "",
-          city: newValue?.city || "",
-          state: newValue?.state || "",
-          country: newValue?.country || "",
-          branchID: newValue?.branch || "",
-        };
-        setFormData(updatedFormData);
-        setShowBranchInput(false);
-
-        const response = await axios.get(
-          `${API_URL}/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
-        );
-        // setBranchNoGst(response.data.branch_gst || "N/A");
-        setBranchNoGst(response?.data?.branch_gst);
-      }
-    } catch (error) {
-      console.error("Error fetching branch/location data:", error);
-      toast.error("Failed to fetch location data. Please try again.", {
-        position: "top-right",
-        autoClose: 2000,
+    console.log("newwvalue", newValue)
+    if (isBranch && newValue && newValue.branch_name) {
+      setBranchNoGst(newValue?.gst_no);
+      setFormData({
+        ...formData,
+        branchID: newValue.id,
       });
     }
+    else if (newValue && newValue.location) {
+      setFormData({
+        ...formData,
+        offLocID: newValue.id,
+        location: newValue.location,
+        contact: newValue.contact || "",
+        address: newValue.address || "",
+        city: newValue.city || "",
+        state: newValue.state || "",
+        country: newValue.country || "",
+        branchID: newValue.branch || "",
+      });
+      setShowBranchInput(false);
+      try {
+        const response = await axiosInstance.get(
+          `${API_URL}/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
+        );
+        console.log("Location Data:---->", response.data.branch_gst);
+        setBranchNoGst(response?.data?.branch_gst);
+      } catch (error) {
+        console.error("Error fetching location data:", error);
+      }
+    }
+    const errorMsg = validatePurchaseField(name, value);
+    setPurchaseErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-
-  // useEffect(() => {
-  //   console.log("formdata changed", formData);
-  //   const matchingLocation = offData?.find(
-  //     (option) =>
-  //       option?.location?.toLowerCase() === formData?.location?.toLowerCase()
-  //   );
-
-  //   console.log("mila ", matchingLocation);
-  //   if (matchingLocation) {
-  //     setShowBranchInput(false);
-  //   }
-  // }, [formData]);
-
-  // console.log("123",branchNoGst)
   const handleInputChangeLocation = async (event, newInputValue) => {
-    // console.log("in change location");
     if (!newInputValue) {
-      // console.log("no new value");
       setFormData((prev) => ({
         ...prev,
         offLocID: "",
@@ -507,19 +444,15 @@ export default function PurchaseCard({
       setShowBranchInput(false);
       return;
     }
-    // console.log("offdata", offData);
     const matchingLocation = offData?.find(
       (option) =>
         option?.location?.toLowerCase() === newInputValue.toLowerCase()
     );
-    // console.log({ matchingLocation });
-
+    
     if (matchingLocation) {
-      // console.log("found match");
       handleLocationChange(matchingLocation);
       setShowBranchInput(false);
     } else {
-      // console.log("no match found");
       setShowBranchInput(true);
       setFormData((prev) => ({
         ...prev,
@@ -532,82 +465,10 @@ export default function PurchaseCard({
         country: "",
         branchID: "",
       }));
+      setBranchNoGst("")
     }
   };
-
-  // const handleGstNoChange = (event, newValue1) => {
-  //   // If user clears the input
-  //   setIsGstNoEmpty(!newValue1);
-  //   if (!newValue1) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: "",
-  //       gst_no: "",
-  //       name: "",
-  //       pan: "",
-  //       email: "",
-  //       contact: "",
-  //       vendor_address: "",
-  //       customer: false,
-  //       vendor: false,
-  //     }));
-  //     return;
-  //   }
-
-  //   if (typeof newValue1 === "string") {
-  //     const matchedCustomer = customerData.find(
-  //       (customer) => customer.gst_no === newValue1
-  //     );
-
-  //     if (matchedCustomer) {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-
-  //         vendorID: matchedCustomer.id,
-  //         gst_no: matchedCustomer.gst_no,
-  //         name: matchedCustomer.name,
-  //         pan: matchedCustomer.pan,
-  //         email: matchedCustomer.email,
-  //         contact: matchedCustomer.contact,
-  //         vendor_address: matchedCustomer.address,
-  //         customer: matchedCustomer.customer,
-  //         vendor: matchedCustomer.vendor,
-  //       }));
-  //     } else {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-  //         vendorID: "",
-  //         gst_no: newValue1,
-  //         name: "",
-  //         pan: "",
-  //         email: "",
-  //         contact: "",
-  //         vendor_address: "",
-  //         customer: false,
-  //         vendor: false,
-  //       }));
-  //     }
-  //     return;
-  //   }
-
-  //   if (newValue1 && newValue1.gst_no) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: newValue1.id,
-  //       gst_no: newValue1.gst_no,
-  //       name: newValue1.name || "",
-  //       pan: newValue1.pan || "",
-  //       email: newValue1.email || "",
-  //       contact: newValue1.contact || "",
-  //       vendor_address: newValue1.address || "",
-  //       customer: newValue1.customer || false,
-  //       vendor: newValue1.vendor || false,
-  //     }));
-  //   }
-  // };
-
   const handleGstNoChange = (event, newValue1) => {
-    // If user clears the input
     setIsGstNoEmpty(!newValue1);
     if (!newValue1) {
       setVendorData((prevVendorData) => ({
@@ -660,7 +521,6 @@ export default function PurchaseCard({
       }
       return;
     }
-
     if (newValue1 && newValue1.gst_no) {
       setVendorData((prevVendorData) => ({
         ...prevVendorData,
@@ -676,9 +536,7 @@ export default function PurchaseCard({
       }));
     }
   };
-
   const handleNameChange = (event, newValue1) => {
-    // If user clears the input
     setIsNameEmpty(!newValue1);
     if (!newValue1) {
       setVendorData((prevVendorData) => ({
@@ -747,12 +605,11 @@ export default function PurchaseCard({
       }));
     }
   };
-
   const handleProductChange = async (index, newValue) => {
     if (newValue) {
-      setProductID(newValue.id); // Assuming setProductID is defined elsewhere
+      setProductID(newValue.id);
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-purchase/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -770,7 +627,6 @@ export default function PurchaseCard({
         console.error("Error fetching HSN code and GST rate:", error);
       }
     } else {
-      // Clear the product field if the value is cleared
       setRows((prevRows) =>
         prevRows.map((row, rowIndex) =>
           rowIndex === index ? { ...row, product: "" } : row
@@ -778,22 +634,54 @@ export default function PurchaseCard({
       );
     }
   };
-
-  const handleInputChangeProductField = (index, value) => {
+  const handleInputChangeProductField = async (index, value) => {
     setRows((prevRows) =>
-      prevRows.map((row, rowIndex) =>
-        rowIndex === index ? { ...row, product: value } : row
-      )
-    );
-  };
+      prevRows.map((row, rowIndex) => {
+        if (rowIndex === index) {
+          return {
+            ...row,
+            product: value,
+            hsnCode: "",
+            gstRate: "",
+            description: "",
+            unit: "",
+            rate: "",
+            product_amount: "",
+            cgst: 0,
+            sgst: 0,
+            igst: 0,
+            total_invoice: 0,
 
+          }; // reset first
+        }
+        return row;
+      })
+    );
+
+    if (value) {
+      try {
+        setRows((prevRows) =>
+          prevRows.map((row, rowIndex) =>
+            rowIndex === index
+              ? { ...row, hsnCode: "", gstRate: "" }
+              : row
+          )
+        );
+        // }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    }
+
+    const errorMsg = validatePurchaseField("product", value);
+    setPurchaseErrors((prev) => ({ ...prev, product: errorMsg }));
+  };
   const handleInputChangeProduct = (index, field, value) => {
     setRows((prevRows) =>
       prevRows.map((row, rowIndex) => {
         if (rowIndex === index) {
           const updatedRow = { ...row, [field]: value };
 
-          // If invoice type is "Nil Rated", reset GST and total_invoice values
           if (invoiceData[0]?.invoice_type.toLowerCase() === "nil rated") {
             updatedRow.cgst = "0.00";
             updatedRow.sgst = "0.00";
@@ -801,16 +689,13 @@ export default function PurchaseCard({
             updatedRow.product_amount =
               (parseFloat(updatedRow.unit) || 0) *
               (parseFloat(updatedRow.rate) || 0).toFixed(2);
-            updatedRow.total_invoice = updatedRow.product_amount; // Just product amount as total_invoice
+            updatedRow.total_invoice = updatedRow.product_amount; 
           } else {
-            // Recalculate product_amount if unit or rate changes
             if (field === "unit" || field === "rate") {
               const unit = parseFloat(updatedRow.unit) || 0;
               const rate = parseFloat(updatedRow.rate) || 0;
-              updatedRow.product_amount = (unit * rate).toFixed(2); // Format to 2 decimal places
+              updatedRow.product_amount = (unit * rate).toFixed(2); 
             }
-
-            // Recalculate GST values when gstRate changes
             if (updatedRow.gstRate) {
               const gstValue = (
                 (parseFloat(updatedRow.gstRate) *
@@ -823,26 +708,23 @@ export default function PurchaseCard({
                 const sgstValue = (gstValue / 2).toFixed(2);
                 updatedRow.cgst = cgstValue;
                 updatedRow.sgst = sgstValue;
-                updatedRow.igst = "0.00"; // Reset IGST if CGST/SGST is enabled
+                updatedRow.igst = "0.00"; 
               } else if (shouldShowIGST) {
-                updatedRow.cgst = "0.00"; // Reset CGST
-                updatedRow.sgst = "0.00"; // Reset SGST
+                updatedRow.cgst = "0.00"; 
+                updatedRow.sgst = "0.00";
                 updatedRow.igst = gstValue;
               }
             }
-
             // Calculate GST value for total invoice calculation
             const gstValueRow = shouldShowCGSTSGST
               ? (parseFloat(updatedRow.cgst) || 0) +
               (parseFloat(updatedRow.sgst) || 0)
               : parseFloat(updatedRow.igst) || 0;
-
             // Ensure total_invoice is calculated without NaN
             updatedRow.total_invoice = (
               (parseFloat(updatedRow.product_amount) || 0) + gstValueRow
             ).toFixed(2);
           }
-
           // Return the updated row
           return updatedRow;
         }
@@ -850,7 +732,6 @@ export default function PurchaseCard({
       })
     );
   };
-
   useEffect(() => {
     setRows((prevRows) => {
       const updatedRows = prevRows.map((row) => {
@@ -866,7 +747,6 @@ export default function PurchaseCard({
             row.sgst = "0.00";
             row.igst = "0.00";
           }
-
           // Set total_invoice to product_amount since no GST applies
           row.total_invoice = (parseFloat(row.product_amount) || 0).toFixed(2);
         } else if (row.product_amount && row.gstRate) {
@@ -881,13 +761,12 @@ export default function PurchaseCard({
             const sgstValue = (gstValue / 2).toFixed(2);
             row.cgst = cgstValue;
             row.sgst = sgstValue;
-            row.igst = "0.00"; // Reset IGST if CGST/SGST is enabled
+            row.igst = "0.00"; 
           } else if (shouldShowIGST) {
-            row.cgst = "0.00"; // Reset CGST
-            row.sgst = "0.00"; // Reset SGST
+            row.cgst = "0.00"; 
+            row.sgst = "0.00"; 
             row.igst = gstValue;
           }
-
           // Calculate total_invoice for this row
           const gstValueRow = shouldShowCGSTSGST
             ? (parseFloat(row.cgst) || 0) + (parseFloat(row.sgst) || 0)
@@ -904,43 +783,32 @@ export default function PurchaseCard({
       return updatedRows;
     });
   }, [shouldShowCGSTSGST, shouldShowIGST, invoiceData]);
-
   useEffect(() => {
-    // Calculate totals for taxable_amount, totalall_gst, and total_invoice_value
+
     let totalAmount = 0;
     let totalGSTValue = 0;
     let totalInvoiceValueSum = 0;
-
     // Check if invoice_type is "Nil Rated"
     const isNilRated =
       invoiceData[0]?.invoice_type.toLowerCase() === "nil rated";
 
     rows.forEach((row) => {
       totalAmount += parseFloat(row.product_amount) || 0;
-
       if (shouldShowCGSTSGST) {
         totalGSTValue +=
           (parseFloat(row.cgst) || 0) + (parseFloat(row.sgst) || 0);
       } else if (shouldShowIGST) {
         totalGSTValue += parseFloat(row.igst) || 0;
       }
-
-      // Sum up total_invoice values
       totalInvoiceValueSum += parseFloat(row.total_invoice) || 0;
     });
-
-    // If invoice_type is Nil Rated, set totalall_gst to 0
     const updatedTotalGST = isNilRated ? "0.00" : totalGSTValue.toFixed(2);
-
-    // Avoid infinite loop by checking if the values have actually changed
     const updatedInvoiceData = {
       ...invoiceData[0],
       taxable_amount: totalAmount.toFixed(2),
       totalall_gst: updatedTotalGST,
       total_invoice_value: totalInvoiceValueSum.toFixed(2),
     };
-
-    // Only update invoiceData if something has changed
     if (
       updatedInvoiceData.taxable_amount !== invoiceData[0]?.taxable_amount ||
       updatedInvoiceData.totalall_gst !== invoiceData[0]?.totalall_gst ||
@@ -950,15 +818,11 @@ export default function PurchaseCard({
       setInvoiceData([updatedInvoiceData]);
     }
   }, [rows, shouldShowCGSTSGST, shouldShowIGST, invoiceData]);
-
   useEffect(() => {
     const tdsTcsRate = parseFloat(invoiceData[0]?.tds_tcs_rate) || 0;
     const totalAmount = parseFloat(invoiceData[0]?.taxable_amount) || 0;
-    const TotalAllInvoice =
-      parseFloat(invoiceData[0]?.total_invoice_value) || 0;
-
+    const TotalAllInvoice = parseFloat(invoiceData[0]?.total_invoice_value) || 0;
     const amountToAddOrSubtract = ((totalAmount * tdsTcsRate) / 100).toFixed(2);
-
     setInvoiceData((prevData) =>
       prevData.map((data, index) =>
         index === 0
@@ -984,7 +848,6 @@ export default function PurchaseCard({
     invoiceData[0]?.tds_tcs_rate,
     selectedTDSTCSOption,
   ]);
-  // console.log("Amount Receivable:", amountReceivable);
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -996,18 +859,140 @@ export default function PurchaseCard({
         unit: "",
         cgst: "0.00",
         sgst: "0.00",
-        igst: "0.00", // Set default GST values to 0 when new row is added
+        igst: "0.00", 
       },
     ]);
   };
-
   const handleDeleteRow = (index) => {
     const updatedRows = rows.filter((_, rowIndex) => rowIndex !== index);
     setRows(updatedRows);
   };
   const [salesInvoice, setSalesInvoice] = useState("100");
+  const [purchaseErrors, setPurchaseErrors] = useState({})
+
+  const purchaseRules = {
+    location: [
+      { test: v => v.length > 0, message: "Office Location is required" }
+    ],
+    contact: [
+      { test: v => /^\d{10}$/.test(v), message: "Contact must be 10 digits" }
+    ],
+    address: [
+      { test: v => v.length > 0, message: "Address is required" }
+    ],
+    city: [
+      { test: v => v.length > 0, message: "City is required" }
+    ],
+    state: [
+      { test: v => v.length > 0, message: "State is required" }
+    ],
+    country: [
+      { test: v => v.length > 0, message: "Country is required" }
+    ],
+    gst_no: [
+      { test: v => v.length > 0, message: "Vendor GST is required" }
+    ],
+    name: [
+      { test: v => v.length > 0, message: "Vendor Name is required" }
+    ],
+    pan: [
+      { test: v => v.length > 0, message: "PAN is required" },
+      { test: v => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v), message: "Invalid PAN format" }
+    ],
+    email: [
+      { test: v => v.length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" }
+    ],
+    contact_vendor: [
+      { test: v => /^\d{10}$/.test(v), message: "Vendor Contact must be 10 digits" }
+    ],
+    customer_vendor_type: [
+      { test: v => v.customer || v.vendor, message: "Select at least Customer or Vendor" }
+    ],
+    invoice_date: [
+      { test: v => v.length > 0, message: "Invoice Date is required" }
+    ],
+    month: [
+      { test: v => v.length > 0, message: "Month is required" }
+    ],
+    product: [
+      { test: v => v.length > 0, message: "Product is required" }
+    ],
+    hsnCode: [
+      { test: v => /^\d+$/.test(v), message: "HSN must be numbers" }
+    ],
+    unit: [
+      { test: v => v.length > 0, message: "Unit is required" }
+    ],
+    rate: [
+      { test: v => v.length > 0, message: "Rate is required" },
+      { test: v => !isNaN(v), message: "Rate must be numeric" }
+    ]
+  };
+
+  const validatePurchaseField = (name, value) => {
+    const fieldRules = purchaseRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+  const [activeTab, setActiveTab] = useState("1");
+
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission behavior
+
+    const newErrors = {};
+
+    // Validate Office/Location formData
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validatePurchaseField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Customer/Vendor vendorData
+    Object.entries(vendorData).forEach(([key, value]) => {
+      const errorMsg = validatePurchaseField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Invoice Data (first object only)
+    Object.entries(invoiceData[0]).forEach(([key, value]) => {
+      const errorMsg = validatePurchaseField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Products (rows)
+    if (rows.length === 0 || rows.some(r => !r.product || !r.hsnCode || !r.unit || !r.rate)) {
+      setActiveTab("2");
+      toast.error("Please fill Product details before submitting.");
+      return; // stop here
+    }
+
+    // If any errors → stop and show first toast
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      // Optionally switch tab based on error
+      if (firstErrorField.startsWith("row_")) {
+        setActiveTab("2"); // Product tab
+      } else if (Object.keys(vendorData).includes(firstErrorField)) {
+        setActiveTab("1"); // Vendor tab
+      }
+      return;
+    }
 
     const cleanedRows = rows.filter(
       (row) =>
@@ -1026,10 +1011,8 @@ export default function PurchaseCard({
     }
 
     const payload = {
-      // salesInvoice,
       formData,
       vendorData,
-      // rows,
       rows: cleanedRows,
       invoiceData,
       branchNoGst,
@@ -1037,7 +1020,7 @@ export default function PurchaseCard({
     console.log('wholedata', payload)
 
     try {
-      const response = await axios.put(
+      const response = await axiosInstance.put(
         `${API_URL}/api/update-purchase-post/${id}/${rowId}`,
         payload,
         {
@@ -1046,8 +1029,6 @@ export default function PurchaseCard({
           },
         }
       );
-      // console.log("Data submitted successfully:", response.data);
-      // Handle successful response
       if (response.status === 200 || response.status === 201) {
         toast.success(response.data.message, {
           position: "top-right",
@@ -1069,7 +1050,6 @@ export default function PurchaseCard({
     } catch (error) {
       console.error("Error submitting data:", error);
       // Handle error response
-
       toast.error(
         `Failed to Update Purchase Invoice.${error.response.data.error_message} `,
         {
@@ -1079,7 +1059,6 @@ export default function PurchaseCard({
       );
     }
   };
-
   useEffect(() => {
     const currentType = invoiceData[0]?.invoice_type.toLowerCase();
 
@@ -1175,9 +1154,6 @@ export default function PurchaseCard({
       }
     }
   }, [invoiceData[0]?.invoice_type, vendorData.gst_no, branchNoGst]);
-
-  // Auto-detect TCS or TDS on initial load based on prepopulated values
-
   useEffect(() => {
     if (invoiceData[0].tcs && parseFloat(invoiceData[0].tcs) > 0) {
       setSelectedTDSTCSOption("tcs");
@@ -1185,7 +1161,6 @@ export default function PurchaseCard({
       setSelectedTDSTCSOption("tds");
     }
   }, [invoiceData]);
-
   useEffect(() => {
     if (!vendorData.gst_no) {
       setFilteredInvoiceTypes([
@@ -1236,7 +1211,6 @@ export default function PurchaseCard({
       }
     }
   }, [vendorData.gst_no, branchNoGst, invoiceData[0].invoice_type]);
-
   const truncateFileName = (fileName, maxLength = 20) => {
     if (typeof fileName !== "string") return "Invalid file name";
     if (fileName.length <= maxLength) return fileName;
@@ -1244,11 +1218,9 @@ export default function PurchaseCard({
     const end = fileName.slice(-10); // Last 10 characters
     return `${start}...${end}`;
   };
-
   const month = useRef(null);
   const invoice = useRef(null);
   const utilise = useRef(null);
-
   const handleDateChange = (date) => {
     if (isValid(date)) {
       const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
@@ -1259,7 +1231,6 @@ export default function PurchaseCard({
       );
     }
   };
-
   const handleToDateChange = (date) => {
     if (isValid(date)) {
       const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
@@ -1270,7 +1241,6 @@ export default function PurchaseCard({
       );
     }
   };
-
   const handleUtiliseChange = (date) => {
     if (isValid(date)) {
       const formattedDate = format(date, "dd-MM-yyyy");
@@ -1281,10 +1251,7 @@ export default function PurchaseCard({
       );
     }
   }
-
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
-
-
   return (
     <>
       {/* <ToastContainer /> */}
@@ -1299,19 +1266,8 @@ export default function PurchaseCard({
               mount: { scale: 1, y: 0 },
               unmount: { scale: 0.9, y: -100 },
             }}
-          // className="overflow-auto"
           >
             <Box sx={style}>
-              {/* <Typography
-                id="modal-modal-title"
-                variant="h5"
-                component="h2"
-                className="text-center border-b-2 border-[#366FA1] pb-3 "
-              >
-                Details View
-              </Typography> */}
-
-              {/* {bankData && ( */}
               <>
                 <div>
                   <form className=" my-5 w-full ">
@@ -1337,7 +1293,6 @@ export default function PurchaseCard({
                   </Button>
                 </DialogFooter>
               </>
-              {/* )} */}
             </Box>
           </Modal>
         </div>
@@ -1393,6 +1348,7 @@ export default function PurchaseCard({
                             id="location-select"
                             disableClearable
                             options={offData}
+                            required
                             getOptionLabel={(option) =>
                               typeof option === "string"
                                 ? option
@@ -1404,18 +1360,16 @@ export default function PurchaseCard({
                             }
                             value={formData.location || ""}
                             onInputChange={(event, newInputValue) => {
-                              // console.log("Input Changed:", newInputValue); // Debug: Log input changes
-
                               handleInputChangeLocation(event, newInputValue);
                             }}
                             onChange={(event, newValue) => {
-                              // console.log("Option Selected:", newValue); // Debug: Log option selection
                               handleLocationChange(newValue);
                             }}
                             renderInput={(params) => (
                               <TextField
                                 {...params}
                                 size="small"
+                                required
                                 value={formData.location || ""}
                                 className="border border-red-500"
                                 placeholder="Location Select"
@@ -1456,13 +1410,13 @@ export default function PurchaseCard({
                       </label>
                     </div>
                     <div className="col-span-8">
-                      {" "}
                       <div className="h-7">
                         <Input
                           type="number"
                           size="md"
                           name="contact"
                           placeholder="Contact No"
+                          required
                           value={formData.contact}
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1501,6 +1455,7 @@ export default function PurchaseCard({
                           name="address"
                           placeholder="Address"
                           value={formData.address}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
@@ -1538,15 +1493,16 @@ export default function PurchaseCard({
                           name="city"
                           placeholder="City"
                           value={formData.city}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px", 
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1575,15 +1531,16 @@ export default function PurchaseCard({
                           name="state"
                           placeholder="State"
                           value={formData.state}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px", 
+                            padding: "4px 6px", 
+                            fontSize: "0.875rem", 
                             width: 300,
                           }}
                         />
@@ -1611,6 +1568,7 @@ export default function PurchaseCard({
                           size="lg"
                           name="country"
                           placeholder="Country"
+                          required
                           value={formData.country}
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1618,9 +1576,9 @@ export default function PurchaseCard({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px", 
+                            padding: "4px 6px",
+                            fontSize: "0.875rem", 
                             width: 300,
                           }}
                         />
@@ -1649,6 +1607,7 @@ export default function PurchaseCard({
                         name="branchNoGst"
                         placeholder="GST No"
                         value={branchNoGst}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -1685,13 +1644,14 @@ export default function PurchaseCard({
                               freeSolo
                               id="branch-select"
                               disableClearable
+                              required
                               options={branch_ser_name}
                               getOptionLabel={(option) =>
                                 option.branch_name || ""
                               }
                               onChange={(event, newValue) =>
                                 handleLocationChange(newValue, true)
-                              } // Handle branch selection
+                              }
                               onOpen={() => setIsBranchDropdownOpen(true)}
                               onClose={() => setIsBranchDropdownOpen(false)}
                               renderOption={(props, option) => (
@@ -1715,7 +1675,7 @@ export default function PurchaseCard({
                                   placeholder="Branch Select"
                                   inputProps={{
                                     ...params.inputProps,
-                                    readOnly: true, // Make the input field read-only
+                                    readOnly: true,
                                   }}
                                   sx={{
                                     "& .MuiInputBase-root": {
@@ -1736,9 +1696,6 @@ export default function PurchaseCard({
                               )}
                             />
                           </Stack>
-                          {/* <Typography className="mt-0 text-sm italic text-red-600">
-                            You are creating a new office location.
-                          </Typography> */}
                         </div>
                       </div>
                     </div>
@@ -1765,6 +1722,7 @@ export default function PurchaseCard({
                         type="text"
                         size="md"
                         name="invoice_no"
+                        required
                         placeholder="Invoice No"
                         value={invoiceData[0].invoice_no}
                         onChange={handleInputChangeInvoiceData}
@@ -1772,18 +1730,15 @@ export default function PurchaseCard({
                         labelProps={{
                           className: "hidden",
                         }}
-                        // containerProps={{ className: "min-w-full" }}
                         style={{
-                          height: "28px", // Match this to your Autocomplete's root height
-                          padding: "4px 6px", // Match this padding
-                          fontSize: "0.875rem", // Ensure font size is consistent
+                          height: "28px",
+                          padding: "4px 6px",
+                          fontSize: "0.875rem",
                           width: 300,
                         }}
                       />
                     </div>
                   </div>
-
-
                   <div>
                     <div>
                       <label htmlFor="attach_invoice">
@@ -1801,6 +1756,7 @@ export default function PurchaseCard({
                         type="file"
                         size="md"
                         name="attach_invoice"
+                        // required
                         placeholder="Invoice Date"
                         onChange={handleInputChangeInvoiceData}
                       />
@@ -1810,7 +1766,6 @@ export default function PurchaseCard({
                           color="#366FA1"
                           className="mb-1"
                         />
-
                         <a
                           href={
                             typeof invoiceData[0]?.attach_invoice === "string"
@@ -1829,7 +1784,7 @@ export default function PurchaseCard({
                                     .split("/")
                                     .pop()
                                 )
-                                : invoiceData[0]?.attach_invoice.name // Show File name if it's a File object
+                                : invoiceData[0]?.attach_invoice.name
                               : "No file uploaded"}
                           </p>
                         </a>
@@ -1853,8 +1808,9 @@ export default function PurchaseCard({
                       <input
                         type="file"
                         size="md"
+                        // required
                         name="attach_e_way_bill"
-                        placeholder="Invoice Date"
+                        placeholder="attach_e_way_bill"
                         onChange={handleInputChangeInvoiceData}
                       />
                       <div className="flex gap-2 pt-1">
@@ -1883,7 +1839,7 @@ export default function PurchaseCard({
                                     .split("/")
                                     .pop()
                                 )
-                                : invoiceData[0]?.attach_e_way_bill.name // Show File name if it's a File object
+                                : invoiceData[0]?.attach_e_way_bill.name 
                               : "No file uploaded"}
                           </p>
                         </a>
@@ -1915,6 +1871,7 @@ export default function PurchaseCard({
                         }
                         onChange={handleDateChange}
                         value={invoiceData[0].month}
+                        required
                         dateFormat="dd-MM-yyyy"
                         className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
                                     focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"
@@ -1925,13 +1882,9 @@ export default function PurchaseCard({
                       />
                       <FaRegCalendarAlt
                         className="absolute top-1/2 left-40 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                        onClick={() => month.current.setFocus()} // Focus the correct DatePicker
+                        onClick={() => month.current.setFocus()}
                       />
                     </div>
-                    {/* fsghfg
-                    
-                    
-                    */}
                   </div>
 
                   <div>
@@ -1958,6 +1911,7 @@ export default function PurchaseCard({
                         }
                         value={invoiceData[0].invoice_date}
                         onChange={handleToDateChange}
+                        required
                         dateFormat="dd-MM-yyyy"
                         className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
                                             focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"
@@ -1968,7 +1922,7 @@ export default function PurchaseCard({
                       />
                       <FaRegCalendarAlt
                         className="absolute top-1/2 left-40 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                        onClick={() => invoice.current.setFocus()} // Focus the correct DatePicker
+                        onClick={() => invoice.current.setFocus()}
                       />
                     </div>
                   </div>
@@ -1986,29 +1940,6 @@ export default function PurchaseCard({
                           </Typography>
                         </label>
                       </div>
-                      {/* <div className="">
-                        <div className="">
-                          <Input
-                            type="date"
-                            size="md"
-                            name="utilise_month"
-                            placeholder="utilise_month"
-                            value={invoiceData[0].utilise_month}
-                            onChange={handleInputChangeInvoiceData}
-                            className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                            labelProps={{
-                              className: "hidden",
-                            }}
-                            // containerProps={{ className: "min-w-full" }}
-                            style={{
-                              height: "28px", // Match this to your Autocomplete's root height
-                              padding: "4px 6px", // Match this padding
-                              fontSize: "0.875rem", // Ensure font size is consistent
-                              width: 300,
-                            }}
-                          />
-                        </div>
-                      </div> */}
                       <div className="relative w-full">
                         <DatePicker
                           ref={utilise}
@@ -2021,20 +1952,21 @@ export default function PurchaseCard({
                           }
                           value={invoiceData[0].utilise_month}
                           onChange={handleUtiliseChange}
+                          required
                           dateFormat="dd-MM-yyyy"
                           className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
                                             focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"
                           placeholderText="dd-mm-yyyy"
                           showYearDropdown
                           PopperProps={{
-                            style: { zIndex: 1500 }, // forces it above the table
+                            style: { zIndex: 1500 },
                           }}
                           scrollableYearDropdown
                           yearDropdownItemNumber={25}
                         />
                         <FaRegCalendarAlt
                           className="absolute top-1/2 left-40 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                          onClick={() => utilise.current.setFocus()} // Focus the correct DatePicker
+                          onClick={() => utilise.current.setFocus()}
                         />
                       </div>
                     </div>
@@ -2056,37 +1988,13 @@ export default function PurchaseCard({
                       <Checkbox
                         name="utilise_edit"
                         ripple={false}
+                        required
                         checked={invoiceData[0]?.utilise_edit || false} // Access the first entry in the array
                         className="h-5 w-5 rounded-md border-gray-900/20 bg-gray-900/10 transition-all hover:scale-105 hover:before:opacity-0"
                         onChange={handleInputChangeInvoiceData} // Updated function
                       />
                     </div>
                   </div>
-
-                  <div>
-                    <div>
-                      <label htmlFor="">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="block font-semibold mb-1"
-                        >
-                          {/* Utilise Edit */}
-                        </Typography>
-                      </label>
-                    </div>
-                    <div className="">
-                      {/* <input
-                          type="file"
-                          size="md"
-                          name="attach_e_way_bill"
-                          placeholder="Eway Bill"
-                          onChange={handleInputChangeInvoiceData}
-                        /> */}
-                      {/* <Checkbox defaultChecked /> */}
-                    </div>
-                  </div>
-
                 </div>
               </div>
 
@@ -2094,7 +2002,7 @@ export default function PurchaseCard({
                 <div className="py-5 px-0">
                   <div className="bg-secondary px-0 py-3 rounded-md ">
                     <Box sx={{ width: "100%", typography: "body1" }}>
-                      <TabContext value={value}>
+                      <TabContext value={activeTab}>
                         <Box
                           sx={{
                             borderBottom: 1,
@@ -2109,7 +2017,7 @@ export default function PurchaseCard({
                             aria-label="customized tabs example"
                             TabIndicatorProps={{
                               sx: {
-                                display: "none", // Hide the default tab indicator
+                                display: "none",
                                 padding: 0,
                                 margin: 0,
                               },
@@ -2183,12 +2091,12 @@ export default function PurchaseCard({
                                 </div>
                                 <div className="col-span-8">
                                   <div className="">
-                                    {/* <Stack spacing={1} sx={{ width: 300 }}> */}
                                     <Autocomplete
                                       sx={{ width: 300 }}
                                       freeSolo
                                       id="gst-no-autocomplete"
                                       disableClearable
+                                      required
                                       options={customerData}
                                       getOptionLabel={(option) =>
                                         typeof option === "string"
@@ -2196,7 +2104,7 @@ export default function PurchaseCard({
                                           : option.gst_no || ""
                                       }
                                       onChange={handleGstNoChange}
-                                      value={vendorData.gst_no || ""} // Bind value to formData.gst_no
+                                      value={vendorData.gst_no || ""}
                                       renderOption={(props, option) => (
                                         <li {...props} key={option.id}>
                                           {option.gst_no} ({option.name})
@@ -2207,19 +2115,19 @@ export default function PurchaseCard({
                                           {...params}
                                           size="small"
                                           name="gst_no"
-                                          value={vendorData.gst_no || ""} // Reset input value when formData.gst_no changes
+                                          value={vendorData.gst_no || ""}
+                                          required
                                           onChange={(e) =>
                                             handleGstNoChange(e, e.target.value)
-                                          } // Update input value on type
+                                          }
                                           placeholder="Enter or select GST No."
                                           sx={{
-                                            // Adjust the height and padding to reduce overall size
                                             "& .MuiInputBase-root": {
-                                              height: 28, // Set your desired height here
-                                              padding: "4px 6px", // Adjust padding to make it smaller
+                                              height: 28,
+                                              padding: "4px 6px",
                                             },
                                             "& .MuiOutlinedInput-input": {
-                                              padding: "4px 6px", // Input padding
+                                              padding: "4px 6px",
                                             },
                                           }}
                                           slotProps={{
@@ -2231,7 +2139,6 @@ export default function PurchaseCard({
                                         />
                                       )}
                                     />
-                                    {/* </Stack> */}
                                   </div>
                                 </div>
                               </div>
@@ -2257,13 +2164,14 @@ export default function PurchaseCard({
                                     id="name-autocomplete"
                                     disableClearable
                                     options={customerData}
+                                    required
                                     getOptionLabel={(option) =>
                                       typeof option === "string"
                                         ? option
                                         : option.name || ""
                                     }
                                     onChange={handleNameChange}
-                                    value={vendorData.name || ""} // Bind value to formData.gst_no
+                                    value={vendorData.name || ""}
                                     renderOption={(props, option) => (
                                       <li {...props} key={option.id}>
                                         {option.name}
@@ -2274,19 +2182,19 @@ export default function PurchaseCard({
                                         {...params}
                                         size="small"
                                         name="name"
-                                        value={vendorData.name || ""} // Reset input value when formData.gst_no changes
+                                        value={vendorData.name || ""}
+                                        required
                                         onChange={(e) =>
                                           handleNameChange(e, e.target.value)
-                                        } // Update input value on type
+                                        }
                                         placeholder="Enter or select Name"
                                         sx={{
-                                          // Adjust the height and padding to reduce overall size
                                           "& .MuiInputBase-root": {
-                                            height: 28, // Set your desired height here
-                                            padding: "4px 6px", // Adjust padding to make it smaller
+                                            height: 28,
+                                            padding: "4px 6px",
                                           },
                                           "& .MuiOutlinedInput-input": {
-                                            padding: "4px 6px", // Input padding
+                                            padding: "4px 6px", 
                                           },
                                         }}
                                         slotProps={{
@@ -2298,27 +2206,7 @@ export default function PurchaseCard({
                                       />
                                     )}
                                   />
-                                  {/* <div className="h-7">
-                                    <Input
-                                      type="text"
-                                      size="lg"
-                                      name="name"
-                                      placeholder="Name"
-                                      value={vendorData.name}
-                                      onChange={handleInputChangeCL}
-                                      className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                                      labelProps={{
-                                        className: "hidden",
-                                      }}
-                                      // containerProps={{ className: "min-w-full" }}
-                                      style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
-                                        width: 300,
-                                      }}
-                                    />
-                                  </div> */}
+
                                 </div>
                               </div>
                             </div>
@@ -2343,15 +2231,16 @@ export default function PurchaseCard({
                                       name="pan"
                                       placeholder="PAN No"
                                       value={vendorData.pan}
+                                      required
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                       labelProps={{
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2380,6 +2269,7 @@ export default function PurchaseCard({
                                       name="vendor_address"
                                       placeholder="Customer Address"
                                       value={vendorData.vendor_address}
+                                      required
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                       labelProps={{
@@ -2396,9 +2286,6 @@ export default function PurchaseCard({
                                 </div>
                               </div>
                             </div>
-
-
-
                             <div>
                               <div className="grid grid-cols-12 gap-2 mb-3">
                                 <div className="col-span-4 border-r-2 border-primary">
@@ -2420,15 +2307,16 @@ export default function PurchaseCard({
                                       name="email"
                                       placeholder="Email"
                                       value={vendorData.email}
+                                      required
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                       labelProps={{
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px", 
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem", 
                                         width: 300,
                                       }}
                                     />
@@ -2457,6 +2345,7 @@ export default function PurchaseCard({
                                       name="contact"
                                       placeholder="Contact No"
                                       value={vendorData.contact}
+                                      required
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                       labelProps={{
@@ -2473,13 +2362,6 @@ export default function PurchaseCard({
                                 </div>
                               </div>
                             </div>
-
-
-
-
-
-
-
                             <div>
                               <div className="grid grid-cols-12 gap-2 mb-3 ">
                                 <div className="col-span-4 border-r-2 border-primary">
@@ -2550,8 +2432,8 @@ export default function PurchaseCard({
                                 <TableHead
                                   sx={{
                                     backgroundColor: "#f3f4f6",
-                                    position: "sticky", // Makes the header sticky
-                                    top: 0, // Ensures it sticks to the top of the container
+                                    position: "sticky", 
+                                    top: 0, 
                                     borderBottom: "1px solid #ccc",
 
                                   }}
@@ -2676,6 +2558,8 @@ export default function PurchaseCard({
                                               {...params}
                                               size="small"
                                               placeholder="select product"
+                                              name="product_name"
+                                              required
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
                                                   padding: "2px",
@@ -2694,6 +2578,8 @@ export default function PurchaseCard({
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           type="text"
+                                          name="description"
+                                          required
                                           value={row.description}
                                           onChange={(e) =>
                                             handleInputChangeProduct(
@@ -2721,6 +2607,8 @@ export default function PurchaseCard({
                                         <TextField
                                           value={row.hsnCode}
                                           type="text"
+                                          name="hsn_code"
+                                          required
                                           onChange={(e) => {
                                             const inputValue = e.target.value;
                                             // Allow only numbers
@@ -2750,6 +2638,7 @@ export default function PurchaseCard({
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.unit}
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2780,6 +2669,7 @@ export default function PurchaseCard({
                                         <TextField
                                           value={row.rate}
                                           type="text"
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2808,6 +2698,7 @@ export default function PurchaseCard({
                                         <TextField
                                           value={row.product_amount}
                                           type="text"
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2844,6 +2735,7 @@ export default function PurchaseCard({
                                         <TextField
                                           value={row.gstRate}
                                           type="text"
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2875,6 +2767,7 @@ export default function PurchaseCard({
                                             <TextField
                                               value={row.cgst || ""}
                                               type="text"
+                                              required
                                               onChange={(e) => {
                                                 const value = e.target.value;
                                                 if (/^\d*$/.test(value)) {
@@ -2911,6 +2804,7 @@ export default function PurchaseCard({
                                             <TextField
                                               value={row.sgst || ""}
                                               type="number"
+                                              required
                                               onChange={(e) => {
                                                 const value = e.target.value;
                                                 if (/^\d*$/.test(value)) {
@@ -2951,6 +2845,7 @@ export default function PurchaseCard({
                                           <TextField
                                             value={row.igst || ""}
                                             type="number"
+                                            required
                                             onChange={(e) => {
                                               const value = e.target.value;
                                               if (/^\d*$/.test(value)) {
@@ -2989,6 +2884,7 @@ export default function PurchaseCard({
                                         <TextField
                                           value={row.total_invoice}
                                           type="number"
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -3066,37 +2962,26 @@ export default function PurchaseCard({
                                               <div className="">
                                                 <select
                                                   name="invoice_type"
+                                                  required
                                                   className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
                                                   style={{
-                                                    height: "28px", // Match this to your Autocomplete's root height
-                                                    padding: "4px 6px", // Match this padding
-                                                    fontSize: "0.875rem", // Ensure font size is consistent
+                                                    height: "28px",
+                                                    padding: "4px 6px",
+                                                    fontSize: "0.875rem",
                                                     width: 300,
                                                   }}
-                                                  value={
-                                                    invoiceData[0].invoice_type
-                                                  } // Ensures the selected value matches the state
-                                                  onChange={
-                                                    handleInputChangeInvoiceData
-                                                  }
+                                                  value={invoiceData[0].invoice_type}
+                                                  onChange={handleInputChangeInvoiceData}
                                                 >
-                                                  {vendorData.gst_no === "" // Check if gst_no is empty
-                                                    ? // Show only these options when gst_no is empty
-                                                    [
-                                                      "Select Invoice Type",
-                                                      "Unregistered Local",
-                                                      "Unregistered Non-Local",
-                                                    ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                  <option value="">Select Invoice Type</option>
+
+                                                  {vendorData.gst_no === ""
+                                                    ? ["Unregistered Local", "Unregistered Non-Local"].map((option) => (
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))
-                                                    : // Show other options when gst_no is not empty
-                                                    [
-                                                      "Select Invoice Type",
+                                                    : [
                                                       "B2B",
                                                       "B2C-L",
                                                       "BSC-O",
@@ -3105,10 +2990,7 @@ export default function PurchaseCard({
                                                       "SEZ",
                                                       "Export",
                                                     ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))}
@@ -3124,6 +3006,7 @@ export default function PurchaseCard({
                                               value={
                                                 invoiceData[0].taxable_amount
                                               }
+                                              required
                                               variant="outlined"
                                               size="small"
                                               sx={{
@@ -3146,13 +3029,7 @@ export default function PurchaseCard({
                                               value={
                                                 invoiceData[0].totalall_gst
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
+                                              required
                                               variant="outlined"
                                               size="small"
                                               sx={{
@@ -3176,13 +3053,7 @@ export default function PurchaseCard({
                                                 invoiceData[0]
                                                   .total_invoice_value
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
+                                              required
                                               variant="outlined"
                                               size="small"
                                               sx={{
@@ -3207,46 +3078,6 @@ export default function PurchaseCard({
                             <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4 my-2">
                               <div className="hidden 2xl:block col-span-1"></div>
                               <div className="col-span-1">
-                                {/* <div>
-                                  <div>
-                                    <label htmlFor="invoice_type">
-                                      <Typography
-                                        variant="small"
-                                        color="blue-gray"
-                                        className="block font-semibold mb-1"
-                                      >
-                                        Invoice Type
-                                      </Typography>
-                                    </label>
-                                  </div>
-                                  <div className="">
-                                    <div className="">
-                                      <select
-                                        name="invoice_type"
-                                        className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
-                                        style={{
-                                          height: "28px",
-                                          padding: "4px 6px",
-                                          fontSize: "0.875rem",
-                                          width: 300,
-                                        }}
-                                        value={
-                                          invoiceData[0].invoice_type || ""
-                                        }
-                                        onChange={handleInputChangeInvoiceData}
-                                      >
-                                        {filteredInvoiceTypes.map((option) => (
-                                          <option
-                                            key={option}
-                                            value={option.toLowerCase()}
-                                          >
-                                            {option}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div> */}
                               </div>
                               <div className="col-span-1">
                                 <label htmlFor="invoice_type">
@@ -3301,7 +3132,7 @@ export default function PurchaseCard({
                                                   e.target.value.replace(
                                                     /[^0-9.]/g,
                                                     ""
-                                                  ); // Allows only digits and a decimal point
+                                                  );
                                               }}
                                               className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             />
@@ -3321,7 +3152,7 @@ export default function PurchaseCard({
                                                   e.target.value.replace(
                                                     /[^0-9.]/g,
                                                     ""
-                                                  ); // Allows only digits and a decimal point
+                                                  );
                                               }}
                                               className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             />
@@ -3352,7 +3183,7 @@ export default function PurchaseCard({
                                                   e.target.value.replace(
                                                     /[^0-9.]/g,
                                                     ""
-                                                  ); // Allows only digits and a decimal point
+                                                  );
                                               }}
                                               className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             />
@@ -3372,7 +3203,7 @@ export default function PurchaseCard({
                                                   e.target.value.replace(
                                                     /[^0-9.]/g,
                                                     ""
-                                                  ); // Allows only digits and a decimal point
+                                                  );
                                               }}
                                               className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             />
@@ -3392,9 +3223,7 @@ export default function PurchaseCard({
                                       variant="outlined"
                                       size="small"
                                       name="amount_receivable"
-                                      // value={amount_receivable}
                                       value={invoiceData[0].amount_receivable}
-                                      // onChange={handleInputChangeInvoiceData}
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
                                           padding: "1px",
@@ -3418,61 +3247,6 @@ export default function PurchaseCard({
                   </div>
                 </div>
               </div>
-              {/* <div className="p-4">
-                <label
-                  htmlFor="option"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Select an option
-                </label>
-                <select
-                  id="option"
-                  value={selectedTDSTCSOption}
-                  onChange={(e) => setSelectedTDSTCSOption(e.target.value)}
-                  className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  <option value="" disabled>
-                    Choose an option
-                  </option>
-                  <option value="TCS">TCS</option>
-                  <option value="TDS">TDS</option>
-                </select>
-
-                <div className="mt-4">
-                  {selectedTDSTCSOption === "TCS" && (
-                    <div>
-                      <label
-                        htmlFor="tcs"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        TCS Input
-                      </label>
-                      <input
-                        id="tcs"
-                        type="text"
-                        placeholder="Enter TCS value"
-                        className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                  )}
-                  {selectedTDSTCSOption === "TDS" && (
-                    <div>
-                      <label
-                        htmlFor="tds"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        TDS Input
-                      </label>
-                      <input
-                        id="tds"
-                        type="text"
-                        placeholder="Enter TDS value"
-                        className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div> */}
               <DialogFooter className="p-0">
                 <Button
                   onClick={handleCreateClose}
@@ -3485,8 +3259,6 @@ export default function PurchaseCard({
                 <Button
                   conained="contained"
                   type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
                   className="bg-primary"
                 >
                   <span>Confirm</span>
@@ -3596,8 +3368,6 @@ export default function PurchaseCard({
             },
           }}
         >
-          {/* <MenuItem onClick={handleViewOpen}>View</MenuItem> */}
-
           <Link to={`/purchaseInvoice/${id}/${rowId}`}>
             <MenuItem>View</MenuItem>
           </Link>

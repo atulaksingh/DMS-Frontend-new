@@ -4,6 +4,7 @@ import MUIDataTable from "mui-datatables";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Card from "./Card";
 import { Button } from "@material-tailwind/react";
@@ -14,8 +15,9 @@ const muiCache = createCache({
 });
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer, toast } from "react-toastify";
-function MuiTable({ tableData ,fetchClients}) {
+function MuiTable({ tableData, fetchClients }) {
   // console.log("tableData", tableData);
+  const role = getUserRole();
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState("525px");
   const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("");
@@ -127,9 +129,9 @@ function MuiTable({ tableData ,fetchClients}) {
           const rowData = tableData[dataIndex];
           return (
             <div>
-     
-              <Card rowId={rowData.id} fetchClients={fetchClients}/>
-              
+
+              <Card rowId={rowData.id} fetchClients={fetchClients} />
+
             </div>
           );
         },
@@ -143,29 +145,29 @@ function MuiTable({ tableData ,fetchClients}) {
     },
   ];
 
-const options = {
-  responsive: responsive,
-  search: searchBtn,
-  download: downloadBtn,
-  print: printBtn,
-  viewColumns: viewColumnBtn,
-  filter: filterBtn,
-  filterType: "dropdown",
-  selectableRows: "none",
-  rowsPerPage: 13,
-  rowsPerPageOptions: [13, 25, 50, 100],
-  page: 0,
+  const options = {
+    responsive: responsive,
+    search: searchBtn,
+    download: downloadBtn,
+    print: printBtn,
+    viewColumns: viewColumnBtn,
+    filter: filterBtn,
+    filterType: "dropdown",
+    selectableRows: "none",
+    rowsPerPage: 13,
+    rowsPerPageOptions: [13, 25, 50, 100],
+    page: 0,
 
-  // 👇👇 Set these two blank or undefined
-  tableBodyHeight: "",
-  tableBodyMaxHeight: "",
+    // 👇👇 Set these two blank or undefined
+    tableBodyHeight: "",
+    tableBodyMaxHeight: "",
 
-  // Optional: log actions
-  onTableChange: (action, state) => {
-    console.log(action);
-    console.dir(state);
-  },
-};
+    // Optional: log actions
+    onTableChange: (action, state) => {
+      console.log(action);
+      console.dir(state);
+    },
+  };
 
 
 
@@ -178,16 +180,16 @@ const options = {
           head: {
             backgroundColor: "#366FA1",
             paddingBlock: "2px",
-            color: "#ffffff !important", 
+            color: "#ffffff !important",
             "&.MuiTableSortLabel-root": {
-              color: "#ffffff !important", 
+              color: "#ffffff !important",
               "&:hover": {
                 color: "#ffffff !important",
               },
               "&.Mui-active": {
                 color: "#ffffff !important",
                 "& .MuiTableSortLabel-icon": {
-                  color: "#ffffff !important", 
+                  color: "#ffffff !important",
                 },
               },
             },
@@ -202,7 +204,7 @@ const options = {
 
   return (
     <>
-        <ToastContainer />
+      <ToastContainer />
       {/* <div style={{ padding: "40px 80px" }}> */}
       <div >
         <div className="flex justify-between align-middle items-center mb-5">
@@ -210,11 +212,13 @@ const options = {
             Client Details
           </div>
           <div>
-            <Link to={"/client"}>
-              <Button size="md" className="bg-[#366FA1] hover:bg-[#2d5e85]">
-                Create
-              </Button>
-            </Link>
+            {((role === "superuser")) && (
+              <Link to={"/client"}>
+                <Button size="md" className="bg-[#366FA1] hover:bg-[#2d5e85]">
+                  Create
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
         <CacheProvider value={muiCache}>

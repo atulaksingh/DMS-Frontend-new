@@ -36,7 +36,6 @@ function ClientUserCreation() {
   const { id } = useParams();
   const role = getUserRole();
   console.log("Role from token:", getUserRole());
-
   const dispatch = useDispatch();
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -47,111 +46,88 @@ function ClientUserCreation() {
   };
   const [customers, setCustomers] = useState([]);
 
-  // Fetch Data from API
-  // useEffect(() => {
-  //   fetch("${API_URL}/api/user-clientform/1")
-  //     .then((response) => response.json())
-  //     .then((data) => setCustomers(data))
-  //     .catch((error) => console.error("Error fetching customers:", error));
-  // }, []);
-
   const handleCreateClose = () => setOpenCreateModal(false);
   const [formData, setFormData] = useState({
-    name: "",
-    customer: "",
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
   });
-  // console.log(formData)
+  const [clientuserErrors, setClientUserErrors] = useState({})
+
+  const clientuserRules = {
+    first_name: [
+      { test: v => v && v.trim().length > 0, message: "First name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "First name can only contain alphabets and spaces" },
+      { test: v => v.trim().length >= 2, message: "First name must be at least 2 characters long" },
+    ],
+    last_name: [
+      { test: v => v && v.trim().length > 0, message: "Last name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Last name can only contain alphabets and spaces" },
+      { test: v => v.trim().length >= 2, message: "Last name must be at least 2 characters long" },
+    ],
+    email: [
+      { test: v => v && v.trim().length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" },
+    ],
+    password: [
+      { test: v => v && v.trim().length > 0, message: "Password is required" },
+      { test: v => v.length >= 6, message: "Password must be at least 6 characters long" },
+      // { test: v => /[A-Za-z]/.test(v) && /\d/.test(v), message: "Password must contain at least one letter and one number" },
+    ],
+  };
+
+  const validateClientUserField = (name, value) => {
+    const fieldRules = clientuserRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+    const errorMsg = validateClientUserField(name, value);
+    setClientUserErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault(); // Prevent default form submission
-
-  //   try {
-  //     // Create a FormData object
-  //     const formDataToSend = new FormData();
-
-  //     // Append text fields to FormData
-  //     formDataToSend.append("name", formData.name);
-  //     formDataToSend.append("customer", formData.customer);
-  //     formDataToSend.append("email", formData.email);
-  //     // formDataToSend.append("password", formData.password);
-
-  //     // Make a POST request to your API
-  //     const response = await axios.post(
-  //       `${API_URL}/api/create-clientuser/${id}`,
-  //       formDataToSend
-  //     );
-  //     console.log(response);
-
-  //     // Check if the response is successful
-  //     if (response.status === 200) {
-  //       // Handle success response
-  //       handleCreateClose();
-
-  //       // Show success toast
-  //       toast.success(response?.data?.message || "User-client form created successfully.", {
-  //         position: "top-right",
-  //         autoClose: 5000,
-  //       });
-
-  //       // Dispatch fetchClientDetails action
-  //       dispatch(fetchClientDetails(id));
-
-  //       // Optionally close the modal and reset form
-  //       setFormData({
-  //         name: "",
-  //         customer: "",
-  //         email: "",
-  //         // password: "",
-  //       });
-  //     } else {
-  //       throw new Error("Failed to create user-client form.");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting data:", error);
-
-  //     // Show error toast
-  //     toast.error(
-  //       error.response?.data?.error_message || "Failed to create user-client details. Please try again.",
-  //       {
-  //         position: "top-right",
-  //         autoClose: 2000,
-  //       }
-  //     );
-  //   }
-  // };
-
-  // const [showPassword, setShowPassword] = useState(false);
-
-  // const togglePasswordVisibility = () => {
-  //   setShowPassword(!showPassword);
-  // };
-
-
 
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateClientUserField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setClientUserErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
     if (submitting) return;
 
     setSubmitting(true);
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
-      formDataToSend.append("customer", formData.customer);
+      formDataToSend.append("first_name", formData.first_name);
+      formDataToSend.append("last_name", formData.last_name);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("password", formData.password);
 
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-clientuser/${id}`,
         formDataToSend
       );
@@ -160,7 +136,7 @@ function ClientUserCreation() {
         handleCreateClose();
         toast.success(response?.data?.message || "User-client form created successfully.");
         dispatch(fetchClientDetails(id));
-        setFormData({ name: "", customer: "", email: "" });
+        setFormData({ first_name: "", last_name: "", email: "" });
       } else {
         throw new Error("Failed to create user-client form.");
       }
@@ -175,22 +151,11 @@ function ClientUserCreation() {
   };
 
 
-  const handleCustomerChange = (event, newValue) => {
-    // When a user selects a customer, update the formData with the selected customer
-    setFormData((prev) => ({
-      ...prev,
-      customer: newValue ? newValue.id : "", // Assuming `id` is what you want to store
-    }));
-  };
-
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-
-
 
   return (
     <>
@@ -214,14 +179,14 @@ function ClientUserCreation() {
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
                 <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-4">
+                  <div className="col-span-2">
                     <label htmlFor="first_name">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="block font-semibold mb-2"
                       >
-                        Name
+                        First Name
                       </Typography>
                     </label>
 
@@ -229,10 +194,11 @@ function ClientUserCreation() {
                       <Input
                         type="text"
                         size="lg"
-                        name="name"
-                        placeholder="Full Name"
-                        value={formData.name}
+                        name="first_name"
+                        placeholder="First Name"
+                        value={formData.first_name}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -241,10 +207,34 @@ function ClientUserCreation() {
                       />
                     </div>
                   </div>
+                  <div className="col-span-2">
+                    <label htmlFor="last_name">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="block font-semibold mb-2"
+                      >
+                        Last Name
+                      </Typography>
+                    </label>
 
-
-
-
+                    <div className="">
+                      <Input
+                        type="text"
+                        size="lg"
+                        name="last_name"
+                        placeholder="Last Name"
+                        value={formData.last_name}
+                        onChange={handleInputChange}
+                        required
+                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        labelProps={{
+                          className: "hidden",
+                        }}
+                        containerProps={{ className: "min-w-full" }}
+                      />
+                    </div>
+                  </div>
 
                   <div className="col-span-2">
                     <label htmlFor="email">
@@ -264,6 +254,7 @@ function ClientUserCreation() {
                         name="email"
                         placeholder="Email"
                         value={formData.email}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -307,6 +298,7 @@ function ClientUserCreation() {
                         name="password"
                         placeholder="Password"
                         value={formData.password}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                         labelProps={{
@@ -328,67 +320,6 @@ function ClientUserCreation() {
                       </button>
                     </div>
                   </div>
-
-
-
-                  {/* <div className="col-span-2">
-                    <label htmlFor="password">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Select Customer or Vendor
-                      </Typography>
-                    </label>
-
-
-
-
-                    <Autocomplete
-                      sx={{ width: 300 }}
-                      freeSolo
-                      id="gst-no-autocomplete"
-                      disableClearable
-                      options={customers}
-                      getOptionLabel={(option) =>
-                        typeof option === "string" ? option : option.name || ""
-                      }
-                      onChange={handleCustomerChange}  // Use the custom handler
-                      value={customers.find((customer) => customer.id === formData.customer) || null} // Bind value to formData.customer
-                      renderOption={(props, option) => (
-                        <li {...props} key={option.id}>
-                          {option.gst_no} ({option.name})
-                        </li>
-                      )}
-                      renderInput={(params) => (
-                        <TextField
-                          {...params}
-                          size="small"
-                          name="customer"
-                          value={formData.customer || ""} // Reset input value when formData.customer changes
-                          onChange={handleInputChange} // Update input value on type
-                          placeholder="Enter or select GST No."
-                          sx={{
-                            "& .MuiInputBase-root": {
-                              height: 34, // Set your desired height here
-                              padding: "4px 6px", // Adjust padding to make it smaller
-                            },
-                            "& .MuiOutlinedInput-input": {
-                              padding: "14px 16px", // Input padding
-                            },
-                          }}
-                          slotProps={{
-                            input: {
-                              ...params.InputProps,
-                              type: "search",
-                            },
-                          }}
-                        />
-                      )}
-                    />
-                  </div> */}
-
                 </div>
               </div>
               <DialogFooter>

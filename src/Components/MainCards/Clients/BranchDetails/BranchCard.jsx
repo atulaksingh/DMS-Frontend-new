@@ -110,12 +110,62 @@ export default function BranchCard({ rowId }) {
     pincode: "",
   });
 
+  const [branchErrors, setBranchErrors] = useState({});
+
+  const branchRules = {
+    branch_name: [
+      { test: v => v.length > 0, message: "Branch name is required" },
+      { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch name can only contain letters, numbers, commas, apostrophes, and spaces" },
+    ],
+    contact: [
+      // { test: v => v.length > 0, message: "Contact number is required" },
+      { test: v => /^\d{10}$/.test(v), message: "Contact number must be exactly 10 digits" },
+    ],
+    gst_no: [
+      { test: v => v.length > 0, message: "GST number is required" },
+      // { test: v => /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(v), message: "GST number must be valid (e.g., 22AAAAA0000A1Z5)" },
+      { test: v => v.length === 15, message: "GST number must be exactly 15 characters long" },
+    ],
+    country: [
+      { test: v => v.length > 0, message: "Country is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Country can only contain alphabets and spaces" },
+    ],
+    state: [
+      { test: v => v.length > 0, message: "State is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "State can only contain alphabets and spaces" },
+    ],
+    city: [
+      { test: v => v.length > 0, message: "City is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "City can only contain alphabets and spaces" },
+    ],
+    address: [
+      { test: v => v.length > 0, message: "Address is required" },
+      { test: v => v.length >= 5, message: "Address must be at least 5 characters long" },
+    ],
+    pincode: [
+      // { test: v => v.length > 0, message: "Pincode is required" },
+      { test: v => /^\d{6}$/.test(v), message: "Pincode must be exactly 6 digits" },
+    ],
+  };
+
+  const validateBranchField = (name, value) => {
+    const fieldRules = branchRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateBranchField(name, value);
+    setBranchErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
   // Handle file input change
   const handleFileChange = (e) => {
@@ -124,6 +174,18 @@ export default function BranchCard({ rowId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateBranchField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return;
 
     try {
       // Create a FormData object
@@ -140,7 +202,7 @@ export default function BranchCard({ rowId }) {
       formDataToSend.append("pincode", formData.pincode);
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-branch/${id}/${rowId}`,
         formDataToSend
       );
@@ -236,7 +298,7 @@ export default function BranchCard({ rowId }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-branch/${id}/${rowId}`
       );
 

@@ -51,7 +51,6 @@ const ITEM_HEIGHT = 48;
 export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
   const { clientID, branchID } = useParams();
   const role = getUserRole();
-  // console.log("rowIdOffice Location", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
@@ -65,16 +64,6 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
     state: "",
     country: "",
   });
-  // console.log("form",formData)
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  // Handle file input change
-
 
   const [countries, setCountries] = useState(Country.getAllCountries());
   const [states, setStates] = useState([]);
@@ -94,7 +83,6 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
       country: country?.name, // Update formData with selected country
     }));
   };
-
   const handleStateChange = (state) => {
     setSelectedState(state);
     setCities(City.getCitiesOfState(selectedCountry?.isoCode, state?.isoCode));
@@ -104,7 +92,6 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
       state: state?.name, // Update formData with selected state
     }));
   };
-
   const handleCityChange = (city) => {
     setSelectedCity(city);
     setFormData((prev) => ({
@@ -113,9 +100,69 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
     }));
   };
 
+  const [officeLocationErrors, setOfficeLocationErrors] = useState({});
+
+  const locationRules = {
+    location: [
+      { test: v => v && v.trim().length > 0, message: "Location is required" },
+      { test: v => /^[A-Za-z0-9\s,.-]+$/.test(v), message: "Location can only contain letters, numbers, spaces, commas, dots, and hyphens" },
+    ],
+    contact: [
+      // { test: v => v && String(v).trim().length > 0, message: "Contact number is required" },
+      { test: v => /^\d{10}$/.test(String(v)), message: "Contact number must be exactly 10 digits" },
+    ],
+    address: [
+      { test: v => v && v.trim().length > 0, message: "Address is required" },
+      { test: v => v.length >= 5, message: "Address must be at least 5 characters long" },
+    ],
+    city: [
+      { test: v => v && v.trim().length > 0, message: "City is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "City can only contain alphabets and spaces" },
+    ],
+    state: [
+      { test: v => v && v.trim().length > 0, message: "State is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "State can only contain alphabets and spaces" },
+    ],
+    country: [
+      { test: v => v && v.trim().length > 0, message: "Country is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Country can only contain alphabets and spaces" },
+    ],
+  };
+
+  const validateLocationField = (name, value) => {
+    const fieldRules = locationRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    const errorMsg = validateLocationField(name, value);
+    setOfficeLocationErrors((prev) => ({ ...prev, [name]: errorMsg }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateLocationField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
 
     try {
       // Create a FormData object
@@ -130,7 +177,7 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
       formDataToSend.append("country", formData.country);
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-officelocation/${branchID}/${rowId}`,
         formDataToSend
       );
@@ -216,16 +263,12 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
     }
   };
 
-  // const handleViewOpen = () => {
-  //   setOpenViewModal(true);
-  //   setAnchorEl(null);
-  // };
   const handleViewOpen = () => {
     setOpenViewModal(true);
     setAnchorEl(null);
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/single-officelocation/${branchID}/${rowId}`
         );
         setLocationData(response.data);
@@ -245,7 +288,7 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-officelocation/${branchID}/${rowId}`
       );
       // console.log("dd", response.data);
@@ -324,7 +367,7 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
   useEffect(() => {
     const fetchLocationDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/edit-officelocation/${branchID}/${rowId}`
         );
         // console.log("ddd",response.data)
@@ -338,13 +381,7 @@ export default function OfficeLocCard({ rowId, fetchBranchDetails }) {
     fetchLocationDetails();
   }, [branchID, rowId]);
 
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
 
-  // if (error) {
-  //   return <div>Error loading client details: {error.message}</div>;
-  // }
   return (
     <>
       {/* <ToastContainer /> */}

@@ -7,6 +7,7 @@ import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useParams } from "react-router-dom";
 import { Country, State, City } from "country-state-city";
 import { Autocomplete, Stack, TextField } from "@mui/material";
@@ -28,6 +29,8 @@ const styleCreateMOdal = {
 };
 function BranchCreation() {
   const { id } = useParams();
+  const role = getUserRole();
+  console.log("Role from token:", getUserRole());
   const dispatch = useDispatch();
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
 
@@ -88,16 +91,84 @@ function BranchCreation() {
   });
   // console.log("hhhh->", formData);
 
+  const [branchErrors, setBranchErrors] = useState({});
+
+  const branchRules = {
+    branch_name: [
+      { test: v => v.length > 0, message: "Branch name is required" },
+      { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch name can only contain letters, numbers, commas, apostrophes, and spaces" },
+    ],
+    contact: [
+      { test: v => v.length > 0, message: "Contact number is required" },
+      { test: v => /^\d{10}$/.test(v), message: "Contact number must be exactly 10 digits" },
+    ],
+    gst_no: [
+      { test: v => v.length > 0, message: "GST number is required" },
+      // { test: v => /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(v), message: "GST number must be valid (e.g., 22AAAAA0000A1Z5)" },
+      { test: v => v.length === 15, message: "GST number must be exactly 15 characters long" },
+    ],
+    country: [
+      { test: v => v.length > 0, message: "Country is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Country can only contain alphabets and spaces" },
+    ],
+    state: [
+      { test: v => v.length > 0, message: "State is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "State can only contain alphabets and spaces" },
+    ],
+    city: [
+      { test: v => v.length > 0, message: "City is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "City can only contain alphabets and spaces" },
+    ],
+    address: [
+      { test: v => v.length > 0, message: "Address is required" },
+      { test: v => v.length >= 5, message: "Address must be at least 5 characters long" },
+    ],
+    pincode: [
+      { test: v => v.length > 0, message: "Pincode is required" },
+      { test: v => /^\d{6}$/.test(v), message: "Pincode must be exactly 6 digits" },
+    ],
+  };
+
+  const validateBranchField = (name, value) => {
+    const fieldRules = branchRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateBranchField(name, value);
+    setBranchErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateBranchField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setBranchErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
 
     try {
       // Create a FormData object
@@ -114,7 +185,7 @@ function BranchCreation() {
       formDataToSend.append("pincode", formData.pincode);
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-branch/${id}`,
         formDataToSend
       );
@@ -213,6 +284,7 @@ function BranchCreation() {
                         placeholder="Branch Name"
                         value={formData.branch_name}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
                         labelProps={{
                           className: "hidden",
@@ -241,6 +313,7 @@ function BranchCreation() {
                         placeholder="Contact"
                         value={formData.contact}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white  text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
                         labelProps={{
                           className: "hidden",
@@ -269,6 +342,7 @@ function BranchCreation() {
                         placeholder="Gst No"
                         value={formData.gst_no}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white  text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
                         labelProps={{
                           className: "hidden",
@@ -348,6 +422,7 @@ function BranchCreation() {
                               isOptionEqualToValue={(option, value) => option.name === value.name}
                               value={selectedCountry} // your selected country object
                               inputValue={formData.location || ""}
+                              required
                               onInputChange={(event, newInputValue) => {
                                 setFormData({ ...formData, location: newInputValue });
 
@@ -468,6 +543,7 @@ function BranchCreation() {
                               isOptionEqualToValue={(option, value) => option.name === value.name}
                               value={selectedState} // selected state object
                               inputValue={formData.state || ""}
+                              required
                               onInputChange={(event, newInputValue) => {
                                 setFormData({ ...formData, state: newInputValue });
 
@@ -588,6 +664,7 @@ function BranchCreation() {
                               isOptionEqualToValue={(option, value) => option.name === value.name}
                               value={selectedCity} // selected city object
                               inputValue={formData.city || ""}
+                              required
                               onInputChange={(event, newInputValue) => {
                                 setFormData((prevData) => ({
                                   ...prevData,
@@ -664,6 +741,7 @@ function BranchCreation() {
                         placeholder="Pin Code"
                         value={formData.pincode}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
                         labelProps={{
                           className: "hidden",
@@ -691,6 +769,7 @@ function BranchCreation() {
                         placeholder="Address"
                         value={formData.address}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
                         labelProps={{
                           className: "hidden",

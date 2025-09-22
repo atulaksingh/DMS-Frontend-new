@@ -15,6 +15,7 @@ import PfCard from "./PfCard";
 import PfFileCreation from "./PfFileCreation";
 import axios from "axios";
 import { set } from "date-fns";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const muiCache = createCache({
   key: "mui-datatables",
@@ -35,7 +36,7 @@ const styleCreateMOdal = {
 };
 function Pf({ PfData }) {
   const calculateTableBodyHeight = () => {
-    const rowHeight = 80; // Approximate height for one row
+    const rowHeight = 170; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
     const calculatedHeight = PfData.length * rowHeight;
     return calculatedHeight > maxHeight
@@ -43,12 +44,13 @@ function Pf({ PfData }) {
       : `${calculatedHeight}px`;
   };
   const { id } = useParams();
+  const role = getUserRole();
   const [errorMessage, setErrorMessage] = useState("");
   const [responsive, setResponsive] = useState("vertical");
   const [tableBodyHeight, setTableBodyHeight] = useState(
     calculateTableBodyHeight
   );
-  const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("525px");
+  const [tableBodyMaxHeight, setTableBodyMaxHeight] = useState("325px");
   const [searchBtn, setSearchBtn] = useState(true);
   const [downloadBtn, setDownloadBtn] = useState(true);
   const [printBtn, setPrintBtn] = useState(true);
@@ -848,25 +850,10 @@ function Pf({ PfData }) {
   });
   const [data, setData] = useState([]);
 
-  // useEffect(() => {
-  //   axios
-  //     .get(`${API_URL}/api/get-pf-totals/${id}`)
-  //     .then((response) => {
-  //       // Agar response single object ho toh array me wrap kar le
-  //       const result = Array.isArray(response.data)
-  //         ? response.data
-  //         : [response.data];
-  //       setData(result);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // }, []);
-
   const fetchPfTotals = async (id) => {
     console.log("gggggg")
     try {
-      const response = await axios.get(`${API_URL}/api/get-pf-totals/${id}`);
+      const response = await axiosInstance.get(`${API_URL}/api/get-pf-totals/${id}`);
       const result = Array.isArray(response?.data) ? response?.data : [response?.data];
       console.log("Response data:", result);
       setData(result);

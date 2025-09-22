@@ -16,6 +16,7 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,9 +40,8 @@ const styleCreateMOdal = {
   borderRadius: "10px",
 };
 function DocumentCreation() {
-
-  // const { clientID, branchID } = useParams();
   const { id } = useParams();
+  const role = getUserRole();
   const dispatch = useDispatch();
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -61,6 +61,50 @@ function DocumentCreation() {
 
   const handleCreateClose = () => setOpenCreateModal(false);
 
+  const [errors, setErrors] = useState({});
+
+  const fileFormRules = {
+    document_type: [
+      { test: (v) => v.length > 0, message: "Document type is required" },
+    ],
+    login: [
+      { test: (v) => v.length > 0, message: "Username is required" },
+      { test: (v) => /^[a-zA-Z0-9_]+$/.test(v), message: "Only letters, numbers, and underscores allowed" },
+    ],
+    password: [
+      { test: (v) => v.length > 0, message: "Password is required" },
+      { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
+    ],
+    remark: [
+      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+    ],
+    files: [
+      { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
+      {
+        test: (v) =>
+          Array.isArray(v) &&
+          v.every(
+            (f) =>
+              f.type === "application/pdf" ||
+              f.type.startsWith("image/") ||
+              f.type === "application/vnd.ms-excel" ||
+              f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+              f.type === "text/plain"
+          ),
+        message: "Only PDF, Image, Excel, or TXT files are allowed",
+      },
+    ],
+
+  };
+
+  const validateFileField = (name, value) => {
+    const rules = fileFormRules[name];
+    if (!rules) return "";
+    for (let rule of rules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -68,22 +112,44 @@ function DocumentCreation() {
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateFileField(name, value);
+    setErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // FileList → Array
+
     setFormData((prev) => ({
       ...prev,
-      files: e.target.files, // Handles multiple files
+      files: selectedFiles,  // store as array
     }));
-  };
-  // const handleFileChange = (event) => {
-  //   const files = Array.from(event.target.files);
-  //   setSelectedFiles(files);
-  // };
 
-  // Handle form submission
+    // validate with correct array
+    const errorMsg = validateFileField("files", selectedFiles);
+    setErrors((prev) => ({ ...prev, files: errorMsg }));
+  };
+
+
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateFileField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
 
     try {
       const formDataToSend = new FormData();
@@ -100,7 +166,7 @@ function DocumentCreation() {
       }
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-companydoc/${id}`,
         formDataToSend,
         {
@@ -235,6 +301,7 @@ function DocumentCreation() {
                         // onChange={handleLoginChange}
                         value={formData.login}
                         onChange={handleInputChange}
+                        required
                         placeholder="UserName"
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                         labelProps={{ className: "hidden" }}
@@ -271,6 +338,7 @@ function DocumentCreation() {
                           // onChange={handlePasswordChange}
                           value={formData.password}
                           onChange={handleInputChange}
+                          required
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                           labelProps={{
                             className: "hidden",
@@ -344,6 +412,7 @@ function DocumentCreation() {
                             type="file"
                             name="files"
                             onChange={handleFileChange}
+                            required
                             multiple
                             className="file-input file-input-bordered file-input-success w-full max-w-sm"
                           />

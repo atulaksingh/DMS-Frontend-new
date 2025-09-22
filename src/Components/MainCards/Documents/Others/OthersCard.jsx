@@ -103,8 +103,42 @@ export default function OthersCard({ rowId }) {
         });
     };
 
+    const [othersErrors, setOthersErrors] = useState({})
 
+    const othersRules = {
+        financial_year: [
+            { test: (v) => v.length > 0, message: "Financial year is required" },
+            { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+            {
+                test: (v) => {
+                    if (!/^\d{4}-\d{4}$/.test(v)) return false;
+                    const [start, end] = v.split("-").map(Number);
+                    return end === start + 1; // year should be consecutive
+                },
+                message: "Financial year must be consecutive (e.g., 2023-2024)",
+            },
+        ],
 
+        text: [
+            { test: (v) => v.length > 0, message: "Text is required" },
+        ],
+
+        files: [
+            {
+                test: (v) => Array.isArray(v) && v.length > 0,
+                message: "At least one file is required",
+            },
+        ],
+    };
+
+    const validateOthers = (name, value) => {
+        const fieldRules = othersRules[name];
+        if (!fieldRules) return "";
+        for (let rule of fieldRules) {
+            if (!rule.test(value)) return rule.message;
+        }
+        return "";
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -112,13 +146,22 @@ export default function OthersCard({ rowId }) {
             ...prev,
             [name]: value,
         }));
+
+        const errorMsg = validateOthers(name, value);
+        setOthersErrors(prev => ({ ...prev, [name]: errorMsg }));
     };
     // Handle file input change
     const handleFileChange = (e) => {
+        const selectedFiles = Array.from(e.target.files); // FileList → Array
+
         setFormData((prev) => ({
             ...prev,
-            files: Array.from(e.target.files), // Converts file list to an array
+            files: selectedFiles,  // store as array
         }));
+
+        // validate with correct array
+        const errorMsg = validateOthers("files", selectedFiles);
+        setOthersErrors((prev) => ({ ...prev, files: errorMsg }));
     };
 
     const yearOptions = generateYearRanges(2017, 33);
@@ -165,7 +208,7 @@ export default function OthersCard({ rowId }) {
             }
 
             // API request
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `${API_URL}/api/edit-others/${id}/${rowId}`,
                 formDataToSend,
                 { headers: { "Content-Type": "multipart/form-data" } }
@@ -275,7 +318,7 @@ export default function OthersCard({ rowId }) {
         setAnchorEl(null);
 
         try {
-            const response = await axios.get(
+            const response = await axiosInstance.get(
                 `${API_URL}/api/edit-others/${id}/${rowId}`
             );
             const data = response.data;
@@ -305,7 +348,7 @@ export default function OthersCard({ rowId }) {
         setAnchorEl(null);
         const fetchAirDetails = async () => {
             try {
-                const response = await axios.get(
+                const response = await axiosInstance.get(
                     `${API_URL}/api/single-others/${id}/${rowId}`
                 );
                 setOthersData(response.data);
@@ -487,6 +530,7 @@ export default function OthersCard({ rowId }) {
                                     </Typography>
                                     <Select
                                         options={yearOptions}
+                                        required
                                         value={yearOptions.find((option) => option.value === formData.financial_year)}
                                         onChange={(selectedOption) => {
                                             setSelectedYear(selectedOption.value);
@@ -510,6 +554,7 @@ export default function OthersCard({ rowId }) {
                                     {isEditingMonth ? (
                                         <DatePicker
                                             selected={selectedMonth}
+                                            required
                                             onChange={handleMonthChange}
                                             dateFormat="MMMM yyyy"
                                             showMonthYearPicker
@@ -556,6 +601,7 @@ export default function OthersCard({ rowId }) {
                                             type="text"
                                             size="lg"
                                             name="text"
+                                            required
                                             placeholder="Nature of Report"
                                             value={formData.text}
                                             onChange={handleInputChange}

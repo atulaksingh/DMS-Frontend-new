@@ -18,6 +18,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import PhoneAndroidIcon from "@mui/icons-material/PhoneAndroid";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 import { format } from "date-fns";
@@ -28,6 +29,7 @@ import { useRef } from "react";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 function ClientCreation() {
   const navigate = useNavigate();
+  const role = getUserRole();
   const [filesList, setFilesList] = useState([]);
   const [open, setOpen] = useState(false);
   const [fileName, setFileName] = useState("");
@@ -48,6 +50,7 @@ function ClientCreation() {
     status: "active",
     fileinfos: [],
   });
+  const [errors, setErrors] = useState({});
 
   const handleOpen = () => setOpen(!open);
 
@@ -60,34 +63,104 @@ function ClientCreation() {
   const handlePasswordChange = (event) => setPassword(event.target.value);
   const handleRemarkChange = (event) => setRemark(event.target.value);
 
+  const fileFormRules = {
+    document_type: [
+      { test: (v) => v.length > 0, message: "Document type is required" },
+    ],
+    login: [
+      { test: (v) => v.length > 0, message: "Username is required" },
+      { test: (v) => /^[a-zA-Z0-9_]+$/.test(v), message: "Only letters, numbers, and underscores allowed" },
+    ],
+    password: [
+      { test: (v) => v.length > 0, message: "Password is required" },
+      { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
+    ],
+    remark: [
+      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+    ],
+    files: [
+      { test: (v) => v && v.length > 0, message: "At least one file is required" },
+      {
+        test: (v) => v.every(f => f.type === "application/pdf" || f.type.startsWith("image/") || f.type === "application/vnd.ms-excel" || f.type ===
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || f.type === "text/plain"), message: "Only PDF or image files are allowed"
+      },
+    ],
+  };
+
+  const validateFileField = (name, value) => {
+    const rules = fileFormRules[name];
+    if (!rules) return "";
+    for (let rule of rules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+
+
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     setSelectedFiles(files);
   };
 
+  // const handleFileSave = () => {
+  //   if (fileName && selectedFiles.length > 0) {
+  //     const newFiles = {
+  //       document_type: fileName,
+  //       login,
+  //       password,
+  //       remark,
+  //       files: selectedFiles,
+  //     };
+
+  //     setFilesList((prevFiles) => [...prevFiles, newFiles]);
+  //     notify("Files uploaded successfully!");
+
+  //     // Reset fields
+  //     setFileName("");
+  //     setSelectedFiles([]);
+  //     setLogin("");
+  //     setPassword("");
+  //     setRemark("");
+  //     handleOpen();
+  //   } else {
+  //     notify("Please provide all details and select at least one file!", "error");
+  //   }
+  // };
+
   const handleFileSave = () => {
-    if (fileName && selectedFiles.length > 0) {
-      const newFiles = {
-        document_type: fileName,
-        login,
-        password,
-        remark,
-        files: selectedFiles,
-      };
+    let errors = {};
 
-      setFilesList((prevFiles) => [...prevFiles, newFiles]);
-      notify("Files uploaded successfully!");
+    const newFiles = {
+      document_type: fileName,
+      login,
+      password,
+      remark,
+      files: selectedFiles,
+    };
 
-      // Reset fields
-      setFileName("");
-      setSelectedFiles([]);
-      setLogin("");
-      setPassword("");
-      setRemark("");
-      handleOpen();
-    } else {
-      notify("Please provide all details and select at least one file!", "error");
+    Object.entries(newFiles).forEach(([field, value]) => {
+      const error = validateFileField(field, value);
+      if (error) errors[field] = error;
+    });
+
+    if (Object.keys(errors).length > 0) {
+      // Show first error in toast
+      toast.error(Object.values(errors)[0]);
+      return;
     }
+
+    // ✅ If no errors
+    setFilesList((prevFiles) => [...prevFiles, newFiles]);
+    notify("Files uploaded successfully!");
+
+    // Reset
+    setFileName("");
+    setSelectedFiles([]);
+    setLogin("");
+    setPassword("");
+    setRemark("");
+    handleOpen();
   };
 
   const handleFileDelete = (index) => {
@@ -98,16 +171,108 @@ function ClientCreation() {
     });
   };
 
+  const rules = {
+    client_name: [
+      { test: (v) => v.length > 0, message: "Client name is required" },
+      { test: (v) => /^[A-Za-z\s]+$/.test(v), message: "Client name can only contain alphabets and spaces" },
+      { test: (v) => v.length >= 2, message: "Client name must be at least 2 characters long" },
+      
+    ],
+    entity_type: [
+      { test: v => v && v.trim() !== "", message: "Entity type is required" },
+    ],
+    date_of_incorporation: [
+      { test: v => v && v.trim() !== "", message: "Date of incorporation is required" },
+      { test: v => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "Date of incorporation must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: v => {
+          if (!v) return false;
+          const parts = v.split(/[-/]/).map(Number);
+          if (parts.length !== 3) return false;
+
+          const [day, month, year] = parts;
+          const inputDate = new Date(year, month - 1, day);
+          const today = new Date();
+
+          return inputDate <= today && !isNaN(inputDate.getTime());
+        },
+        message: "Date of incorporation cannot be in the future",
+      }
+    ],
+    contact_person: [
+      { test: v => v.length > 0, message: "Contact person is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Contact person can only contain alphabets and spaces" },
+      { test: v => v.length >= 2, message: "Contact person must be at least 2 characters long" },
+    ],
+    designation: [
+      { test: v => v.length > 0, message: "Designation is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Designation can only contain alphabets" },
+      { test: v => v.length >= 2, message: "Designation must be at least 2 characters long" },
+    ],
+    contact_no_1: [
+      { test: (v) => v.length > 0, message: "Primary contact number is required" },
+      { test: (v) => /^\d{10}$/.test(v), message: "Primary contact number must be exactly 10 digits" },
+    ],
+    contact_no_2: [
+      { test: v => !v || /^\d{10}$/.test(v), message: "Alternate contact number must be exactly 10 digits if provided" },
+    ],
+    email: [
+      { test: (v) => v.length > 0, message: "Email is required" },
+      { test: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Email format is invalid" },
+    ],
+    business_detail: [
+      { test: v => !v || v.length <= 200, message: "Business detail cannot exceed 200 characters" },
+    ],
+    status: [
+      { test: v => v.length > 0, message: "Status is required" },
+      { test: v => ["active", "inactive"].includes(v.toLowerCase()), message: "Status must be either Active or Inactive" },
+    ],
+  };
+
+
+  const validateField = (name, value) => {
+    const fieldRules = rules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+
+    const errorMsg = validateField(name, value);
+    setErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setErrors(newErrors);
+
+    // Agar errors hai, stop submit
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
 
     try {
       const data = new FormData();
+
 
       // Append all other form fields
       Object.entries(formData).forEach(([key, value]) => {
@@ -134,7 +299,7 @@ function ClientCreation() {
       });
 
       // console.log("data to send:", data);
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-client`,
         data,
         {
@@ -212,7 +377,6 @@ function ClientCreation() {
   const handleToDateChange = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
-      // setSelectedDate(date); // Keep original date for display
       // setFormData({ ...formData, from_date: formattedDate }); // Store in required format
       setSelectedDate(date); // Set selected date to to_date
       setFormData({ ...formData, date_of_incorporation: formattedDate }); // Store in required format
@@ -272,6 +436,7 @@ function ClientCreation() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={fileName}
                   onChange={handleFileNameChange}
+                  required
                 >
                   <Option value="udym">Udyam Aadhar</Option>
                   <Option value="pan">PAN</Option>
@@ -301,6 +466,7 @@ function ClientCreation() {
                 className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                 labelProps={{ className: "hidden" }}
                 containerProps={{ className: "min-w-[100px]" }}
+                required
               />
             </div>
             <div>
@@ -336,6 +502,7 @@ function ClientCreation() {
                     className: "hidden",
                   }}
                   containerProps={{ className: "min-w-full" }}
+                  required
                 />
                 {/* Toggle visibility button */}
                 <button
@@ -375,6 +542,8 @@ function ClientCreation() {
                     className: "hidden",
                   }}
                   containerProps={{ className: "min-w-[100px]" }}
+                // requiredddddddddddddddddddss
+
                 />
               </div>
             </div>
@@ -458,6 +627,7 @@ function ClientCreation() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.client_name}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -487,12 +657,15 @@ function ClientCreation() {
                   }}
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.entity_type}
+                  required
                   onChange={(selectedValue) =>
                     handleChange({
                       target: { name: "entity_type", value: selectedValue },
                     })
                   }
                 >
+                  {/* <Option value="" disabled>Select Entity T
+                  ype</Option> */}
                   <Option value="proprietorship">Proprietorship</Option>
                   <Option value="partnership">Partnership</Option>
                   <Option value="llp">LLP</Option>
@@ -515,22 +688,7 @@ function ClientCreation() {
                 </Typography>
               </label>
 
-              {/* <div className="">
-                <Input
-                  type="date"
-                  size="lg"
-                  name="date_of_incorporation"
-                  placeholder="Contact Person"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                  labelProps={{
-                    className: "hidden",
-                  }}
-                  containerProps={{ className: "min-w-[100px]" }}
-                  value={formData.date_of_incorporation}
-                  onChange={handleChange}
-                />
-              </div> */}
-              <div className="relative w-full">
+              {/* <div className="relative w-full">
                 <DatePicker
                   ref={date}
                   selected={selectedDate}
@@ -543,6 +701,7 @@ function ClientCreation() {
                   //  className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   placeholderText="dd/mm/yyyy"
                   showYearDropdown
+                  required
                   name="date_of_incorporation"
                   scrollableYearDropdown
                   yearDropdownItemNumber={25}
@@ -551,6 +710,27 @@ function ClientCreation() {
                 <FaRegCalendarAlt
                   className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                   onClick={() => date.current.setFocus()} // Focus the correct DatePicker
+                />
+              </div> */}
+
+              
+              <div className="flex items-center w-full border border-[#cecece] rounded-md bg-white">
+                <DatePicker
+                  ref={date}
+                  selected={selectedDate}
+                  onChange={handleToDateChange}
+                  dateFormat="dd/MM/yyyy"
+                  className="flex-1 py-2 pl-3 pr-2 text-gray-900 outline-none rounded-md"
+                  placeholderText="dd/mm/yyyy"
+                  showYearDropdown
+                  required
+                  name="date_of_incorporation"
+                  scrollableYearDropdown
+                  yearDropdownItemNumber={25}
+                />
+                <FaRegCalendarAlt
+                  className="ml-24 text-gray-500 cursor-pointer"
+                  onClick={() => date.current.setFocus()}
                 />
               </div>
             </div>
@@ -578,6 +758,7 @@ function ClientCreation() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.contact_person}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -605,6 +786,7 @@ function ClientCreation() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.designation}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -632,6 +814,7 @@ function ClientCreation() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.email}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -660,6 +843,7 @@ function ClientCreation() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.contact_no_1}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -715,12 +899,25 @@ function ClientCreation() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.business_detail}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
           </div>
 
-          <ToastContainer />
+          <ToastContainer
+            position="top-right"
+            autoClose={2000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            style={{ zIndex: 99999 }} // 👈 ye add karo
+          />
+
           <div className="grid grid-cols-2 gap-x-28">
             <div>
               <div className="my-3">
@@ -775,19 +972,49 @@ function ClientCreation() {
                 {filesList.length === 0 ? (
                   <div className="mt-2">
                     <label
-                      htmlFor="mom-file"
+                      htmlFor="fileinfo"
                       className="cursor-pointer   bg-white text-blue-500 hover:text-white border border-[#366FA1] px-4 py-3  rounded-md hover:bg-[#366FA1]"
                     >
                       Select PDF/image file.
                     </label>
                     <input
-                      id="mom-file"
-                      name="mom"
-                      className="hidden"
+                      id="fileinfo"
+                      name="fileinfo"
+                      // className="sr-only"
+                      style={{
+                        opacity: 0,
+                        width: "100%",
+                        height: "40px",
+                        position: "relative", // not absolute
+                        zIndex: 10,
+                      }}
                       accept="image/*,application/pdf"
                       onClick={handleOpen}
                       required
                     />
+                    {/* <label
+                      htmlFor="fileinfo"
+                      className="cursor-pointer bg-white text-blue-500 hover:text-white border border-[#366FA1] px-4 py-3 rounded-md hover:bg-[#366FA1] inline-block relative"
+                    >
+                      Select PDF/image file.
+                    </label>
+                    <input
+                      id="fileinfo"
+                      name="fileinfo"
+                      type="file"
+                      accept="image/*,application/pdf"
+                      required
+                      style={{
+                        opacity: 0,
+                        width: "100%",     // makes it stretch across the label
+                        height: "40px",    // same height as your label button
+                        position: "relative",
+                        zIndex: 10,
+                        cursor: "pointer",
+                      }}
+                      onChange={handleOpen}
+                    /> */}
+
                   </div>
                 ) : null}
               </div>
@@ -830,14 +1057,16 @@ function ClientCreation() {
             </div>
           </div>
           <div className="pt-5">
-            <Button
-              size="lg"
-              type="submit"
-              name="create-btn"
-              className="bg-[#366FA1] hover:bg-[#2d5e85]"
-            >
-              Create
-            </Button>
+            {((role === "superuser")) && (
+              <Button
+                size="lg"
+                type="submit"
+                name="create-btn"
+                className="bg-[#366FA1] hover:bg-[#2d5e85]"
+              >
+                Create
+              </Button>
+            )}
           </div>
         </div>
       </form>

@@ -5,17 +5,17 @@ import {
     Typography,
     Input,
     Option,
-} from "@material-tailwind/react";
+}
+    from "@material-tailwind/react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import Select from "react-select";
-// import DatePicker from "react-datepicker";
 import { format } from "date-fns";
 import { useParams } from "react-router-dom";
 import "react-datepicker/dist/react-datepicker.css";
-// import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import DatePicker from "react-datepicker";
@@ -45,6 +45,8 @@ const generateYearRanges = (startYear, count) => {
 
 function OthersCreation() {
     const { id } = useParams();
+    const role = getUserRole();
+    console.log("Role from token:", getUserRole());
     const dispatch = useDispatch();
     const [selectedYear, setSelectedYear] = useState(null);
     const [selectedMonth, setSelectedMonth] = useState(null);
@@ -78,23 +80,102 @@ function OthersCreation() {
 
     const yearOptions = generateYearRanges(2017, 33);
 
-    // Unified input change handler
+    const [othersErrors, setOthersErrors] = useState({})
+
+    const othersRules = {
+        financial_year: [
+            { test: (v) => v.length > 0, message: "Financial year is required" },
+            { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+            {
+                test: (v) => {
+                    if (!/^\d{4}-\d{4}$/.test(v)) return false;
+                    const [start, end] = v.split("-").map(Number);
+                    return end === start + 1; // year should be consecutive
+                },
+                message: "Financial year must be consecutive (e.g., 2023-2024)",
+            },
+        ],
+
+        text: [
+            { test: (v) => v.length > 0, message: "Text is required" },
+        ],
+
+        files: [
+            {
+                test: (v) => Array.isArray(v) && v.length > 0,
+                message: "At least one file is required",
+            },
+            {
+                test: (v) =>
+                    Array.isArray(v) &&
+                    v.every(
+                        (f) =>
+                            f &&
+                            typeof f === "object" &&
+                            "type" in f &&
+                            (
+                                f.type === "application/pdf" ||
+                                f.type.startsWith("image/") ||
+                                f.type === "application/vnd.ms-excel" ||
+                                f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+                                f.type === "text/plain"
+                            )
+                    ),
+                message: "Only PDF, Image, Excel, or TXT files are allowed",
+            },
+        ],
+    };
+
+    const validateOthers = (name, value) => {
+        const fieldRules = othersRules[name];
+        if (!fieldRules) return "";
+        for (let rule of fieldRules) {
+            if (!rule.test(value)) return rule.message;
+        }
+        return "";
+    };
+
     const handleInputChange = (name, value) => {
         setFormData((prev) => ({
             ...prev,
             [name]: value,
         }));
+        const errorMsg = validateOthers(name, value);
+        setOthersErrors(prev => ({ ...prev, [name]: errorMsg }));
     };
 
     const handleFileChange = (e) => {
+        const selectedFiles = Array.from(e.target.files); // FileList → Array
+
         setFormData((prev) => ({
             ...prev,
-            files: Array.from(e.target.files), // Converts file list to an array
+            files: selectedFiles,  // store as array
         }));
+
+        const errorMsg = validateOthers("files", selectedFiles);
+        setOthersErrors((prev) => ({ ...prev, files: errorMsg }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        const newErrors = {};
+        Object.entries(formData).forEach(([key, value]) => {
+            const errorMsg = validateOthers(key, value);
+            if (errorMsg) {
+                newErrors[key] = errorMsg;
+            }
+        });
+
+        setOthersErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) {
+            const firstErrorField = Object.keys(newErrors)[0];
+            toast.error(newErrors[firstErrorField], {
+                position: "top-right",
+                autoClose: 2000,
+            });
+            return; // ❌ Stop submit
+        }
+
         console.log("Final Form Data Before Submit:", formData); // Debugging log
 
         if (formData.files.length === 0) {
@@ -118,7 +199,7 @@ function OthersCreation() {
             //     headers: { "Content-Type": "multipart/form-data" }
             // });
 
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `${API_URL}/api/create-others/${id}`,
                 formDataToSend,
                 {
@@ -187,6 +268,7 @@ function OthersCreation() {
                                 </Typography>
                                 <Select
                                     options={yearOptions}
+                                    required
                                     value={yearOptions.find((option) => option.value === selectedYear)}
                                     onChange={(selectedOption) => {
                                         setSelectedYear(selectedOption.value);
@@ -205,6 +287,7 @@ function OthersCreation() {
                                 </Typography>
                                 <DatePicker
                                     selected={selectedMonth}
+                                    required
                                     onChange={(date) => {
                                         setSelectedMonth(date);
                                         handleInputChange("month", format(date, "MMMM yyyy"));
@@ -238,6 +321,7 @@ function OthersCreation() {
                                         type="text"
                                         size="lg"
                                         name="text"
+                                        required
                                         placeholder="Nature of Report"
                                         value={formData.text}
                                         // onChange={handleInputChange}
@@ -260,6 +344,7 @@ function OthersCreation() {
                                 <input
                                     type="file"
                                     name="files"
+                                    required
                                     onChange={handleFileChange}
                                     multiple
                                     className="file-input file-input-bordered file-input-success w-full max-w-sm"

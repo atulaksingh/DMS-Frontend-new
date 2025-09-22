@@ -3,6 +3,7 @@ import { Button, DialogFooter, Typography, Input } from "@material-tailwind/reac
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
@@ -37,6 +38,8 @@ const generateYearRanges = (startYear, count) => {
 function TaxAuditCreation() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const role = getUserRole();
+  console.log("Role from token:", getUserRole());
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
   const [openCreateModal, setOpenCreateModal] = useState(false);
@@ -51,24 +54,116 @@ function TaxAuditCreation() {
 
   const yearOptions = generateYearRanges(2017, 33);
 
+  const [taxAuditErrors, setTaxAuditErrors] = useState({})
+
+  const taxAuditRules = {
+    financial_year: [
+      { test: (v) => v.length > 0, message: "Financial year is required" },
+      { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+      {
+        test: (v) => {
+          if (!/^\d{4}-\d{4}$/.test(v)) return false;
+          const [start, end] = v.split("-").map(Number);
+          return end === start + 1; // year should be consecutive
+        },
+        message: "Financial year must be consecutive (e.g., 2023-2024)",
+      },
+    ],
+
+    // month: [
+    //   { test: (v) => v.length > 0, message: "Month is required" },
+    //   {
+    //     test: (v) =>
+    //       [
+    //         "january", "february", "march", "april", "may", "june",
+    //         "july", "august", "september", "october", "november", "december",
+    //       ].includes(v.toLowerCase()),
+    //     message: "Month must be a valid month name (e.g., January)",
+    //   },
+    // ],
+
+    files: [
+      {
+        test: (v) => Array.isArray(v) && v.length > 0,
+        message: "At least one file is required",
+      },
+      {
+        test: (v) =>
+          Array.isArray(v) &&
+          v.every(
+            (f) =>
+              f &&
+              typeof f === "object" &&
+              "type" in f &&
+              (
+                f.type === "application/pdf" ||
+                f.type.startsWith("image/") ||
+                f.type === "application/vnd.ms-excel" ||
+                f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+                f.type === "text/plain"
+              )
+          ),
+        message: "Only PDF, Image, Excel, or TXT files are allowed",
+      },
+    ],
+  };
+
+  const validateTaxAudit = (name, value) => {
+    const fieldRules = taxAuditRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+
   // Unified input change handler
   const handleInputChange = (name, value) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateTaxAudit(name, value);
+    setTaxAuditErrors(prev => ({ ...prev, [name]: errorMsg }));
+
   };
 
   const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // FileList → Array
+
     setFormData((prev) => ({
       ...prev,
-      files: Array.from(e.target.files), // Converts file list to an array
+      files: selectedFiles,  // store as array
     }));
+
+    const errorMsg = validateTaxAudit("files", selectedFiles);
+    setTaxAuditErrors((prev) => ({ ...prev, files: errorMsg }));
+
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateTaxAudit(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setTaxAuditErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
 
     if (formData.files.length === 0) {
       toast.error("Please upload at least one file before submitting.", {
@@ -85,7 +180,7 @@ function TaxAuditCreation() {
       formData.files.forEach((file) => formDataToSend.append("files", file));
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-taxaudit/${id}`,
         formDataToSend,
         {
@@ -147,6 +242,7 @@ function TaxAuditCreation() {
                 </Typography>
                 <Select
                   options={yearOptions}
+                  required
                   value={yearOptions.find((option) => option.value === selectedYear)}
                   onChange={(selectedOption) => {
                     setSelectedYear(selectedOption.value);
@@ -165,6 +261,7 @@ function TaxAuditCreation() {
                 </Typography>
                 <DatePicker
                   selected={selectedMonth}
+                  required
                   onChange={(date) => {
                     setSelectedMonth(date);
                     handleInputChange("month", format(date, "MMMM yyyy"));
@@ -187,6 +284,7 @@ function TaxAuditCreation() {
                   type="file"
                   name="files"
                   onChange={handleFileChange}
+                  required
                   multiple
                   className="file-input file-input-bordered file-input-success w-full max-w-sm"
                 />

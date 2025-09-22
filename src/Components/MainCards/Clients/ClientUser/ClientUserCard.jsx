@@ -21,6 +21,7 @@ import { EyeIcon, EyeSlashIcon } from "@heroicons/react/16/solid";
 import { Autocomplete, TextField } from "@mui/material";
 import { is } from "date-fns/locale/is";
 import Signup from "../../../../pages/ForgetPassword";
+import { use } from "react";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
@@ -66,41 +67,78 @@ export default function ClientUserCard({ rowId }) {
   const [deleteId, setDeleteId] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [formData, setFormData] = useState({
-    name: "",
+    first_name: "",
+    last_name: "",
+    username: "",
     // customer: "",
     email: "",
     password: "",
     is_active: " ",
   });
-
-
-  // console.log("formData12", formData);
   const [attachment, setAttachment] = useState(null); // State for file input
+
+  const [clientuserErrors, setClientUserErrors] = useState({})
+
+  const clientuserRules = {
+    first_name: [
+      { test: v => v && v.trim().length > 0, message: "First name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "First name can only contain alphabets and spaces" },
+      { test: v => v.trim().length >= 2, message: "First name must be at least 2 characters long" },
+    ],
+    last_name: [
+      { test: v => v && v.trim().length > 0, message: "Last name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Last name can only contain alphabets and spaces" },
+      { test: v => v.trim().length >= 2, message: "Last name must be at least 2 characters long" },
+    ],
+    email: [
+      { test: v => v && v.trim().length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" },
+    ],
+    password: [
+      { test: v => v && v.trim().length > 0, message: "Password is required" },
+      { test: v => v.length >= 6, message: "Password must be at least 6 characters long" },
+      { test: v => /[A-Za-z]/.test(v) && /\d/.test(v), message: "Password must contain at least one letter and one number" },
+    ],
+  };
+
+  const validateClientUserField = (name, value) => {
+    const fieldRules = clientuserRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+    const errorMsg = validateClientUserField(name, value);
+    setClientUserErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-  // Handle file input change
-
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateClientUserField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
 
     try {
       const dataToSubmit = new FormData();
-      // Create a FormData object
-      // Extract only the customer id from the selected customer object
-      // const customerId = formData.customer?.id || formData.customer; // Ensure we're sending the customer id
-
-      // Prepare the data to submit, making sure only the customer ID is included
-      // const dataToSubmit = {
-      //   ...formData,
-      //   customer: customerId, // Send only the customer id (not the full object)
-      // };
       dataToSubmit.append("email", formData.email);
-      dataToSubmit.append("name", formData.name);
+      dataToSubmit.append("first_name", formData.first_name);
+      dataToSubmit.append("last_name", formData.last_name);
       dataToSubmit.append("password", formData.password);
       dataToSubmit.append("is_active", formData.is_active);
 
@@ -126,9 +164,9 @@ export default function ClientUserCard({ rowId }) {
         // Optionally close the modal and reset form
         handleCreateClose();
         setFormData({
-          // first_name: "",
-          // last_name: "",
-          name: "",
+          first_name: "",
+          last_name: "",
+          // name: "",
           email: "",
           password: "",
           is_active: " ",
@@ -146,13 +184,36 @@ export default function ClientUserCard({ rowId }) {
       });
     }
   };
-
-
   const [resetData, setResetData] = useState({
     previous_password: "",
     new_password: "",
     confirm_password: "",
   });
+
+  const [passwordErrors, setPasswordErrors] = useState({});
+
+  const passwordRules = {
+    previous_password: [
+      { test: v => v && v.trim().length > 0, message: "Previous password is required" },
+    ],
+    new_password: [
+      { test: v => v && v.trim().length > 0, message: "New password is required" },
+      { test: v => v.length >= 6, message: "New password must be at least 6 characters long" },
+      { test: v => /[A-Za-z]/.test(v) && /\d/.test(v), message: "New password must contain at least one letter and one number" },
+    ],
+    confirm_password: [
+      { test: v => v && v.trim().length > 0, message: "Confirm password is required" },
+      // ✅ cross-field check should be handled separately in handleSubmit
+    ],
+  };
+  const validatePasswordField = (name, value, formData) => {
+    const fieldRules = passwordRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
 
   const handleResetInputChange = (e) => {
     const { name, value } = e.target;
@@ -160,9 +221,23 @@ export default function ClientUserCard({ rowId }) {
       ...prev,
       [name]: value,
     }));
+    const errorMsg = validatePasswordField(name, value);
+    setPasswordErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
   const handleReset = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validatePasswordField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
 
     try {
       const dataToSubmit = new FormData();
@@ -208,7 +283,6 @@ export default function ClientUserCard({ rowId }) {
       });
     }
   };
-
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -216,7 +290,6 @@ export default function ClientUserCard({ rowId }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  // console.log("row123", deleteId);
   const handleDeleteOpen = () => {
     setDeleteId(rowId);
     setOpenDeleteModal(true);
@@ -253,18 +326,12 @@ export default function ClientUserCard({ rowId }) {
       });
     }
   };
-
-  // const handleViewOpen = () => {
-  //   setOpenViewModal(true);
-  //   setAnchorEl(null);
-  // };
-
   const handleViewOpen = () => {
     setOpenViewModal(true);
     setAnchorEl(null);
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/single-clientuser/${id}/${rowId}`
         );
         setClientUser(response.data);
@@ -276,10 +343,8 @@ export default function ClientUserCard({ rowId }) {
     };
     fetchBankDetails();
   };
-
   const handleDeleteClose = () => setOpenDeleteModal(false);
   const handleViewClose = () => setOpenViewModal(false);
-  // const handleCreateOpen = async () => {
   //   setOpenCreateModal(true);
   //   setAnchorEl(null);
 
@@ -307,42 +372,20 @@ export default function ClientUserCard({ rowId }) {
     setOpenResetModal(true);
     setAnchorEl(null);
   };
-
   const handleCreateClose = () => setOpenCreateModal(false);
   const handleResetClose = () => setOpenResetModal(false);
   const [clientUser, setClientUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchBankDetails = async () => {
-  //     try {
-  //       const response = await axiosInstance.get(
-  //         `${API_URL}/api/edit-clientuser/${id}/${rowId}`
-  //       );
-
-  //       setClientUser(response.data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setError(error);
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchBankDetails();
-  // }, [id, rowId]);
-
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswords, setShowPasswords] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
   const togglePasswordsVisibility = () => {
     setShowPasswords(!showPasswords);
   };
-
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
@@ -394,7 +437,7 @@ export default function ClientUserCard({ rowId }) {
                               Name :
                             </Typography>
                             <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.name}
+                              {clientUser.first_name} {clientUser.last_name}
                             </div>
                           </div>
                           <div className="w-full flex gap-3">
@@ -403,84 +446,51 @@ export default function ClientUserCard({ rowId }) {
                               color="blue-gray"
                               className=""
                             >
+                              Status:
+                            </Typography>
+                            {/* <div className="text-gray-700 text-[15px] my-auto">
+                              {clientUser.is_active}
+                            </div> */}
+                            <div
+                              className={`text-[15px] my-auto font-semibold ${clientUser.is_active ? "text-green-600" : "text-red-600"
+                                }`}
+                            >
+                              {clientUser.is_active ? "Active" : "Inactive"}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex gap-10 p-2">
+                          <div className="flex gap-3">
+                            <Typography
+                              variant="h6"
+                              color="blue-gray"
+                              size="sm"
+                            >
+                              Username :
+                            </Typography>
+                            <div className="text-gray-700 text-[15px] my-auto">
+                              {clientUser.username}
+                            </div>
+                          </div>
+
+                          <div className="flex gap-3">
+                            <Typography
+                              variant="h6"
+                              color="blue-gray"
+                              size="sm"
+                            >
                               Email :
                             </Typography>
-                            {/* {clientUser.customer.name} */}
                             <div className="text-gray-700 text-[15px] my-auto">
                               {clientUser.email}
                             </div>
                           </div>
                         </div>
 
-                        {/* <div className="flex gap-6   p-2">
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=""
-                              size="sm"
-                            >
-                              Type :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.customer.customer && clientUser.customer.vendor
-                                ? "Customer and Vendor"
-                                : clientUser.customer.customer
-                                  ? "Customer"
-                                  : clientUser.customer.vendor
-                                    ? "Vendor"
-                                    : ""}
-                            </div>
-                          </div>
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=""
-                              size="sm"
-                            >
-                              {clientUser.customer.customer && clientUser.customer.vendor
-                                ? "Customer and Vendor :"
-                                : clientUser.customer.customer
-                                  ? "Customer Name :"
-                                  : clientUser.customer.vendor
-                                    ? "Vendor Name:"
-                                    : ""}
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.customer.name}
-                            </div>
-                          </div>
-                        </div> */}
 
-                        {/* <div className="flex gap-6  p-2">
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className="mb-1"
-                              size="sm"
-                            >
-                              IFSC Code :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.ifsc}
-                            </div>
-                          </div>
-                          <div className="w-full flex gap-3 align-middle items-center">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className="mb-1"
-                              size="sm"
-                            >
-                              Attachment :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {clientUser.attachment}
-                            </div>
-                          </div>
-                        </div> */}
+
+
+
                       </div>
                     </form>
                   </div>
@@ -530,14 +540,14 @@ export default function ClientUserCard({ rowId }) {
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
                 <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-4">
+                  <div className="col-span-2">
                     <label htmlFor="first_name">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="block font-semibold mb-2"
                       >
-                        Name
+                        First Name
                       </Typography>
                     </label>
 
@@ -545,9 +555,36 @@ export default function ClientUserCard({ rowId }) {
                       <Input
                         type="text"
                         size="lg"
-                        name="name"
-                        placeholder="Name"
-                        value={formData.name}
+                        name="first_name"
+                        placeholder="First Name"
+                        value={formData.first_name}
+                        onChange={handleInputChange}
+                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        labelProps={{
+                          className: "hidden",
+                        }}
+                        containerProps={{ className: "min-w-full" }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label htmlFor="last_name">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="block font-semibold mb-2"
+                      >
+                        Last Name
+                      </Typography>
+                    </label>
+
+                    <div className="">
+                      <Input
+                        type="text"
+                        size="lg"
+                        name="last_name"
+                        placeholder="Last Name"
+                        value={formData.last_name}
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -775,6 +812,7 @@ export default function ClientUserCard({ rowId }) {
                         placeholder="Previous Password"
                         value={resetData.previous_password}
                         onChange={handleResetInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -815,6 +853,7 @@ export default function ClientUserCard({ rowId }) {
                         placeholder="New Password"
                         value={resetData.new_password}
                         onChange={handleResetInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                         labelProps={{
                           className: "hidden",
@@ -855,6 +894,7 @@ export default function ClientUserCard({ rowId }) {
                         placeholder="Confirm Password"
                         value={resetData.confirm_password}
                         onChange={handleResetInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                         labelProps={{
                           className: "hidden",

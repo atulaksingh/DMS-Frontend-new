@@ -158,7 +158,7 @@ function Login() {
               <CardBody>
                 <form action="#" className="flex flex-col gap-4 md:mt-1" onSubmit={handleSubmit}>
                   <div>
-                    <label htmlFor="email">
+                    <label htmlFor="text">
                       <Typography
                         variant="small"
                         color="blue-gray"
@@ -173,7 +173,7 @@ function Login() {
 
                     <div className="">
                       <Input
-                        type="email"
+                        type="text"
                         name="username"
                         placeholder="Email Address"
                         className="!border !border-[#366FA1] bg-white text-gray-900 shadow-lg  ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "

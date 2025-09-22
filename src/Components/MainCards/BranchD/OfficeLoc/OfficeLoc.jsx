@@ -31,14 +31,14 @@ const styleCreateMOdal = {
   p: 4,
   borderRadius: "10px",
 };
-function OfficeLoc({ officeLocationData ,fetchBranchDetails}) {
+function OfficeLoc({ officeLocationData, fetchBranchDetails }) {
 
 
   const calculateTableBodyHeight = () => {
-    const minHeight = 80; 
-    const maxHeight = 525; 
-      const rowHeight = 79; 
-      const headerHeight = 50; 
+    const minHeight = 80;
+    const maxHeight = 525;
+    const rowHeight = 79;
+    const headerHeight = 50;
     const calculatedHeight = officeLocationData.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
@@ -209,6 +209,12 @@ function OfficeLoc({ officeLocationData ,fetchBranchDetails}) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No office location data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -219,14 +225,28 @@ function OfficeLoc({ officeLocationData ,fetchBranchDetails}) {
             Office Location Details
           </div>
           <div>
-       <OfficeLocCreation fetchBranchDetails={fetchBranchDetails}/>
+            <OfficeLocCreation fetchBranchDetails={fetchBranchDetails} />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
+        {/* <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable data={officeLocationData} columns={columns} options={options} />
           </ThemeProvider>
-        </CacheProvider>
+        </CacheProvider> */}
+        {Array.isArray(officeLocationData) && officeLocationData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable
+                title={"Office Location Details"}
+                data={officeLocationData}
+                columns={columns}
+                options={options}
+              />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

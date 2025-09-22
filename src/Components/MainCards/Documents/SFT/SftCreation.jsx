@@ -4,6 +4,7 @@ import { Button, DialogFooter, Typography, Input } from "@material-tailwind/reac
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
@@ -37,6 +38,7 @@ const generateYearRanges = (startYear, count) => {
 
 function SftCreation() {
   const { id } = useParams();
+  const role = getUserRole();
   const dispatch = useDispatch();
   const [selectedYear, setSelectedYear] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
@@ -52,24 +54,113 @@ function SftCreation() {
 
   const yearOptions = generateYearRanges(2017, 33);
 
+  const [sftErrors, setSftErrors] = useState({})
+
+  const sftRules = {
+    financial_year: [
+      { test: (v) => v.length > 0, message: "Financial year is required" },
+      { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+      {
+        test: (v) => {
+          if (!/^\d{4}-\d{4}$/.test(v)) return false;
+          const [start, end] = v.split("-").map(Number);
+          return end === start + 1; // year should be consecutive
+        },
+        message: "Financial year must be consecutive (e.g., 2023-2024)",
+      },
+    ],
+
+    // month: [
+    //   { test: (v) => v.length > 0, message: "Month is required" },
+    //   {
+    //     test: (v) =>
+    //       [
+    //         "january", "february", "march", "april", "may", "june",
+    //         "july", "august", "september", "october", "november", "december",
+    //       ].includes(v.toLowerCase()),
+    //     message: "Month must be a valid month name (e.g., January)",
+    //   },
+    // ],
+
+    files: [
+      {
+        test: (v) => Array.isArray(v) && v.length > 0,
+        message: "At least one file is required",
+      },
+      {
+        test: (v) =>
+          Array.isArray(v) &&
+          v.every(
+            (f) =>
+              f &&
+              typeof f === "object" &&
+              "type" in f &&
+              (
+                f.type === "application/pdf" ||
+                f.type.startsWith("image/") ||
+                f.type === "application/vnd.ms-excel" ||
+                f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+                f.type === "text/plain"
+              )
+          ),
+        message: "Only PDF, Image, Excel, or TXT files are allowed",
+      },
+    ],
+  };
+
+  const validateSft = (name, value) => {
+    const fieldRules = sftRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   // Unified input change handler
   const handleInputChange = (name, value) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateSft(name, value);
+    setSftErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // FileList → Array
+
     setFormData((prev) => ({
       ...prev,
-      files: Array.from(e.target.files), // Converts file list to an array
+      files: selectedFiles,  // store as array
     }));
+
+    const errorMsg = validateSft("files", selectedFiles);
+    setSftErrors((prev) => ({ ...prev, files: errorMsg }));
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateSft(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setSftErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
 
     if (formData.files.length === 0) {
       toast.error("Please upload at least one file before submitting.", {
@@ -77,7 +168,7 @@ function SftCreation() {
         autoClose: 2000,
       });
       return; // Stop form submission
-    } 
+    }
 
     try {
       const formDataToSend = new FormData();
@@ -86,7 +177,7 @@ function SftCreation() {
       formData.files.forEach((file) => formDataToSend.append("files", file));
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-sft/${id}`,
         formDataToSend,
         {
@@ -151,6 +242,7 @@ function SftCreation() {
                 </Typography>
                 <Select
                   options={yearOptions}
+                  required
                   value={yearOptions.find((option) => option.value === selectedYear)}
                   onChange={(selectedOption) => {
                     setSelectedYear(selectedOption.value);
@@ -169,6 +261,7 @@ function SftCreation() {
                 </Typography>
                 <DatePicker
                   selected={selectedMonth}
+                  required
                   onChange={(date) => {
                     setSelectedMonth(date);
                     handleInputChange("month", format(date, "MMMM yyyy"));
@@ -190,6 +283,7 @@ function SftCreation() {
                 <input
                   type="file"
                   name="files"
+                  required
                   onChange={handleFileChange}
                   multiple
                   className="file-input file-input-bordered file-input-success w-full max-w-sm"

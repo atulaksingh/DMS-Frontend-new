@@ -10,10 +10,10 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
@@ -21,7 +21,6 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Tab from "@mui/material/Tab";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
-// import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendarAlt } from "react-icons/fa";
@@ -43,19 +42,6 @@ import TabPanel from "@mui/lab/TabPanel";
 import { useEffect } from "react";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { useDispatch } from "react-redux";
-// const styleCreateMOdal = {
-//   position: "absolute",
-//   top: "50%",
-//   left: "50%",
-//   transform: "translate(-50%, -50%)",
-//   width: "80%",
-//   bgcolor: "background.paper",
-
-//   boxShadow: 24,
-//   paddingTop: "17px", // For vertical (top and bottom) padding
-//   paddingInline: "40px",
-//   borderRadius: "10px",
-// };
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateModal = {
   position: "absolute",
@@ -63,19 +49,19 @@ const styleCreateModal = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: {
-    xs: "90%", // Mobile devices (extra-small screens)
-    sm: "90%", // Small screens (e.g., tablets)
-    md: "90%", // Medium screens
-    lg: "90%", // Large screens%
-    xl: "85%", // Large screens
+    xs: "90%",
+    sm: "90%",
+    md: "90%",
+    lg: "90%",
+    xl: "85%",
   },
   bgcolor: "background.paper",
   boxShadow: 24,
   paddingTop: "17px",
   paddingInline: {
-    xs: "20px", // Smaller padding for smaller screens
-    sm: "30px", // Medium padding for small screens
-    md: "40px", // Default padding for medium and larger screens
+    xs: "20px",
+    sm: "30px",
+    md: "40px",
   },
   borderRadius: "10px",
 };
@@ -83,28 +69,23 @@ function PurchaseCreation({
   allLocationBranchProductData,
   fetchAllLocBranchDetails,
 }) {
-  // console.log("allLocationBranchProductData purchase",allLocationBranchProductData)
   const { id } = useParams();
+  const role = getUserRole();
   const offData = allLocationBranchProductData?.serializer || [];
   const customerData = allLocationBranchProductData?.serializer_customer || [];
-  const product_ser_Data =
-    allLocationBranchProductData?.product_serializer || [];
+  const product_ser_Data = allLocationBranchProductData?.product_serializer || [];
   const branch_ser_name = allLocationBranchProductData?.branch_serializer || [];
-
   const dispatch = useDispatch();
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [value, setValue] = React.useState("1");
   const [selectedValueInvoiceType, setSelectedValueInvoiceType] = useState("");
-
   const [showBranchInput, setShowBranchInput] = useState(false);
   const [branchNoGst, setBranchNoGst] = useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [selectedTDSTCSOption, setSelectedTDSTCSOption] = useState("");
   const [selectedTDSTCSRateOption, setSelectedTDSTCSRateOption] = useState("");
-  const [selectedTDSTCSectionOption, setSelectedTDSTCSectionOption] =
-    useState("");
-  // console.log("123456", selectedTDSTCSOption, selectedTDSTCSOption);
+  const [selectedTDSTCSectionOption, setSelectedTDSTCSectionOption] = useState("");
   const [shouldShowIGST, setShouldShowIGST] = useState(false);
   const [shouldShowCGSTSGST, setShouldShowCGSTSGST] = useState(false);
   const [isGstNoEmpty, setIsGstNoEmpty] = useState(true);
@@ -120,7 +101,6 @@ function PurchaseCreation({
     setValue(newValue);
   };
   const handleCreateClose = () => {
-    // console.log("Closing modal");
     setOpenCreateModal(false);
     resetFields();
   };
@@ -188,7 +168,6 @@ function PurchaseCreation({
     setBranchNoGst("");
   };
 
-  // const handleCreateClose = () => setOpenCreateModal(false);
   const [formData, setFormData] = useState({
     offLocID: "",
     location: "",
@@ -197,7 +176,6 @@ function PurchaseCreation({
     city: "",
     state: "",
     country: "",
-    // gst_no: "",
     branchID: "",
   });
 
@@ -233,53 +211,103 @@ function PurchaseCreation({
       invoice_no: "",
       invoice_date: "",
       invoice_type: "",
-      // entry_type: "",
       attach_invoice: "",
       attach_e_way_bill: "",
       taxable_amount: "",
       totalall_gst: "",
       total_invoice_value: "",
       tds_tcs_rate: 0,
-      // tds_tcs_section: "",
       tcs: 0,
       tds: 0,
       amount_receivable: "",
-      // utilise_month: "",
-      // utilise_edit: false,
     },
   ]);
-  // console.log("formData", formData);
-  // console.log("vendor", vendorData);
-  // console.log("rowsData", rows);
-  // console.log("invoiceData", invoiceData);
-  // const handleInputChangeInvoiceData = (e) => {
-  //   const { name, value, type } = e.target;
-  //   const fieldValue = type === "file" ? e.target.files[0] : value;
-
-  //   setInvoiceData((prevData) => {
-  //     const updatedData = [...prevData];
-  //     updatedData[0] = {
-  //       ...updatedData[0],
-  //       [name]: name === "invoice_type" ? fieldValue.toLowerCase() : fieldValue,
-  //     };
-  //     return updatedData;
-  //   });
-  // };
-
+  const [purchaseErrors, setPurchaseErrors] = useState({})
+  const purchaseRules = {
+    location: [
+      { test: v => v.length > 0, message: "Office Location is required" }
+    ],
+    contact: [
+      { test: v => /^\d{10}$/.test(v), message: "Contact must be 10 digits" }
+    ],
+    address: [
+      { test: v => v.length > 0, message: "Address is required" }
+    ],
+    city: [
+      { test: v => v.length > 0, message: "City is required" }
+    ],
+    state: [
+      { test: v => v.length > 0, message: "State is required" }
+    ],
+    country: [
+      { test: v => v.length > 0, message: "Country is required" }
+    ],
+    branchNoGst: [
+      { test: v => v.length > 0, message: "GST No is required" },
+      // { test: v => /^[0-9A-Z]{15}$/.test(v), message: "Invalid GST format" }
+    ],
+    gst_no: [
+      { test: v => v.length > 0, message: "Vendor GST is required" }
+    ],
+    name: [
+      { test: v => v.length > 0, message: "Vendor Name is required" }
+    ],
+    pan: [
+      { test: v => v.length > 0, message: "PAN is required" },
+      { test: v => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v), message: "Invalid PAN format" }
+    ],
+    email: [
+      { test: v => v.length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" }
+    ],
+    contact_vendor: [
+      { test: v => /^\d{10}$/.test(v), message: "Vendor Contact must be 10 digits" }
+    ],
+    customer_vendor_type: [
+      { test: v => v.customer || v.vendor, message: "Select at least Customer or Vendor" }
+    ],
+    invoice_no: [
+      { test: v => v.length > 0, message: "Invoice No is required" }
+    ],
+    invoice_date: [
+      { test: v => v.length > 0, message: "Invoice Date is required" }
+    ],
+    month: [
+      { test: v => v.length > 0, message: "Month is required" }
+    ],
+    product: [
+      { test: v => v.length > 0, message: "Product is required" }
+    ],
+    hsnCode: [
+      { test: v => /^\d+$/.test(v), message: "HSN must be numbers" }
+    ],
+    unit: [
+      { test: v => v.length > 0, message: "Unit is required" }
+    ],
+    rate: [
+      { test: v => !isNaN(v), message: "Rate must be numeric" }
+    ]
+  };
+  const validatePurchaseField = (name, value) => {
+    const fieldRules = purchaseRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
   const handleInputChangeInvoiceData = (e) => {
-    const { name, value, type, checked } = e.target; // Include `checked`
+    const { name, value, type, checked } = e.target;
     let fieldValue;
-
     if (type === "checkbox") {
       fieldValue = checked;
     } else if (type === "file") {
       fieldValue = e.target.files[0];
     } else if (name === "tds_tcs_rate" && value === "") {
-      fieldValue = ""; // Default to 0.00 if empty
+      fieldValue = "";
     } else {
       fieldValue = value;
     }
-
     setInvoiceData((prevData) => {
       const updatedData = Array.isArray(prevData) ? [...prevData] : [{}];
 
@@ -311,14 +339,18 @@ function PurchaseCreation({
 
       return updatedData;
     });
+    const errorMsg = validatePurchaseField(name, value);
+    setPurchaseErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validatePurchaseField(name, value);
+    setPurchaseErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
   const handleInputChangeCL = (e) => {
     const { name, value } = e.target;
@@ -326,9 +358,11 @@ function PurchaseCreation({
       ...prev,
       [name]: value,
     }));
-  };
 
-  const handleGstNoChange = (event, newValue1) => {
+    const errorMsg = validatePurchaseField(name, value);
+    setPurchaseErrors(prev => ({ ...prev, [name]: errorMsg }));
+  };
+  const handleGstNoChange = (name, newValue1) => {
     setIsGstNoEmpty(!newValue1);
 
     if (!newValue1) {
@@ -378,8 +412,9 @@ function PurchaseCreation({
         contact: "",
       });
     }
+    const errorMsg = validatePurchaseField(name, value);
+    setPurchaseErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-
   const handleNameChange = (event, newValue2) => {
     if (!newValue2) {
       setVendorData((prev) => ({
@@ -428,22 +463,22 @@ function PurchaseCreation({
         contact: "",
       }));
     }
+    const errorMsg = validatePurchaseField(name, value);
+    setPurchaseErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-
   const [selectedLocation, setSelectedLocation] = useState("");
   const [productID, setProductID] = useState("");
   const [selectedGstNo, setSelectedGstNo] = useState("");
-
   const handleLocationChange = async (newValue, isBranch = false) => {
     console.log("newwvalue", newValue)
     if (isBranch && newValue && newValue.branch_name) {
-      // console.log("branchiddd--->",isBranch,newValue,newValue.branch_name)
       setBranchNoGst(newValue?.gst_no);
       setFormData({
         ...formData,
-        branchID: newValue.id, // Store branchID when branch is selected
+        branchID: newValue.id,
       });
-    } else if (newValue && newValue.location) {
+    }
+    else if (newValue && newValue.location) {
       setFormData({
         ...formData,
         offLocID: newValue.id,
@@ -453,14 +488,11 @@ function PurchaseCreation({
         city: newValue.city || "",
         state: newValue.state || "",
         country: newValue.country || "",
-        // gst_no: newValue.gst_no || "",
         branchID: newValue.branch || "",
       });
-      setShowBranchInput(false); // Hide branch input when a location is selected
-
-      // Fetch additional data if needed
+      setShowBranchInput(false);
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         console.log("Location Data:---->", response.data.branch_gst);
@@ -470,7 +502,6 @@ function PurchaseCreation({
       }
     }
   };
-  // console.log("123",branchNoGst)
   const handleInputChangeLocation = async (event, newInputValue) => {
     if (newInputValue === "") {
       setFormData({
@@ -482,9 +513,9 @@ function PurchaseCreation({
         state: "",
         country: "",
         gst_no: "",
-        branchID: "", // Reset branchID as well
+        branchID: "",
       });
-      setShowBranchInput(false); // Hide custom branch input
+      setShowBranchInput(false);
     } else {
       const isLocationFound = offData.some(
         (option) =>
@@ -509,99 +540,54 @@ function PurchaseCreation({
       );
 
       if (matchingLocation) {
-        setFormData({
-          ...formData,
-          offLocID: matchingLocation.id,
-          location: matchingLocation.location,
-          contact: matchingLocation.contact || "",
-          address: matchingLocation.address || "",
-          city: matchingLocation.city || "",
-          state: matchingLocation.state || "",
-          country: matchingLocation.country || "",
-          gst_no: matchingLocation.gst_no || "",
+        try {
+          const response = await axiosInstance.get(
+            `${API_URL}/api/get-purchase/${id}/?newValue=${matchingLocation.id}&productID=${productID}`
+          );
+          setBranchNoGst(response?.data?.branch_gst);
+          console.log("Full matchingLocation:", matchingLocation);
+          console.log("Branch object:", matchingLocation.branch);
+          console.log("Location Data:---->", response.data.branch_gst);
 
-        });
+          setFormData({
+            ...formData,
+            offLocID: matchingLocation.id,
+            location: matchingLocation.location,
+            contact: matchingLocation.contact || "",
+            address: matchingLocation.address || "",
+            city: matchingLocation.city || "",
+            state: matchingLocation.state || "",
+            country: matchingLocation.country || "",
+            gst_no: response?.data?.branch_gst || "",
+            branch: matchingLocation.branch || "",
+          });
+        } catch (error) {
+          console.error("Error fetching location data:", error);
+        }
+      }
+      else {
+        setFormData({
+          offLocID: "",
+          location: "",
+          contact: "",
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          gst_no: "",
+
+        })
+        setBranchNoGst("")
       }
     }
+    const errorMsg = validatePurchaseField(event, value);
+    setPurchaseErrors(prev => ({ ...prev, [event]: errorMsg }));
   };
-
-  // const handleGstNoChange = (event, newValue1) => {
-  //   // If user clears the input
-  //   setIsGstNoEmpty(!newValue1);
-  //   if (!newValue1) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: "",
-  //       gst_no: "",
-  //       name: "",
-  //       pan: "",
-  //       vendor_address: "",
-  //       customer: false,
-  //       vendor: false,
-  //       email: "",
-  //       contact: ""
-  //     }));
-  //     return;
-  //   }
-
-  //   if (typeof newValue1 === "string") {
-  //     const matchedCustomer = customerData.find(
-  //       (customer) => customer.gst_no === newValue1
-  //     );
-
-  //     if (matchedCustomer) {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-
-  //         vendorID: matchedCustomer.id,
-  //         gst_no: matchedCustomer.gst_no,
-  //         name: matchedCustomer.name,
-  //         pan: matchedCustomer.pan,
-  //         vendor_address: matchedCustomer.address,
-  //         customer: matchedCustomer.customer,
-  //         vendor: matchedCustomer.vendor,
-  //         contact: matchedCustomer.contact,
-  //         email: matchedCustomer.email,
-  //       }));
-  //     } else {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-  //         vendorID: "",
-  //         gst_no: newValue1,
-  //         name: "",
-  //         pan: "",
-  //         vendor_address: "",
-  //         customer: false,
-  //         vendor: false,
-  //         email: "",
-  //         contact: ""
-  //       }));
-  //     }
-  //     return;
-  //   }
-
-  //   if (newValue1 && newValue1.gst_no) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: newValue1.id,
-  //       gst_no: newValue1.gst_no,
-  //       name: newValue1.name || "",
-  //       pan: newValue1.pan || "",
-  //       email: newValue1.email || "",
-  //       contact: newValue1.contact || "",
-  //       vendor_address: newValue1.address || "",
-  //       customer: newValue1.customer || false,
-  //       vendor: newValue1.vendor || false,
-
-  //     }));
-  //   }
-  // };
-
   const handleProductChange = async (index, newValue) => {
     if (newValue) {
-      setProductID(newValue.id); // Assuming setProductID is defined elsewhere
+      setProductID(newValue.id);
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-purchase/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -619,36 +605,68 @@ function PurchaseCreation({
         console.error("Error fetching HSN code and GST rate:", error);
       }
     } else {
-      // Clear the product field if the value is cleared
       setRows((prevRows) =>
         prevRows.map((row, rowIndex) =>
           rowIndex === index ? { ...row, product: "" } : row
         )
       );
     }
+    const errorMsg = validatePurchaseField(name, value);
+    setPurchaseErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-
-  const handleInputChangeProductField = (index, value) => {
+  const handleInputChangeProductField = async (index, value) => {
     setRows((prevRows) =>
-      prevRows.map((row, rowIndex) =>
-        rowIndex === index ? { ...row, product: value } : row
-      )
-    );
-  };
+      prevRows.map((row, rowIndex) => {
+        if (rowIndex === index) {
+          return {
+            ...row,
+            product: value,
+            hsnCode: "",
+            gstRate: "",
+            description: "",
+            unit: "",
+            rate: "",
+            product_amount: "",
+            cgst: 0,
+            sgst: 0,
+            igst: 0,
+            total_invoice: 0,
 
+          }; // reset first
+        }
+        return row;
+      })
+    );
+
+    if (value) {
+      try {
+        setRows((prevRows) =>
+          prevRows.map((row, rowIndex) =>
+            rowIndex === index
+              ? { ...row, hsnCode: "", gstRate: "" }
+              : row
+          )
+        );
+        // }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    }
+
+    const errorMsg = validatePurchaseField("product", value);
+    setPurchaseErrors((prev) => ({ ...prev, product: errorMsg }));
+  };
   const handleInputChangeProduct = (index, field, value) => {
     setRows((prevRows) =>
       prevRows.map((row, rowIndex) => {
         if (rowIndex === index) {
           const updatedRow = { ...row, [field]: value };
-
           // Recalculate product_amount if unit or rate changes
           if (field === "unit" || field === "rate") {
             const unit = parseFloat(updatedRow.unit) || 0;
             const rate = parseFloat(updatedRow.rate) || 0;
             updatedRow.product_amount = (unit * rate).toFixed(2); // Format to 2 decimal places
           }
-
           // Check if invoice_type is "Nil Rated"
           if (invoiceData[0]?.invoice_type.toLowerCase() === "nil rated") {
             updatedRow.cgst = "0";
@@ -661,43 +679,40 @@ function PurchaseCreation({
                 parseFloat(updatedRow.product_amount)) /
               100
             ).toFixed(2);
-
             if (shouldShowCGSTSGST) {
               const cgstValue = (gstValue / 2).toFixed(2);
               const sgstValue = (gstValue / 2).toFixed(2);
               updatedRow.cgst = cgstValue;
               updatedRow.sgst = sgstValue;
-              updatedRow.igst = 0; // Reset IGST if CGST/SGST is enabled
+              updatedRow.igst = 0;
             } else if (shouldShowIGST) {
-              updatedRow.cgst = 0; // Reset CGST
-              updatedRow.sgst = 0; // Reset SGST
+              updatedRow.cgst = 0;
+              updatedRow.sgst = 0;
               updatedRow.igst = gstValue;
             }
           }
-
           // Calculate GST value for total invoice calculation
           const gstValueRow = shouldShowCGSTSGST
             ? (parseFloat(updatedRow.cgst) || 0) +
             (parseFloat(updatedRow.sgst) || 0)
             : parseFloat(updatedRow.igst) || 0;
-
           // Ensure total_invoice is calculated without NaN
           updatedRow.total_invoice = (
             (parseFloat(updatedRow.product_amount) || 0) + gstValueRow
           ).toFixed(2);
-
           return updatedRow;
         }
         return row;
       })
     );
-  };
 
+    const errorMsg = validatePurchaseField(name, value);
+    setPurchaseErrors(prev => ({ ...prev, [name]: errorMsg }));
+  };
   useEffect(() => {
     setRows((prevRows) => {
       const updatedRows = prevRows.map((row) => {
         let updatedRow = { ...row }; // Create a copy to avoid direct mutation of state
-
         // Check if the invoice type is "Nil Rated"
         if (invoiceData[0]?.invoice_type.toLowerCase() === "nil rated") {
           // Set all GST values to 0 when Nil Rated is selected
@@ -710,7 +725,6 @@ function PurchaseCreation({
             updatedRow.sgst = "0.00";
             updatedRow.igst = "0.00";
           }
-
           // Set total_invoice to product_amount since no GST applies
           updatedRow.total_invoice = (
             parseFloat(updatedRow.product_amount) || 0
@@ -722,7 +736,6 @@ function PurchaseCreation({
               parseFloat(updatedRow.product_amount)) /
             100
           ).toFixed(2);
-
           if (shouldShowCGSTSGST) {
             const cgstValue = (gstValue / 2).toFixed(2);
             const sgstValue = (gstValue / 2).toFixed(2);
@@ -734,27 +747,22 @@ function PurchaseCreation({
             updatedRow.sgst = "0.00"; // Reset SGST
             updatedRow.igst = gstValue;
           }
-
           // Calculate total_invoice for this row
           const gstValueRow = shouldShowCGSTSGST
             ? (parseFloat(updatedRow.cgst) || 0) +
             (parseFloat(updatedRow.sgst) || 0)
             : parseFloat(updatedRow.igst) || 0;
-
           updatedRow.total_invoice = (
             (parseFloat(updatedRow.product_amount) || 0) + gstValueRow
           ).toFixed(2);
         }
-
         return updatedRow;
       });
-
       // Only set the state if the rows have actually changed
       // If the updated rows are different from the previous ones, then set state
       if (JSON.stringify(updatedRows) !== JSON.stringify(prevRows)) {
         return updatedRows;
       }
-
       // Otherwise, return the previous state (no change)
       return prevRows;
     });
@@ -818,11 +826,9 @@ function PurchaseCreation({
       } else if (shouldShowIGST) {
         totalGSTValue += parseFloat(row.igst) || 0;
       }
-
       // Sum up total_invoice values
       totalInvoiceValueSum += parseFloat(row.total_invoice) || 0;
     });
-
     // Update invoiceData with calculated values
     setInvoiceData((prevData) =>
       prevData.map((data, index) =>
@@ -873,7 +879,6 @@ function PurchaseCreation({
     selectedTDSTCSOption,
   ]);
 
-  // console.log("Amount Receivable:", amountReceivable);
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -886,14 +891,63 @@ function PurchaseCreation({
       },
     ]);
   };
-
   const handleDeleteRow = (index) => {
     const updatedRows = rows.filter((_, rowIndex) => rowIndex !== index);
     setRows(updatedRows);
   };
   const [salesInvoice, setSalesInvoice] = useState("100");
+  const [activeTab, setActiveTab] = useState("1");
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent default form submission behavior
+    event.preventDefault(); // Prevent default form submission behavior 
+    const newErrors = {};
+
+    // Validate Office/Location formData
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validatePurchaseField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Customer/Vendor vendorData
+    Object.entries(vendorData).forEach(([key, value]) => {
+      const errorMsg = validatePurchaseField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Invoice Data (first object only)
+    Object.entries(invoiceData[0]).forEach(([key, value]) => {
+      const errorMsg = validatePurchaseField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    if (rows.length === 0 || rows.some(r => !r.product || !r.hsnCode || !r.unit || !r.rate)) {
+      setActiveTab("2");
+      toast.error("Please fill Product details before submitting.");
+      return; // stop here
+    }
+
+
+    // If any errors → stop and show first toast
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      // Optionally switch tab based on error
+      if (firstErrorField.startsWith("row_")) {
+        setActiveTab("2"); // Product tab
+      } else if (Object.keys(vendorData).includes(firstErrorField)) {
+        setActiveTab("1"); // Vendor tab
+      }
+      return;
+    }
 
     const cleanedRows = rows.filter(
       (row) =>
@@ -906,19 +960,13 @@ function PurchaseCreation({
         row.rate !== "" &&
         !isNaN(row.rate)
     );
-
     // Optional: show a warning if rows were removed
     if (rows.length !== cleanedRows.length) {
       toast.warning("Some empty product rows were ignored.");
     }
-
-    // const params = (index, value)
-
     const payload = {
-      // salesInvoice,
       formData,
       vendorData,
-      // rows,
       rows: cleanedRows,  // ✅ This is the fi
       invoiceData,
       selectedInvoiceDate,
@@ -926,7 +974,7 @@ function PurchaseCreation({
     };
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-purchase-post2/${id}`,
         payload,
         {
@@ -952,8 +1000,6 @@ function PurchaseCreation({
         handleCreateClose();
         setSelectedInvoiceDate(null);
 
-
-
         // Clear all form data
         resetFields();
       } else {
@@ -966,10 +1012,6 @@ function PurchaseCreation({
       }
     } catch (error) {
       console.error("Error submitting data:", error);
-      // toast.error(`${error.response.data.error_message}`, {
-      //   position: "top-right",
-      //   autoClose: 2000,
-      // });
       toast.error(`${error.response.data.error_message}`, {
         position: "top-right",
         autoClose: 2000,
@@ -980,7 +1022,6 @@ function PurchaseCreation({
 
   useEffect(() => {
     const currentType = invoiceData[0]?.invoice_type.toLowerCase();
-
     if (currentType === "nil rated") {
       setRows((prevRows) =>
         prevRows.map((row) => ({
@@ -1074,8 +1115,6 @@ function PurchaseCreation({
     }
   }, [invoiceData[0]?.invoice_type, vendorData.gst_no, branchNoGst]);
 
-  // Auto-detect TCS or TDS on initial load based on prepopulated values
-
   useEffect(() => {
     if (invoiceData[0].tcs && parseFloat(invoiceData[0].tcs) > 0) {
       setSelectedTDSTCSOption("tcs");
@@ -1135,14 +1174,13 @@ function PurchaseCreation({
     }
   }, [vendorData.gst_no, branchNoGst, invoiceData[0].invoice_type]);
 
-  const [selectedMonthDate, setSelectedMonthDate] = useState(null); //....
-  //....
+  const [selectedMonthDate, setSelectedMonthDate] = useState(null);
   const month = useRef(null);
   const invoice = useRef(null);
-
+  const [isLocationEmpty, setIsLocationEmpty] = useState(true);
   const handleDateChange = (date) => {
     if (date instanceof Date && !isNaN(date)) {
-      const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
+      const formattedDate = format(date, "dd-MM-yyyy");
       setInvoiceData((prevData) =>
         prevData.map((item, index) =>
           index === 0 ? { ...item, month: formattedDate } : item
@@ -1153,8 +1191,7 @@ function PurchaseCreation({
   const [selectedInvoiceDate, setSelectedInvoiceDate] = useState(null);
   const handleToDateChange = (date) => {
     if (date instanceof Date && !isNaN(date)) {
-      const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
-
+      const formattedDate = format(date, "dd-MM-yyyy");
       // Invoice Data ke first object ka invoice_date update karein
       setInvoiceData((prevData) =>
         prevData.map((item, index) =>
@@ -1165,8 +1202,6 @@ function PurchaseCreation({
   };
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
 
-
-
   return (
     <>
       {/* <ToastContainer /> */}
@@ -1176,7 +1211,6 @@ function PurchaseCreation({
           onClose={handleCreateClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
-        // className="overflow-auto"
         >
           <Box sx={styleCreateModal} className="max-h-full overflow-scroll">
             <Typography
@@ -1219,6 +1253,7 @@ function PurchaseCreation({
                             id="location-select"
                             disableClearable
                             options={offData}
+                            required
                             getOptionLabel={(option) => option.location || ""}
                             onChange={(event, newValue) =>
                               handleLocationChange(newValue)
@@ -1240,9 +1275,13 @@ function PurchaseCreation({
                               <TextField
                                 {...params}
                                 size="small"
+                                required
                                 value={formData.location || ""}
                                 className="border border-red-500"
                                 placeholder="Office Location"
+                                onChange={(e) =>
+                                  handleLocationChange(e, e.target.value)
+                                }
                                 sx={{
                                   "& .MuiInputBase-root": {
                                     height: 28,
@@ -1287,6 +1326,7 @@ function PurchaseCreation({
                           size="md"
                           name="contact"
                           placeholder="Contact No"
+                          required
                           value={formData.contact}
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1325,15 +1365,16 @@ function PurchaseCreation({
                           name="address"
                           placeholder="Address"
                           value={formData.address}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1362,15 +1403,16 @@ function PurchaseCreation({
                           name="city"
                           placeholder="City"
                           value={formData.city}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1399,15 +1441,16 @@ function PurchaseCreation({
                           name="state"
                           placeholder="State"
                           value={formData.state}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1436,15 +1479,16 @@ function PurchaseCreation({
                           name="country"
                           placeholder="Country"
                           value={formData.country}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1465,7 +1509,6 @@ function PurchaseCreation({
                     </label>
                   </div>
                   <div className="col-span-8">
-                    {/* {" "} */}
                     <div className="h-7">
                       <Input
                         type="text"
@@ -1473,6 +1516,7 @@ function PurchaseCreation({
                         name="branchNoGst"
                         placeholder="GST No"
                         value={branchNoGst}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -1509,6 +1553,7 @@ function PurchaseCreation({
                               freeSolo
                               id="branch-select"
                               disableClearable
+                              required
                               options={branch_ser_name}
                               getOptionLabel={(option) =>
                                 option.branch_name || ""
@@ -1560,9 +1605,6 @@ function PurchaseCreation({
                               )}
                             />
                           </Stack>
-                          {/* <Typography className="mt-0 text-sm italic text-red-600">
-                            You are creating a new office location.
-                          </Typography> */}
                         </div>
                       </div>
                     </div>
@@ -1590,6 +1632,7 @@ function PurchaseCreation({
                         type="text"
                         size="md"
                         name="invoice_no"
+                        required
                         placeholder="Invoice No"
                         value={invoiceData[0].invoice_no}
                         onChange={handleInputChangeInvoiceData}
@@ -1597,18 +1640,15 @@ function PurchaseCreation({
                         labelProps={{
                           className: "hidden",
                         }}
-                        // containerProps={{ className: "min-w-full" }}
                         style={{
-                          height: "28px", // Match this to your Autocomplete's root height
-                          padding: "4px 6px", // Match this padding
-                          fontSize: "0.875rem", // Ensure font size is consistent
+                          height: "28px",
+                          padding: "4px 6px",
+                          fontSize: "0.875rem",
                           width: 300,
                         }}
                       />
                     </div>
                   </div>
-
-
                   <div>
                     <div>
                       <label htmlFor="attach_invoice">
@@ -1626,6 +1666,7 @@ function PurchaseCreation({
                         type="file"
                         size="md"
                         name="attach_invoice"
+                        required
                         placeholder="Invoice Date"
                         onChange={handleInputChangeInvoiceData}
                       />
@@ -1648,6 +1689,7 @@ function PurchaseCreation({
                         type="file"
                         size="md"
                         name="attach_e_way_bill"
+                        required
                         placeholder="Eway Bill"
                         onChange={handleInputChangeInvoiceData}
                       />
@@ -1665,27 +1707,6 @@ function PurchaseCreation({
                         </Typography>
                       </label>
                     </div>
-                    {/* <div className="">
-                      <Input
-                        type="date"
-                        size="md"
-                        name="month"
-                        value={invoiceData[0].month}
-                        onChange={handleInputChangeInvoiceData}
-                        placeholder="Month"
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        // containerProps={{ className: "min-w-full" }}
-                        style={{
-                          height: "28px", // Match this to your Autocomplete's root height
-                          padding: "4px 6px", // Match this padding
-                          fontSize: "0.875rem", // Ensure font size is consistent
-                          width: 300,
-                        }}
-                      />
-                    </div> */}
                     <div className="relative w-full">
                       <DatePicker
                         ref={month}
@@ -1695,6 +1716,7 @@ function PurchaseCreation({
                             : null
                         }
                         value={invoiceData[0].month}
+                        required
                         onChange={handleDateChange}
                         dateFormat="dd-MM-yyyy"
                         className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
@@ -1706,7 +1728,7 @@ function PurchaseCreation({
                       />
                       <FaRegCalendarAlt
                         className="absolute top-1/2 left-40 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                        onClick={() => month.current.setFocus()} // Focus the correct DatePicker
+                        onClick={() => month.current.setFocus()}
                       />
                     </div>
                   </div>
@@ -1732,6 +1754,7 @@ function PurchaseCreation({
                             : null
                         }
                         onChange={handleToDateChange}
+                        required
                         dateFormat="dd-MM-yyyy"
                         className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
                         focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"
@@ -1742,85 +1765,10 @@ function PurchaseCreation({
                       />
                       <FaRegCalendarAlt
                         className="absolute top-1/2 left-40 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                        onClick={() => invoice.current.setFocus()} // Focus the correct DatePicker
+                        onClick={() => invoice.current.setFocus()}
                       />
                     </div>
                   </div>
-                  <div>
-                    <div className="">
-                      {/* <input
-                          type="file"
-                          size="md"
-                          name="attach_e_way_bill"
-                          placeholder="Eway Bill"
-                          onChange={handleInputChangeInvoiceData}
-                        /> */}
-                      {/* <Checkbox defaultChecked /> */}
-                    </div>
-                  </div>
-                  {/* <div className="flex  align-middle items-center gap-5 mt-2">
-                    <div>
-                      <label htmlFor="utilise_edit">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="block font-semibold mb-1"
-                        >
-                          Utilise Edit
-                        </Typography>
-                      </label>
-                    </div>
-                    <div className="">
-                      <Checkbox
-                        name="utilise_edit"
-                        ripple={false}
-                        checked={invoiceData[0]?.utilise_edit || false} // Access the first entry in the array
-                        className="h-5 w-5 rounded-md border-gray-900/20 bg-gray-900/10 transition-all hover:scale-105 hover:before:opacity-0"
-                        onChange={handleInputChangeInvoiceData} // Updated function
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <div>
-                      <div>
-                        <label htmlFor="utilise_month">
-                          <Typography
-                            variant="small"
-                            color="blue-gray"
-                            className="block font-semibold mb-1 mt-2"
-                          >
-                            Utilise Month
-                          </Typography>
-                        </label>
-                      </div>
-                      <div className="">
-                        <div className="">
-                         
-
-
-                          <Input
-                        type="date"
-                        size="md"
-                        name="utilise_month"
-                        placeholder="utilise_month"
-                        value={invoiceData[0].utilise_month}
-                        onChange={handleInputChangeInvoiceData}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        // containerProps={{ className: "min-w-full" }}
-                        style={{
-                          height: "28px", // Match this to your Autocomplete's root height
-                          padding: "4px 6px", // Match this padding
-                          fontSize: "0.875rem", // Ensure font size is consistent
-                          width: 300,
-                        }}
-                      />
-                        </div>
-                      </div>
-                    </div>
-                  </div> */}
                 </div>
               </div>
 
@@ -1828,7 +1776,7 @@ function PurchaseCreation({
                 <div className="py-5 px-0">
                   <div className="bg-secondary px-0 py-3 rounded-md shadow-sm">
                     <Box sx={{ width: "100%", typography: "body1" }}>
-                      <TabContext value={value}>
+                      <TabContext value={activeTab}>
                         <Box
                           sx={{
                             borderBottom: 1,
@@ -1839,26 +1787,26 @@ function PurchaseCreation({
                           }}
                         >
                           <TabList
-                            onChange={handleChange}
-                            aria-label="customized tabs example"
+                            onChange={(e, newValue) => setActiveTab(newValue)}
+                            aria-label="purchase tabs"
                             TabIndicatorProps={{
                               sx: {
-                                display: "none", // Hide the default tab indicator
+                                display: "none",
                                 padding: 0,
                                 margin: 0,
                               },
                             }}
                             sx={{
-                              padding: 0, // Remove any default padding from the TabList
-                              minHeight: "20px", // Set a specific minHeight for the TabList
+                              padding: 0,
+                              minHeight: "20px",
                             }}
                           >
                             <Tab
                               label="Customer And Vendor Details"
                               value="1"
                               sx={{
-                                padding: "0px 10px", // Adjust padding as needed
-                                minHeight: "0px", // Reduced min height
+                                padding: "0px 10px",
+                                minHeight: "0px",
                                 lineHeight: "2.2",
                                 fontSize: "0.75rem",
                                 "&.Mui-selected": {
@@ -1879,8 +1827,8 @@ function PurchaseCreation({
                               label="Product Details"
                               value="2"
                               sx={{
-                                padding: "0px 10px", // Adjust padding as needed
-                                minHeight: "25px", // Reduced min height
+                                padding: "0px 10px",
+                                minHeight: "25px",
                                 lineHeight: "2.2",
                                 fontSize: "0.75rem",
                                 "&.Mui-selected": {
@@ -1917,12 +1865,12 @@ function PurchaseCreation({
                                 </div>
                                 <div className="col-span-8">
                                   <div className="">
-                                    {/* <Stack spacing={1} sx={{ width: 300 }}> */}
                                     <Autocomplete
                                       sx={{ width: 300 }}
                                       freeSolo
                                       id="gst-no-autocomplete"
                                       disableClearable
+                                      required
                                       options={customerData}
                                       getOptionLabel={(option) =>
                                         typeof option === "string"
@@ -1930,7 +1878,7 @@ function PurchaseCreation({
                                           : option.gst_no || ""
                                       }
                                       onChange={handleGstNoChange}
-                                      value={vendorData.gst_no || ""} // Bind value to formData.gst_no
+                                      value={vendorData.gst_no || ""}
                                       renderOption={(props, option) => (
                                         <li {...props} key={option.id}>
                                           {option.gst_no} ({option.name})
@@ -1940,20 +1888,20 @@ function PurchaseCreation({
                                         <TextField
                                           {...params}
                                           size="small"
+                                          required
                                           name="gst_no"
-                                          value={vendorData.gst_no || ""} // Reset input value when formData.gst_no changes
+                                          value={vendorData.gst_no || ""}
                                           onChange={(e) =>
                                             handleGstNoChange(e, e.target.value)
                                           } // Update input value on type
                                           placeholder="Enter or select GST No."
                                           sx={{
-                                            // Adjust the height and padding to reduce overall size
                                             "& .MuiInputBase-root": {
-                                              height: 28, // Set your desired height here
-                                              padding: "4px 6px", // Adjust padding to make it smaller
+                                              height: 28,
+                                              padding: "4px 6px",
                                             },
                                             "& .MuiOutlinedInput-input": {
-                                              padding: "4px 6px", // Input padding
+                                              padding: "4px 6px",
                                             },
                                           }}
                                           slotProps={{
@@ -1965,7 +1913,6 @@ function PurchaseCreation({
                                         />
                                       )}
                                     />
-                                    {/* </Stack> */}
                                   </div>
                                 </div>
                               </div>
@@ -1990,6 +1937,7 @@ function PurchaseCreation({
                                     freeSolo
                                     id="name-autocomplete"
                                     disableClearable
+                                    required
                                     options={customerData}
                                     getOptionLabel={(option) =>
                                       typeof option === "string"
@@ -1997,7 +1945,7 @@ function PurchaseCreation({
                                         : option.name || ""
                                     }
                                     onChange={handleNameChange}
-                                    value={vendorData.name || ""} // Bind value to formData.gst_no
+                                    value={vendorData.name || ""}
                                     renderOption={(props, option) => (
                                       <li {...props} key={option.id}>
                                         {option.name}
@@ -2011,16 +1959,15 @@ function PurchaseCreation({
                                         value={vendorData.name || ""} // Reset input value when formData.gst_no changes
                                         onChange={(e) =>
                                           handleNameChange(e, e.target.value)
-                                        } // Update input value on type
+                                        }
                                         placeholder="Enter or select Name"
                                         sx={{
-                                          // Adjust the height and padding to reduce overall size
                                           "& .MuiInputBase-root": {
-                                            height: 28, // Set your desired height here
-                                            padding: "4px 6px", // Adjust padding to make it smaller
+                                            height: 28,
+                                            padding: "4px 6px",
                                           },
                                           "& .MuiOutlinedInput-input": {
-                                            padding: "4px 6px", // Input padding
+                                            padding: "4px 6px",
                                           },
                                         }}
                                         slotProps={{
@@ -2032,27 +1979,6 @@ function PurchaseCreation({
                                       />
                                     )}
                                   />
-                                  {/* <div className="h-7">
-                                    <Input
-                                      type="text"
-                                      size="lg"
-                                      name="name"
-                                      placeholder="Name"
-                                      value={vendorData.name}
-                                      onChange={handleInputChangeCL}
-                                      className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                                      labelProps={{
-                                        className: "hidden",
-                                      }}
-                                      // containerProps={{ className: "min-w-full" }}
-                                      style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
-                                        width: 300,
-                                      }}
-                                    />
-                                  </div> */}
                                 </div>
                               </div>
                             </div>
@@ -2076,6 +2002,7 @@ function PurchaseCreation({
                                       size="lg"
                                       name="pan"
                                       placeholder="PAN No"
+                                      required
                                       value={vendorData.pan}
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -2083,9 +2010,9 @@ function PurchaseCreation({
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2113,6 +2040,7 @@ function PurchaseCreation({
                                       size="lg"
                                       name="vendor_address"
                                       placeholder="Customer Address"
+                                      required
                                       value={vendorData.vendor_address}
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -2151,15 +2079,16 @@ function PurchaseCreation({
                                       name="email"
                                       placeholder="Email"
                                       value={vendorData.email}
+                                      required
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                       labelProps={{
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2188,6 +2117,7 @@ function PurchaseCreation({
                                       name="contact"
                                       placeholder="Contact No"
                                       value={vendorData.contact}
+                                      required
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                       labelProps={{
@@ -2274,22 +2204,22 @@ function PurchaseCreation({
                                 <TableHead
                                   sx={{
                                     backgroundColor: "#f3f4f6",
-                                    position: "sticky", // Makes the header sticky
-                                    top: 0, // Ensures it sticks to the top of the container
-                                    zIndex: 0, // Keeps it above the table rows
+                                    position: "sticky",
+                                    top: 0,
+                                    zIndex: 0,
                                   }}
                                 >
                                   <TableRow
                                     className="font-semibold bg-primary text-white"
                                     sx={{
-                                      color: "white", // Text color
+                                      color: "white",
                                       padding: "4px",
                                     }}
                                   >
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2298,7 +2228,7 @@ function PurchaseCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2307,7 +2237,7 @@ function PurchaseCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2316,7 +2246,7 @@ function PurchaseCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2325,7 +2255,7 @@ function PurchaseCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2334,7 +2264,7 @@ function PurchaseCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2343,7 +2273,7 @@ function PurchaseCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2355,7 +2285,7 @@ function PurchaseCreation({
                                         <TableCell
                                           className="font-semibold text-gray-600"
                                           sx={{
-                                            color: "white", // Text color
+                                            color: "white",
                                             padding: "4px",
                                           }}
                                         >
@@ -2364,7 +2294,7 @@ function PurchaseCreation({
                                         <TableCell
                                           className="font-semibold text-gray-600"
                                           sx={{
-                                            color: "white", // Text color
+                                            color: "white",
                                             padding: "4px",
                                           }}
                                         >
@@ -2377,7 +2307,7 @@ function PurchaseCreation({
                                       <TableCell
                                         className="font-semibold text-gray-600"
                                         sx={{
-                                          color: "white", // Text color
+                                          color: "white",
                                           padding: "4px",
                                         }}
                                       >
@@ -2387,7 +2317,7 @@ function PurchaseCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2396,7 +2326,7 @@ function PurchaseCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     ></TableCell>
@@ -2442,6 +2372,7 @@ function PurchaseCreation({
                                               size="small"
                                               placeholder="select product"
                                               name="product_name"
+                                              required
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
                                                   padding: "2px",
@@ -2461,6 +2392,7 @@ function PurchaseCreation({
                                         <TextField
                                           type="text"
                                           name="description"
+                                          required
                                           id={`description-${index}`}
                                           value={row.description}
                                           onChange={(e) =>
@@ -2491,9 +2423,9 @@ function PurchaseCreation({
                                           type="text"
                                           id={`hsn_code-${index}`}
                                           name="hsn_code"
+                                          required
                                           onChange={(e) => {
                                             const inputValue = e.target.value;
-                                            // Allow only numbers
                                             if (/^\d*$/.test(inputValue)) {
                                               handleInputChangeProduct(
                                                 index,
@@ -2520,6 +2452,7 @@ function PurchaseCreation({
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.unit}
+                                          required
                                           name="unit"
                                           id={`unit-${index}`}
                                           onChange={(e) => {
@@ -2554,6 +2487,7 @@ function PurchaseCreation({
                                           type="text"
                                           name="rate"
                                           id={`rate-${index}`}
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2582,6 +2516,7 @@ function PurchaseCreation({
                                         <TextField
                                           value={row.product_amount}
                                           type="text"
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2620,6 +2555,7 @@ function PurchaseCreation({
                                           value={row.gstRate}
                                           type="text"
                                           name="gst_rate"
+                                          required
                                           id={`gst_rate-${index}`}
                                           onChange={(e) => {
                                             const value = e.target.value;
@@ -2652,6 +2588,7 @@ function PurchaseCreation({
                                             <TextField
                                               value={row.cgst || ""}
                                               type="text"
+                                              required
                                               onChange={(e) => {
                                                 const value = e.target.value;
                                                 if (/^\d*$/.test(value)) {
@@ -2688,6 +2625,7 @@ function PurchaseCreation({
                                             <TextField
                                               value={row.sgst || ""}
                                               type="number"
+                                              required
                                               onChange={(e) => {
                                                 const value = e.target.value;
                                                 if (/^\d*$/.test(value)) {
@@ -2727,6 +2665,7 @@ function PurchaseCreation({
                                         <TableCell sx={{ padding: "6px" }}>
                                           <TextField
                                             value={row.igst || ""}
+                                            required
                                             type="number"
                                             onChange={(e) => {
                                               const value = e.target.value;
@@ -2765,17 +2704,8 @@ function PurchaseCreation({
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.total_invoice}
+                                          required
                                           type="number"
-                                          // onChange={(e) => {
-                                          //   const value = e.target.value;
-                                          //   if (/^\d*$/.test(value)) {
-                                          //     handleInputChangeProduct(
-                                          //       index,
-                                          //       "total_invoice",
-                                          //       value
-                                          //     );
-                                          //   }
-                                          // }}
                                           variant="outlined"
                                           size="small"
                                           sx={{
@@ -2823,7 +2753,6 @@ function PurchaseCreation({
                                             type="button"
                                             name="add-product"
                                             className=" bg-primary text-white p-2 rounded-md"
-                                          // disabled={rows.length > 0 && rows[rows.length - 1].product.trim() === ""}
                                           >
                                             Add New Product
                                           </button>
@@ -2845,37 +2774,26 @@ function PurchaseCreation({
                                               <div className="">
                                                 <select
                                                   name="invoice_type"
+                                                  required
                                                   className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
                                                   style={{
-                                                    height: "28px", // Match this to your Autocomplete's root height
-                                                    padding: "4px 6px", // Match this padding
-                                                    fontSize: "0.875rem", // Ensure font size is consistent
+                                                    height: "28px",
+                                                    padding: "4px 6px",
+                                                    fontSize: "0.875rem",
                                                     width: 300,
                                                   }}
-                                                  value={
-                                                    invoiceData[0].invoice_type
-                                                  } // Ensures the selected value matches the state
-                                                  onChange={
-                                                    handleInputChangeInvoiceData
-                                                  }
+                                                  value={invoiceData[0].invoice_type}
+                                                  onChange={handleInputChangeInvoiceData}
                                                 >
-                                                  {vendorData.gst_no === "" // Check if gst_no is empty
-                                                    ? // Show only these options when gst_no is empty
-                                                    [
-                                                      "Select Invoice Type",
-                                                      "Unregistered Local",
-                                                      "Unregistered Non-Local",
-                                                    ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                  <option value="">Select Invoice Type</option>
+
+                                                  {vendorData.gst_no === ""
+                                                    ? ["Unregistered Local", "Unregistered Non-Local"].map((option) => (
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))
-                                                    : // Show other options when gst_no is not empty
-                                                    [
-                                                      "Select Invoice Type",
+                                                    : [
                                                       "B2B",
                                                       "B2C-L",
                                                       "BSC-O",
@@ -2884,14 +2802,12 @@ function PurchaseCreation({
                                                       "SEZ",
                                                       "Export",
                                                     ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))}
                                                 </select>
+
                                               </div>
                                             </div>
                                           </div>
@@ -2903,6 +2819,7 @@ function PurchaseCreation({
                                               value={
                                                 invoiceData[0].taxable_amount
                                               }
+                                              required
                                               variant="outlined"
                                               size="small"
                                               sx={{
@@ -2925,13 +2842,7 @@ function PurchaseCreation({
                                               value={
                                                 invoiceData[0].totalall_gst
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
+                                              required
                                               variant="outlined"
                                               size="small"
                                               sx={{
@@ -2955,13 +2866,7 @@ function PurchaseCreation({
                                                 invoiceData[0]
                                                   .total_invoice_value
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
+                                              required
                                               variant="outlined"
                                               size="small"
                                               sx={{
@@ -2987,68 +2892,6 @@ function PurchaseCreation({
                             <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4 my-2">
                               <div className="hidden 2xl:block col-span-1"></div>
                               <div className="col-span-1">
-                                {/* <div>
-                                  <div>
-                                    <label htmlFor="invoice_type">
-                                      <Typography
-                                        variant="small"
-                                        color="blue-gray"
-                                        className="block font-semibold mb-1"
-                                      >
-                                        Invoice Type
-                                      </Typography>
-                                    </label>
-                                  </div>
-                                  <div className="">
-                                    <div className="">
-                                      <select
-                                        name="invoice_type"
-                                        className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
-                                        style={{
-                                          height: "28px", // Match this to your Autocomplete's root height
-                                          padding: "4px 6px", // Match this padding
-                                          fontSize: "0.875rem", // Ensure font size is consistent
-                                          width: 300,
-                                        }}
-                                        value={invoiceData[0].invoice_type} // Ensures the selected value matches the state
-                                        onChange={handleInputChangeInvoiceData}
-                                      >
-                                        {vendorData.gst_no === "" // Check if gst_no is empty
-                                          ? // Show only these options when gst_no is empty
-                                            [
-                                              "Select Invoice Type",
-                                              "Unregistered Local",
-                                              "Unregistered Non-Local",
-                                            ].map((option) => (
-                                              <option
-                                                key={option}
-                                                value={option.toLowerCase()}
-                                              >
-                                                {option}
-                                              </option>
-                                            ))
-                                          : // Show other options when gst_no is not empty
-                                            [
-                                              "Select Invoice Type",
-                                              "B2B",
-                                              "B2C-L",
-                                              "BSC-O",
-                                              "Nil Rated",
-                                              "Advance Received",
-                                              "SEZ",
-                                              "Export",
-                                            ].map((option) => (
-                                              <option
-                                                key={option}
-                                                value={option.toLowerCase()}
-                                              >
-                                                {option}
-                                              </option>
-                                            ))}
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div> */}
                               </div>
                               <div className="col-span-1">
                                 <label htmlFor="invoice_type">
@@ -3103,7 +2946,7 @@ function PurchaseCreation({
                                                   e.target.value.replace(
                                                     /[^0-9.]/g,
                                                     ""
-                                                  ); // Allows only digits and decimal
+                                                  );
                                               }}
                                               className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             />
@@ -3123,7 +2966,7 @@ function PurchaseCreation({
                                                   e.target.value.replace(
                                                     /[^0-9.]/g,
                                                     ""
-                                                  ); // Allows only digits and a decimal point
+                                                  );
                                               }}
                                               className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             />
@@ -3154,7 +2997,7 @@ function PurchaseCreation({
                                                   e.target.value.replace(
                                                     /[^0-9.]/g,
                                                     ""
-                                                  ); // Allows only digits and decimal
+                                                  );
                                               }}
                                               className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             />
@@ -3174,7 +3017,7 @@ function PurchaseCreation({
                                                   e.target.value.replace(
                                                     /[^0-9.]/g,
                                                     ""
-                                                  ); // Allows only digits and a decimal point
+                                                  );
                                               }}
                                               className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                             />
@@ -3184,66 +3027,6 @@ function PurchaseCreation({
                                     )}
                                   </div>
                                 </div>
-                                {/* <div className=" text-sm my-2">
-                                  <div className="">
-                                    {selectedTDSTCSRateOption === "TCS" && (
-                                      <div>
-                                        <label
-                                          htmlFor="tcs"
-                                          className="block text-sm font-medium text-gray-700"
-                                        >
-                                          TCS Input
-                                        </label>
-                                        <input
-                                          id="tcs"
-                                          type="text"
-                                          placeholder="Enter TCS Rate value"
-                                          className="mt-2 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        />
-                                      </div>
-                                    )}
-                                    {selectedTDSTCSRateOption === "TDS" && (
-                                      <div>
-                                        <label
-                                          htmlFor="tds"
-                                          className="block text-sm font-medium text-gray-700"
-                                        >
-                                          TDS Input
-                                        </label>
-                                        <input
-                                          id="tds"
-                                          type="text"
-                                          placeholder="Enter TDS Rate value"
-                                          className="mt-2 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        />
-                                      </div>
-                                    )}
-                                  </div>
-                                </div> */}
-                                {/* <div className=" text-sm my-2">
-                                  <div className="">
-                                    {selectedTDSTCSectionOption === "TCS" && (
-                                      <div>
-                                        <input
-                                          id="tcs"
-                                          type="text"
-                                          placeholder="Enter TCS Section value"
-                                          className="mt-2 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        />
-                                      </div>
-                                    )}
-                                    {selectedTDSTCSectionOption === "TDS" && (
-                                      <div>
-                                        <input
-                                          id="tds"
-                                          type="text"
-                                          placeholder="Enter TDS Section value"
-                                          className="mt-2 block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                        />
-                                      </div>
-                                    )}
-                                  </div>
-                                </div> */}
                                 <div className="grid grid-cols-12 text-sm mt-8">
                                   <div className="col-span-6 font-bold">
                                     Amount Receivable :
@@ -3253,9 +3036,7 @@ function PurchaseCreation({
                                       variant="outlined"
                                       size="small"
                                       name="amount_receivable"
-                                      // value={amount_receivable}
                                       value={invoiceData[0].amount_receivable}
-                                      // onChange={handleInputChangeInvoiceData}
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
                                           padding: "1px",
@@ -3292,8 +3073,6 @@ function PurchaseCreation({
                 <Button
                   conained="contained"
                   type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
                   className="bg-primary"
                 >
                   <span>Confirm</span>
@@ -3314,5 +3093,4 @@ function PurchaseCreation({
     </>
   );
 }
-
 export default PurchaseCreation;

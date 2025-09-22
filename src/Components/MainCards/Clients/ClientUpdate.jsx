@@ -25,9 +25,11 @@ import "react-datepicker/dist/react-datepicker.css";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
 import { format, parse, isValid } from "date-fns";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 function ClientUpdate() {
   const { id } = useParams();
+  const role = getUserRole();
   const navigate = useNavigate();
   const [filesList, setFilesList] = useState([]);
   const [open, setOpen] = useState(false);
@@ -51,12 +53,14 @@ function ClientUpdate() {
     status: "active",
     fileinfos: [],
   });
+  const [errors, setErrors] = useState({});
+
   // console.log("form", filesList);
   // Fetch client data when the component mounts
   useEffect(() => {
     const fetchClientData = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/edit-client/${id}`
           // 'http://127.0.0.1:8000/api/edit-client/${id}'
         );
@@ -107,6 +111,39 @@ function ClientUpdate() {
   const handlePasswordChange = (event) => setPassword(event.target.value);
   const handleRemarkChange = (event) => setRemark(event.target.value);
 
+  const fileFormRules = {
+    document_type: [
+      { test: (v) => v.length > 0, message: "Document type is required" },
+    ],
+    login: [
+      { test: (v) => v.length > 0, message: "Username is required" },
+      { test: (v) => /^[a-zA-Z0-9_]+$/.test(v), message: "Only letters, numbers, and underscores allowed" },
+    ],
+    password: [
+      { test: (v) => v.length > 0, message: "Password is required" },
+      { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
+    ],
+    remark: [
+      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+    ],
+    files: [
+      { test: (v) => v && v.length > 0, message: "At least one file is required" },
+      {
+        test: (v) => v.every(f => f.type === "application/pdf" || f.type.startsWith("image/") || f.type === "application/vnd.ms-excel" || f.type ===
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || f.type === "text/plain"), message: "Only PDF or image files are allowed"
+      },
+    ],
+  };
+
+  const validateFileField = (name, value) => {
+    const rules = fileFormRules[name];
+    if (!rules) return "";
+    for (let rule of rules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleFileChange = (event) => {
     const files = Array.from(event.target.files);
     setSelectedFiles(files);
@@ -115,6 +152,7 @@ function ClientUpdate() {
   // const handleFileSave = () => {
   //   if (fileName && selectedFiles.length > 0) {
   //     const newFiles = {
+  //       id: currentFileIndex !== null ? filesList[currentFileIndex].id : undefined, // ✅ Include ID
   //       document_type: fileName,
   //       login,
   //       password,
@@ -136,7 +174,7 @@ function ClientUpdate() {
   //       toast.success("Files uploaded successfully!");
   //     }
 
-  //     // Reset fields
+  //     // Reset
   //     setFileName("");
   //     setSelectedFiles([]);
   //     setLogin("");
@@ -144,49 +182,60 @@ function ClientUpdate() {
   //     setRemark("");
   //     handleClose();
   //   } else {
-  //     toast.error(
-  //       "Please provide all details and select at least one file!",
-  //       "error"
-  //     );
+  //     toast.error("Please provide all details and select at least one file!");
   //   }
   // };
-
   const handleFileSave = () => {
-    if (fileName && selectedFiles.length > 0) {
-      const newFiles = {
-        id: currentFileIndex !== null ? filesList[currentFileIndex].id : undefined, // ✅ Include ID
-        document_type: fileName,
-        login,
-        password,
-        remark,
-        files: selectedFiles,
-      };
+    // Collect current values
+    const fieldsToValidate = {
+      document_type: fileName,
+      login,
+      password,
+      remark,
+      files: selectedFiles,
+    };
 
-      if (currentFileIndex !== null) {
-        // Update existing file
-        setFilesList((prevFiles) =>
-          prevFiles.map((file, index) =>
-            index === currentFileIndex ? newFiles : file
-          )
-        );
-        toast.success("File updated successfully!");
-      } else {
-        // Add new file
-        setFilesList((prevFiles) => [...prevFiles, newFiles]);
-        toast.success("Files uploaded successfully!");
+    // Validate each field
+    for (let [field, value] of Object.entries(fieldsToValidate)) {
+      const errorMsg = validateFileField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        return; // ❌ Stop execution if validation fails
       }
-
-      // Reset
-      setFileName("");
-      setSelectedFiles([]);
-      setLogin("");
-      setPassword("");
-      setRemark("");
-      handleClose();
-    } else {
-      toast.error("Please provide all details and select at least one file!");
     }
+
+    const newFiles = {
+      id: currentFileIndex !== null ? filesList[currentFileIndex].id : undefined, // ✅ Keep ID for update
+      document_type: fileName,
+      login,
+      password,
+      remark,
+      files: selectedFiles,
+    };
+
+    if (currentFileIndex !== null) {
+      // Update existing file
+      setFilesList((prevFiles) =>
+        prevFiles.map((file, index) =>
+          index === currentFileIndex ? newFiles : file
+        )
+      );
+      toast.success("File updated successfully!");
+    } else {
+      // Add new file
+      setFilesList((prevFiles) => [...prevFiles, newFiles]);
+      toast.success("Files uploaded successfully!");
+    }
+
+    // Reset fields
+    setFileName("");
+    setSelectedFiles([]);
+    setLogin("");
+    setPassword("");
+    setRemark("");
+    handleClose();
   };
+
 
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -200,42 +249,32 @@ function ClientUpdate() {
   };
 
   const date_of_incorporation = useRef(null);
+  // const handleDateChange = (date) => {
+  //   if (isValid(date)) {
+  //     const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
+  //     setFormData((prevData) =>
+  //       prevData.map((item, index) =>
+  //         index === 0 ? { ...item, date_of_incorporation: formattedDate } : item
+  //       )
+  //     );
+  //   }
+  // };
   const handleDateChange = (date) => {
     if (isValid(date)) {
       const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
-      setFormData((prevData) =>
-        prevData.map((item, index) =>
-          index === 0 ? { ...item, date_of_incorporation: formattedDate } : item
-        )
-      );
+      setFormData((prevData) => ({
+        ...prevData,
+        date_of_incorporation: formattedDate,
+      }));
     }
   };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // const handleOpen = (index = null) => {
-  //   // console.log("index", index);
-  //   if (index !== null) {
-  //     setCurrentFileIndex(index); // Set the index of the file being edited
-  //     const fileInfo = filesList[index];
-  //     setFileName(fileInfo.document_type);
-  //     setLogin(fileInfo.login);
-  //     setPassword(fileInfo.password);
-  //     setRemark(fileInfo.remark);
-  //     setSelectedFiles(fileInfo.files);
-  //   } else {
-  //     // Reset fields for new file
-  //     setFileName("");
-  //     setSelectedFiles([]);
-  //     setLogin("");
-  //     setPassword("");
-  //     setRemark("");
-  //   }
-  //   setOpen(true);
-  // };
 
   const handleOpen = (index = null) => {
     if (index !== null && filesList[index]) {
@@ -262,9 +301,88 @@ function ClientUpdate() {
     setOpen(false);
   };
 
+  const rules = {
+    client_name: [
+      { test: (v) => v.length > 0, message: "Client name is required" },
+      { test: (v) => /^[A-Za-z\s]+$/.test(v), message: "Client name can only contain alphabets and spaces" },
+      { test: (v) => v.length >= 2, message: "Client name must be at least 2 characters long" },
+    ],
+    entity_type: [
+      { test: v => v && v.trim() !== "", message: "Entity type is required" },
+    ],
+    date_of_incorporation: [
+      { test: v => v && v.trim() !== "", message: "Date of incorporation is required" },
+      { test: v => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "Date of incorporation must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: v => {
+          if (!v) return false;
+          const parts = v.split(/[-/]/).map(Number);
+          if (parts.length !== 3) return false;
+
+          const [day, month, year] = parts;
+          const inputDate = new Date(year, month - 1, day);
+          const today = new Date();
+
+          return inputDate <= today && !isNaN(inputDate.getTime());
+        },
+        message: "Date of incorporation cannot be in the future",
+      }
+    ],
+    contact_person: [
+      { test: v => v.length > 0, message: "Contact person is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Contact person can only contain alphabets and spaces" },
+      { test: v => v.length >= 2, message: "Contact person must be at least 2 characters long" },
+    ],
+    designation: [
+      { test: v => v.length > 0, message: "Designation is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Designation can only contain alphabets" },
+      { test: v => v.length >= 2, message: "Designation must be at least 2 characters long" },
+    ],
+    contact_no_1: [
+      // { test: (v) => v.length > 0
+      // , message: "Primary contacts number is required" },
+      { test: (v) => /^\d{10}$/.test(v), message: "Primary contact number must be exactly 10 digits" },
+    ],
+    contact_no_2: [
+      { test: v => !v || /^\d{10}$/.test(v), message: "Alternate contact number must be exactly 10 digits if provided" },
+    ],
+    email: [
+      { test: (v) => v.length > 0, message: "Email is required" },
+      { test: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Email format is invalid" },
+    ],
+    business_detail: [
+      { test: v => !v || v.length <= 200, message: "Business detail cannot exceed 200 characters" },
+    ],
+    status: [
+      { test: v => v.length > 0, message: "Status is required" },
+      { test: v => ["active", "inactive"].includes(v.toLowerCase()), message: "Status must be either Active or Inactive" },
+    ],
+  };
+
+  const validateField = (name, value) => {
+    const fieldRules = rules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
 
     try {
       const data = new FormData();
@@ -307,7 +425,7 @@ function ClientUpdate() {
       // console.log("Data to send:", data);
 
       // Submit the form data
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-client/${id}`,
         data,
         {
@@ -411,6 +529,7 @@ function ClientUpdate() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={fileName}
                   onChange={handleFileNameChange}
+                  required
                 >
                   <Option value="udym">Udyam Aadhar</Option>
                   <Option value="pan">PAN</Option>
@@ -440,6 +559,7 @@ function ClientUpdate() {
                 className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                 labelProps={{ className: "hidden" }}
                 containerProps={{ className: "min-w-[100px]" }}
+                required
               />
             </div>
             <div>
@@ -464,6 +584,7 @@ function ClientUpdate() {
                     className: "hidden",
                   }}
                   containerProps={{ className: "min-w-full" }}
+                  required
                 />
                 {/* Toggle visibility button */}
                 <button
@@ -596,6 +717,7 @@ function ClientUpdate() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.client_name}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -625,6 +747,7 @@ function ClientUpdate() {
                   }}
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.entity_type}
+                  required
                   onChange={(selectedValue) =>
                     handleChange({
                       target: { name: "entity_type", value: selectedValue },
@@ -653,34 +776,8 @@ function ClientUpdate() {
                 </Typography>
               </label>
 
-              <div className="">
-                {/* <Input
-                  type="date"
-                  size="lg"
-                  name="date_of_incorporation"
-                  placeholder="Contact Person"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                  labelProps={{
-                    className: "hidden",
-                  }}
-                  containerProps={{ className: "min-w-[100px]" }}
-                  value={formData.date_of_incorporation}
-                  onChange={handleChange}
-                /> */}
+              {/* <div className="">
                 <div className="">
-                  {/* <Input
-                  type="date"
-                  size="lg"
-                  name="date_of_incorporation"
-                  placeholder="Contact Person"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                  labelProps={{
-                    className: "hidden",
-                  }}
-                  containerProps={{ className: "min-w-[100px]" }}
-                  value={formData.date_of_incorporation}
-                  onChange={handleChange}
-                /> */}
                   <DatePicker
                     ref={date_of_incorporation}
                     selected={
@@ -703,12 +800,33 @@ function ClientUpdate() {
                     scrollableYearDropdown
                     yearDropdownItemNumber={25}
                   />
-                  {/* <FaRegCalendarAlt
-                  // className="absolute top-1/2 left-40 transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                  className="absolute top-[300px] left-[600px] transform -translate-y-1/2 text-gray-500 cursor-pointer"
-                  onClick={() => date_of_incorporation.current.setFocus()} // Focus the correct DatePicker
-                /> */}
                 </div>
+              </div> */}
+              <div className="flex items-center w-full border border-[#cecece] rounded-md bg-white">
+                <DatePicker
+                  ref={date_of_incorporation}
+                  selected={
+                    formData[0]?.date_of_incorporation
+                      ? isValid(parse(formData[0].date_of_incorporation, "dd-MM-yyyy", new Date()))
+                        ? parse(formData[0].date_of_incorporation, "dd-MM-yyyy", new Date())
+                        : null
+                      : null
+                  }
+                  value={formData.date_of_incorporation}
+                  onChange={handleDateChange}
+                  dateFormat="dd/MM/yyyy"
+                  className="flex-1 py-2 pl-3 pr-2 text-gray-900 outline-none rounded-md"
+                  placeholderText="dd/mm/yyyy"
+                  showYearDropdown
+                  required
+                  name="date_of_incorporation"
+                  scrollableYearDropdown
+                  yearDropdownItemNumber={25}
+                />
+                <FaRegCalendarAlt
+                  className="ml-24 text-gray-500 cursor-pointer"
+                  onClick={() => date_of_incorporation.current.setFocus()}
+                />
               </div>
             </div>
             <div className="my-3">
@@ -735,6 +853,7 @@ function ClientUpdate() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.contact_person}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -762,6 +881,7 @@ function ClientUpdate() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.designation}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -789,6 +909,7 @@ function ClientUpdate() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.email}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -817,6 +938,7 @@ function ClientUpdate() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.contact_no_1}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -872,6 +994,7 @@ function ClientUpdate() {
                   containerProps={{ className: "min-w-[100px]" }}
                   value={formData.business_detail}
                   onChange={handleChange}
+                  required
                 />
               </div>
             </div>
@@ -905,6 +1028,7 @@ function ClientUpdate() {
                     }}
                     containerProps={{ className: "min-w-[100px]" }}
                     value={formData.status}
+                    required
                     onChange={(selectedValue) =>
                       handleChange({
                         target: { name: "status", value: selectedValue },

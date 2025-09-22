@@ -1,14 +1,12 @@
-
-
 import { Button, DialogFooter } from "@material-tailwind/react";
 import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
@@ -35,22 +33,26 @@ function PurchaseFileCreation() {
     setOpenCreateModal(true);
     setAnchorEl(null);
   };
-
   const handleCreateClose = () => setOpenCreateModal(false);
-
   const [formData, setFormData] = useState({
     files: [],
   });
-
   const handleFileChange = (event) => {
     setFormData((prevData) => ({
       ...prevData,
       files: Array.from(event.target.files),
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.files || formData.files.length === 0) {
+      toast.error("Please upload at least one file!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return;
+    }
 
     try {
       const formDataToSend = new FormData();
@@ -59,7 +61,7 @@ function PurchaseFileCreation() {
         formDataToSend.append("attach_invoice", formData.files[i]);
       }
 
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-purchase/${id}`,
         formDataToSend,
         {
@@ -68,9 +70,7 @@ function PurchaseFileCreation() {
           },
         }
       );
-
-      // console.log(response.data); // Handle success response
-      toast.success("Sales E-way bill uploaded  successfully!", {
+      toast.success("<Purchase></Purchase> E-way bill uploaded  successfully!", {
         position: "top-right",
         autoClose: 2000,
       });
@@ -82,7 +82,7 @@ function PurchaseFileCreation() {
       }));
     } catch (error) {
       console.error("Error submitting data:", error);
-      toast.error("Failed to create bank details. Please try again.", {
+      toast.error("Failed to create purchase details. Please try again.", {
         position: "top-right",
         autoClose: 2000,
       });
@@ -166,8 +166,6 @@ function PurchaseFileCreation() {
                 <Button
                   conained="contained"
                   type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
                   className="bg-primary"
                 >
                   <span>Confirm</span>

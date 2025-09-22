@@ -43,6 +43,9 @@ function Owner({ ownerData }) {
   if (!ownerData) return <div>No owner data available</div>;
   const [ownerShare, setOwnerShare] = useState("")
   const [showPassword, setShowPassword] = useState(false);
+  const [ownerErrors, setOwnerErrors] = useState({});
+  const [errorMessage, setErrorMessage] = useState("");
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -60,7 +63,8 @@ function Owner({ ownerData }) {
   console.log("Role from token:", getUserRole());
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
-    owner_name: "",
+    first_name: "",
+    last_name: "",
     share: "",
     pan: "",
     aadhar: "",
@@ -76,21 +80,78 @@ function Owner({ ownerData }) {
     toast[type](message, { position: "top-right", autoClose: 1000 });
   };
 
+  const ownerRules = {
+    first_name: [
+      { test: v => v.length > 0, message: "First name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "First name can only contain alphabets and spaces" },
+      { test: v => v.length >= 2, message: "First name must be at least 2 characters long" },
+    ],
+    last_name: [
+      { test: v => v.length > 0, message: "Last name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Last name can only contain alphabets and spaces" },
+      { test: v => v.length >= 2, message: "Last name must be at least 2 characters long" },
+    ],
+    share: [
+      { test: v => v.length > 0, message: "Share is required" },
+      { test: v => /^\d+(\.\d+)?$/.test(v), message: "Share must be a valid number" },
+      { test: v => parseFloat(v) > 0 && parseFloat(v) <= 100, message: "Share must be between 0 and 100" },
+    ],
+    pan: [
+      { test: v => v.length > 0, message: "PAN number is required" },
+      { test: v => /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v), message: "Invalid PAN format (e.g., ABCDE1234F)" },
+    ],
+    aadhar: [
+      { test: v => v.length > 0, message: "Aadhar number is required" },
+      { test: v => /^\d{12}$/.test(v), message: "Aadhar number must be 12 digits" },
+    ],
+    email: [
+      { test: v => v.length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" },
+    ],
+    username: [
+      { test: v => v.length > 0, message: "Username is required" },
+      { test: v => /^[a-zA-Z0-9_]+$/.test(v), message: "Username can only contain letters, numbers, and underscores" },
+    ],
+    it_password: [
+      { test: v => v.length > 0, message: "IT password is required" },
+      { test: v => v.length >= 6, message: "IT password must be at least 6 characters long" },
+    ],
+    mobile_number: [
+      { test: v => v.length > 0, message: "Mobile number is required" },
+      { test: v => /^\d{10}$/.test(v), message: "Mobile number must be exactly 10 digits" },
+    ],
+    user_password: [
+      { test: v => v.length > 0, message: "User password is required" },
+      { test: v => v.length >= 6, message: "User password must be at least 6 characters long" },
+    ],
+    is_admin: [
+      { test: v => typeof v === "boolean", message: "Is Admin must be true or false" },
+    ],
+    is_active: [
+      { test: v => typeof v === "boolean", message: "Is Active must be true or false" },
+    ],
+  };
+
+  const validateOwnerField = (name, value) => {
+    const fieldRules = ownerRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateOwnerField(name, value);
+    setOwnerErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
-  // const handleCheckboxChange = (e) => {
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     isadmin: e.target.checked,  // Update isadmin based on checkbox state
-  //     is_active: e.target.checked, // Update is_active based on checkbox state
-  //   }));
-  // };
-  // console.log("formmmowner", ownerShare);
+
   const handleCheckboxChange = (e) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -106,8 +167,6 @@ function Owner({ ownerData }) {
       is_active: e.target.checked, // Update is_active based on checkbox state
     }));
   };
-
-
 
   const createOwnerShare = async () => {
     try {
@@ -135,6 +194,24 @@ function Owner({ ownerData }) {
   const handleSubmit = async (e) => {
     // console.log("enter");
     e.preventDefault(); // Prevent default form submission
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateOwnerField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setOwnerErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
 
     try {
       // Make a POST request to your API
@@ -155,7 +232,8 @@ function Owner({ ownerData }) {
         handleCreateClose();
         // setErrorMessage("");
         setFormData({
-          owner_name: "",
+          first_name: "",
+          last_name: "",
           share: "",
           pan: "",
           aadhar: "",
@@ -240,8 +318,20 @@ function Owner({ ownerData }) {
 
   const columns = [
     {
-      name: "owner_name",
-      label: "Name",
+      name: "first_name",
+      label: "First Name",
+      options: {
+        setCellHeaderProps: () => ({
+          style: {
+            backgroundColor: "#366FA1",
+            color: "#ffffff",
+          },
+        }),
+      },
+    },
+    {
+      name: "last_name",
+      label: "Last Name",
       options: {
         setCellHeaderProps: () => ({
           style: {
@@ -439,14 +529,14 @@ function Owner({ ownerData }) {
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
                 <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-3">
-                    <label htmlFor="owner_name">
+                  <div className="col-span-2">
+                    <label htmlFor="first_name">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="block font-semibold mb-2"
                       >
-                        Owner Name
+                        First Name
                       </Typography>
                     </label>
 
@@ -454,10 +544,11 @@ function Owner({ ownerData }) {
                       <Input
                         type="text"
                         size="lg"
-                        name="owner_name"
-                        placeholder="Owner Name"
-                        value={formData.owner_name}
+                        name="first_name"
+                        placeholder="First Name"
+                        value={formData.first_name}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -466,7 +557,35 @@ function Owner({ ownerData }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-1">
+                  <div className="col-span-2">
+                    <label htmlFor="last_name">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="block font-semibold mb-2"
+                      >
+                        Last Name
+                      </Typography>
+                    </label>
+
+                    <div className="">
+                      <Input
+                        type="text"
+                        size="lg"
+                        name="last_name"
+                        placeholder="Last Name"
+                        value={formData.last_name}
+                        onChange={handleInputChange}
+                        required
+                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        labelProps={{
+                          className: "hidden",
+                        }}
+                        containerProps={{ className: "min-w-full" }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-span-2">
                     <label htmlFor="share">
                       <Typography
                         variant="small"
@@ -513,6 +632,7 @@ function Owner({ ownerData }) {
                         placeholder="Pan Number"
                         value={formData.pan}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -540,6 +660,7 @@ function Owner({ ownerData }) {
                         placeholder="Aadhar Number"
                         value={formData.aadhar}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -568,6 +689,7 @@ function Owner({ ownerData }) {
                         placeholder="Email"
                         value={formData.email}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -595,6 +717,7 @@ function Owner({ ownerData }) {
                         placeholder="UserName"
                         value={formData.username}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -636,6 +759,7 @@ function Owner({ ownerData }) {
                           placeholder="Password"
                           value={formData.it_password}
                           onChange={handleInputChange}
+                          required
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                           labelProps={{
                             className: "hidden",
@@ -676,6 +800,7 @@ function Owner({ ownerData }) {
                         placeholder="Mobile Number"
                         value={formData.mobile}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -704,6 +829,7 @@ function Owner({ ownerData }) {
                           placeholder="User Password"
                           value={formData.user_password}
                           onChange={handleInputChange}
+                          required
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                           labelProps={{
                             className: "hidden",

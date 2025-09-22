@@ -66,12 +66,64 @@ export default function CVCard({ rowId }) {
     vendor: false,
   });
 
+  const [cvErrors, setCVErrors] = useState({});
+
+  const customerVendorRules = {
+    name: [
+      { test: (v) => v.length > 0, message: "Name is required" },
+      { test: (v) => /^[A-Za-z\s]+$/.test(v), message: "Name can only contain alphabets and spaces" },
+      { test: (v) => v.length >= 2, message: "Name must be at least 2 characters long" },
+    ],
+
+    gst_no: [
+      { test: (v) => v.length > 0, message: "GST number is required" },
+      // { test: (v) => /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(v), message: "GST number must be in valid format (e.g., 27ABCDE1234F1Z5)" },
+    ],
+
+    pan: [
+      { test: (v) => v.length > 0, message: "PAN number is required" },
+      { test: (v) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v), message: "PAN must be in format ABCDE1234F" },
+    ],
+
+    address: [
+      { test: (v) => v.length > 0, message: "Address is required" },
+      { test: (v) => v.length <= 250, message: "Address cannot exceed 250 characters" },
+    ],
+    email: [
+      { test: (v) => v.length > 0, message: "Email is required" },
+      { test: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Email format is invalid" },
+    ],
+    contact: [
+      // { test: (v) => v.length > 0, message: "Contact number is required" },
+      { test: (v) => /^\d{10}$/.test(v), message: "Contact number must be exactly 10 digits" },
+    ],
+
+    customerVendorSelection: [
+      {
+        test: (v, formData) => formData.customer === true || formData.vendor === true,
+        message: "Please select at least Customer or Vendor",
+      },
+    ],
+  };
+
+  const validateCustomerVendor = (name, value) => {
+    const fieldRules = customerVendorRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateCustomerVendor(name, value);
+    setCVErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
   const handleCheckboxChange = (e) => {
     const { name, checked } = e.target;
@@ -83,6 +135,24 @@ export default function CVCard({ rowId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateCustomerVendor(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (!formData.customer && !formData.vendor) {
+      toast.error("Please select at least Customer or Vendor");
+      return; // ❌ stop submit
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
+
 
     try {
       const formDataToSend = new FormData();
@@ -97,7 +167,7 @@ export default function CVCard({ rowId }) {
       formDataToSend.append("vendor", formData.vendor);
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-customer/${id}/${rowId}`,
         formDataToSend
       );
@@ -189,16 +259,12 @@ export default function CVCard({ rowId }) {
     }
   };
 
-  // const handleViewOpen = () => {
-  //   setOpenViewModal(true);
-  //   setAnchorEl(null);
-  // };
   const handleViewOpen = () => {
     setOpenViewModal(true);
     setAnchorEl(null);
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/single-customer/${id}/${rowId}`
         );
         setCVData(response.data);
@@ -210,27 +276,8 @@ export default function CVCard({ rowId }) {
     };
     fetchBankDetails();
   };
+  const [errors, setErrors] = useState({});
 
-  // const handleViewOpen = () => {
-  //   setOpenViewModal(true);
-  //   setAnchorEl(null);
-  //   const fetchClientDetails = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_URL}/api/single-customer/${id}/${rowId}`
-  //       );
-  //       // console.log("ss", response.data);
-  //       setFormData(response.data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setError(error);
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchClientDetails();
-
-  // };
 
   const handleDeleteClose = () => setOpenDeleteModal(false);
   const handleViewClose = () => setOpenViewModal(false);
@@ -239,7 +286,7 @@ export default function CVCard({ rowId }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-customer/${id}/${rowId}`
       );
       // console.log("dd", response.data);
@@ -261,7 +308,7 @@ export default function CVCard({ rowId }) {
   useEffect(() => {
     const fetchCVDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/edit-customer/${id}/${rowId}`
         );
         setCVData(response.data);
@@ -273,10 +320,6 @@ export default function CVCard({ rowId }) {
     };
     fetchCVDetails();
   }, [id, rowId]);
-
-  // useEffect(() => {
-  //   dispatch(fetchClientDetails(id));
-  // }, [id, rowId, dispatch]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -485,6 +528,7 @@ export default function CVCard({ rowId }) {
                         name="name"
                         placeholder="Name"
                         value={formData.name}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -513,6 +557,7 @@ export default function CVCard({ rowId }) {
                         name="gst_no"
                         placeholder="Gst No"
                         value={formData.gst_no}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -541,6 +586,7 @@ export default function CVCard({ rowId }) {
                         name="pan"
                         placeholder="Pan Number"
                         value={formData.pan}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -573,6 +619,7 @@ export default function CVCard({ rowId }) {
                         name="email"
                         placeholder="Email"
                         value={formData.email}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -602,6 +649,7 @@ export default function CVCard({ rowId }) {
                         name="contact"
                         placeholder="Contact Number"
                         value={formData.contact}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -633,6 +681,7 @@ export default function CVCard({ rowId }) {
                         name="address"
                         placeholder="Addesss"
                         value={formData.address}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -643,7 +692,7 @@ export default function CVCard({ rowId }) {
                     </div>
                   </div>
 
-                  <div className="col-span-4">
+                  {/* <div className="col-span-4">
                     <div className="col-span-4">
                       <div className="flex gap-10">
                         <Checkbox
@@ -661,7 +710,30 @@ export default function CVCard({ rowId }) {
                         />
                       </div>
                     </div>
+                  </div> */}
+                  <div className="col-span-4">
+                    <div className="flex gap-10">
+                      <Checkbox
+                        name="customer"
+                        label="Customer"
+                        ripple={false}
+                        checked={formData.customer}
+                        onChange={handleCheckboxChange}
+                      />
+                      <Checkbox
+                        name="vendor"
+                        label="Vendor"
+                        checked={formData.vendor}
+                        onChange={handleCheckboxChange}
+                      />
+                    </div>
+
+                    {/* Error message */}
+                    {errors.customerVendor && (
+                      <p className="text-red-500 text-sm mt-1">{errors.customerVendor}</p>
+                    )}
                   </div>
+
                 </div>
               </div>
               <DialogFooter>

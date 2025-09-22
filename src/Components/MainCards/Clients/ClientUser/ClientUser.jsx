@@ -52,6 +52,7 @@ function ClientUser({ clientUserData }) {
   const [printBtn, setPrintBtn] = useState(true);
   const [viewColumnBtn, setViewColumnBtn] = useState(true);
   const [filterBtn, setFilterBtn] = useState(true);
+  
 
 
   useEffect(() => {
@@ -60,8 +61,20 @@ function ClientUser({ clientUserData }) {
 
   const columns = [
     {
-      name: "name",
-      label: "Name",
+      name: "first_name",
+      label: "First Name",
+      options: {
+        setCellHeaderProps: () => ({
+          style: {
+            backgroundColor: "#366FA1",
+            color: "#ffffff",
+          },
+        }),
+      },
+    },
+    {
+      name: "last_name",
+      label: "Last Name",
       options: {
         setCellHeaderProps: () => ({
           style: {

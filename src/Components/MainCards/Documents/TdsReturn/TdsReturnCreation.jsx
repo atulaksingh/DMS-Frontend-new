@@ -3,6 +3,7 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -35,6 +36,7 @@ function TdsReturnCreation({
   fetchAllTdsSectionDetails
 }) {
   const { id } = useParams();
+  const role = getUserRole();
   const dispatch = useDispatch();
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -72,19 +74,124 @@ function TdsReturnCreation({
     files: [],
   });
 
+  const [tdsReturnErrors, setTdsReturnErrors] = useState({});
+
+  const tdsReturnRules = {
+    challan_date: [
+      { test: (v) => v.length > 0, message: "Challan date is required" },
+      { test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "Challan date must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: (v) => {
+          if (!v) return false;
+          const parts = v.split(/[-/]/).map(Number);
+          if (parts.length !== 3) return false;
+          const [day, month, year] = parts;
+          const inputDate = new Date(year, month - 1, day);
+          const today = new Date();
+          return inputDate <= today && !isNaN(inputDate.getTime());
+        },
+        message: "Challan date cannot be in the future",
+      },
+    ],
+
+    challan_no: [
+      { test: (v) => v.length > 0, message: "Challan number is required" },
+      { test: (v) => /^[A-Za-z0-9]+$/.test(v), message: "Challan number can only contain letters and numbers" },
+    ],
+
+    challan_type: [
+      { test: (v) => v.length > 0, message: "Challan type is required" },
+    ],
+
+    // tds_section: [
+    //   { test: (v) => v.length > 0, message: "TDS section is required" },
+    //   { test: (v) => /^[0-9A-Za-z\s]+$/.test(v), message: "TDS section can only contain letters and numbers" },
+    // ],
+
+    amount: [
+      { test: (v) => v.length > 0, message: "Amount is required" },
+      { test: (v) => !isNaN(v) && Number(v) > 0, message: "Amount must be a valid positive number" },
+    ],
+
+    last_filed_return_ack_date: [
+      { test: (v) => v === "" || /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "Last filed return acknowledgment date must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: (v) => {
+          if (!v) return true; // optional
+          const parts = v.split(/[-/]/).map(Number);
+          if (parts.length !== 3) return false;
+          const [day, month, year] = parts;
+          const inputDate = new Date(year, month - 1, day);
+          const today = new Date();
+          return inputDate <= today && !isNaN(inputDate.getTime());
+        },
+        message: "Last filed return acknowledgment date cannot be in the future",
+      },
+    ],
+
+    last_filed_return_ack_no: [
+      { test: (v) => v === "" || /^[A-Za-z0-9]+$/.test(v), message: "Acknowledgment number can only contain letters and numbers" },
+    ],
+
+    files: [
+      { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
+      {
+        test: (v) =>
+          Array.isArray(v) &&
+          v.every(
+            (f) =>
+              typeof f === "string" ||
+              f?.url ||
+              (
+                f &&
+                typeof f === "object" &&
+                "type" in f &&
+                (
+                  f.type === "application/pdf" ||
+                  f.type.startsWith("image/") ||
+                  f.type === "application/vnd.ms-excel" ||
+                  f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+                  f.type === "text/plain"
+                )
+              )
+          ),
+        message: "Only PDF, Image, Excel, or TXT files are allowed",
+      },
+    ],
+  };
+
+  const validateTdsReturn = (name, value) => {
+    const fieldRules = tdsReturnRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateTdsReturn(name, value);
+    setTdsReturnErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
   // Handle file input change
   const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // FileList → Array
+
     setFormData((prev) => ({
       ...prev,
-      files: e.target.files, // Handles multiple files
+      files: selectedFiles,  // store as array
     }));
+
+    // validate with correct array
+    const errorMsg = validateTdsReturn("files", selectedFiles);
+    setTdsReturnErrors((prev) => ({ ...prev, files: errorMsg }));
   };
 
   const handleTdsSectionOnChange = (event, newValue) => {
@@ -105,6 +212,24 @@ function TdsReturnCreation({
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateTdsReturn(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setTdsReturnErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
 
     if (formData.files.length === 0) {
       toast.error("Please upload at least one file before submitting.", {
@@ -139,7 +264,7 @@ function TdsReturnCreation({
       }
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-tds/${id}`,
         formDataToSend,
         {
@@ -259,6 +384,7 @@ function TdsReturnCreation({
                         id="tds-section-autocomplete"
                         // disablePortal  
                         disableClearable
+                        required
                         options={tdsSectionData}
                         getOptionLabel={(option) =>
                           typeof option === "string"
@@ -334,19 +460,18 @@ function TdsReturnCreation({
                       </Typography>
                     </label>
 
-                    <div className="relative w-full">
+                    {/* <div className="relative w-full">
                       <DatePicker
                         ref={challenDateRef}
                         selected={selectedChallenDate}
-                        // onChange={(date) => setSelectedDate(date)}
                         onChange={handleDateChange}
                         dateFormat="dd/MM/yyyy"
                         className="w-full !border !border-[#cecece] w-[335px] bg-white py-2 pl-3 pr-10 text-gray-900 
                                                                     focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md 
                                                                     outline-none"
-                        //  className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         placeholderText="dd/mm/yyyy"
                         showYearDropdown
+                        required
                         scrollableYearDropdown
                         yearDropdownItemNumber={25}
 
@@ -354,6 +479,26 @@ function TdsReturnCreation({
                       <FaRegCalendarAlt
                         className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                         onClick={() => challenDateRef.current.setFocus()} // Focus the correct DatePicker
+                      />
+                    </div> */}
+                    <div className="flex items-center w-full border border-[#cecece] rounded-md bg-white">
+                      <DatePicker
+                        ref={challenDateRef}
+                        selected={selectedChallenDate}
+                        onChange={handleDateChange}
+                        dateFormat="dd/MM/yyyy"
+                        className="flex-1 py-2 pl-3 pr-2 text-gray-900 outline-none rounded-md"
+                        placeholderText="dd/mm/yyyy"
+                        showYearDropdown
+                        // value={formData.last_filed_return_ack_date}
+                        required
+                        name="date_of_incorporation"
+                        scrollableYearDropdown
+                        yearDropdownItemNumber={25}
+                      />
+                      <FaRegCalendarAlt
+                        className="ml-20 text-gray-500 cursor-pointer"
+                        onClick={() => challenDateRef.current.setFocus()}
                       />
                     </div>
                   </div>
@@ -370,11 +515,12 @@ function TdsReturnCreation({
 
                     <div className="">
                       <Input
-                        type="number"
+                        type="text"
                         size="lg"
                         name="challan_no"
                         placeholder="Challan No"
                         value={formData.challan_no}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -384,34 +530,6 @@ function TdsReturnCreation({
                       />
                     </div>
                   </div>
-                  {/* <div className="col-span-2">
-                    <label htmlFor="tds_section">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        TDS Section
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="tds_section"
-                        placeholder="TDS Section"
-                        value={formData.tds_section}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div> */}
-
                   <div className="col-span-2">
                     <label htmlFor="amount">
                       <Typography
@@ -430,6 +548,7 @@ function TdsReturnCreation({
                         name="amount"
                         placeholder="Amount"
                         value={formData.amount}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -458,6 +577,7 @@ function TdsReturnCreation({
                         placeholder="Challan Type"
                         value={formData.challan_type}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -479,12 +599,13 @@ function TdsReturnCreation({
 
                     <div className="">
                       <Input
-                        type="number"
+                        type="text"
                         size="lg"
                         name="last_filed_return_ack_no"
                         placeholder="Last filed return Ack No"
                         value={formData.last_filed_return_ack_no}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -504,19 +625,18 @@ function TdsReturnCreation({
                       </Typography>
                     </label>
 
-                    <div className="relative w-full">
+                    {/* <div className="relative w-full">
                       <DatePicker
                         ref={ackDateRef}
                         selected={selectedAckDate}
-                        // onChange={(date) => setSelectedDate(date)}
                         onChange={handleToDateChange}
                         dateFormat="dd/MM/yyyy"
                         className="w-full !border !border-[#cecece] w-[335px] bg-white py-2 pl-3 pr-10 text-gray-900 
                                                                     focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md 
                                                                     outline-none"
-                        //  className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         placeholderText="dd/mm/yyyy"
                         showYearDropdown
+                        required
                         scrollableYearDropdown
                         yearDropdownItemNumber={25}
 
@@ -524,6 +644,26 @@ function TdsReturnCreation({
                       <FaRegCalendarAlt
                         className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                         onClick={() => ackDateRef.current.setFocus()} // Focus the correct DatePicker
+                      />
+                    </div> */}
+                    <div className="flex items-center w-full border border-[#cecece] rounded-md bg-white">
+                      <DatePicker
+                        ref={ackDateRef}
+                        selected={selectedAckDate}
+                        onChange={handleToDateChange}
+                        dateFormat="dd/MM/yyyy"
+                        className="flex-1 py-2 pl-3 pr-2 text-gray-900 outline-none rounded-md"
+                        placeholderText="dd/mm/yyyy"
+                        showYearDropdown
+                        // value={formData.last_filed_return_ack_date}
+                        required
+                        name="date_of_incorporation"
+                        scrollableYearDropdown
+                        yearDropdownItemNumber={25}
+                      />
+                      <FaRegCalendarAlt
+                        className="ml-20 text-gray-500 cursor-pointer"
+                        onClick={() => ackDateRef.current.setFocus()}
                       />
                     </div>
                   </div>
@@ -543,6 +683,7 @@ function TdsReturnCreation({
                         type="file"
                         name="attachment"
                         multiple
+                        required
                         onChange={handleFileChange}
                         className="file-input file-input-bordered file-input-success w-full max-w-sm"
                       />

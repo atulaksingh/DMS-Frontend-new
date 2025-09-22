@@ -46,17 +46,52 @@ function CustomerUserCreation() {
   };
   const handleCreateClose = () => setOpenCreateModal(false);
   const [formData, setFormData] = useState({
-    name: "",
+    first_name: "",
+    last_name: "",
     email: "",
     password: "",
   });
-  // console.log(formData)
+  const [customerUserErrors, setCustomerUserErrors] = useState({})
+
+  const customerUserRules = {
+    first_name: [
+      { test: v => v && v.trim().length > 0, message: "First name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "First name can only contain alphabets and spaces" },
+      { test: v => v.trim().length >= 2, message: "First name must be at least 2 characters long" },
+    ],
+    last_name: [
+      { test: v => v && v.trim().length > 0, message: "Last name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Last name can only contain alphabets and spaces" },
+      { test: v => v.trim().length >= 2, message: "Last name must be at least 2 characters long" },
+    ],
+    email: [
+      { test: v => v && v.trim().length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" },
+    ],
+    password: [
+      { test: v => v && v.trim().length > 0, message: "Password is required" },
+      { test: v => v.length >= 6, message: "Password must be at least 6 characters long" },
+      // { test: v => /[A-Za-z]/.test(v) && /\d/.test(v), message: "Password must contain at least one letter and one number" },
+    ],
+  };
+
+  const validateCustomerUserField = (name, value) => {
+    const fieldRules = customerUserRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+    const errorMsg = validateCustomerUserField(name, value);
+    setCustomerUserErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
   const [openPasswordModal, setOpenPasswordModal] = useState(false);
   const [generatedPassword, setGeneratedPassword] = useState("");
@@ -66,12 +101,30 @@ function CustomerUserCreation() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateCustomerUserField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setCustomerUserErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
     if (submitting) return;
 
     setSubmitting(true);
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append("name", formData.name);
+      formDataToSend.append("first_name", formData.first_name);
+      formDataToSend.append("last_name", formData.last_name);
       formDataToSend.append("email", formData.email);
       formDataToSend.append("password", formData.password);
 
@@ -84,7 +137,7 @@ function CustomerUserCreation() {
         handleCreateClose();
         toast.success(response?.data?.message || "User-client form created successfully.");
         dispatch(fetchClientDetails(id));
-        setFormData({ name: "", customer: "", email: "" });
+        setFormData({ first_name: "", last_name: "", email: "", password: "" });
       } else {
         throw new Error("Failed to create user-client form.");
       }
@@ -128,14 +181,14 @@ function CustomerUserCreation() {
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
                 <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-4">
+                  <div className="col-span-2">
                     <label htmlFor="first_name">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="block font-semibold mb-2"
                       >
-                        Name
+                        First Name
                       </Typography>
                     </label>
 
@@ -143,10 +196,39 @@ function CustomerUserCreation() {
                       <Input
                         type="text"
                         size="lg"
-                        name="name"
-                        placeholder="Full Name"
-                        value={formData.name}
+                        name="first_name"
+                        placeholder="First Name"
+                        value={formData.first_name}
                         onChange={handleInputChange}
+                        required
+                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        labelProps={{
+                          className: "hidden",
+                        }}
+                        containerProps={{ className: "min-w-full" }}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-span-2">
+                    <label htmlFor="last_name">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="block font-semibold mb-2"
+                      >
+                        Last Name
+                      </Typography>
+                    </label>
+
+                    <div className="">
+                      <Input
+                        type="text"
+                        size="lg"
+                        name="last_name"
+                        placeholder="Last Name"
+                        value={formData.last_name}
+                        onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -174,6 +256,7 @@ function CustomerUserCreation() {
                         placeholder="Email"
                         value={formData.email}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -216,6 +299,7 @@ function CustomerUserCreation() {
                         placeholder="Password"
                         value={formData.password}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                         labelProps={{
                           className: "hidden",

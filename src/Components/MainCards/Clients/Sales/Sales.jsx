@@ -8,12 +8,12 @@ import createCache from "@emotion/cache";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { useParams } from "react-router-dom";
 import SalesCreation from "./SalesCreation";
 import SalesFileCreation from "./SalesFileCreation";
 import SalesCard from "./SalesCard";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const muiCache = createCache({
   key: "mui-datatables",
@@ -27,7 +27,6 @@ const styleCreateMOdal = {
   transform: "translate(-50%, -50%)",
   width: 750,
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
   p: 4,
   borderRadius: "10px",
@@ -41,8 +40,7 @@ function Sales({ salesInvoiceData }) {
   const [allLocationBranchProductData, setAllLocationBranchProductData] = useState([])
   const fetchAllLocBranchDetails = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/get-sales/${id}`);
-      // console.log("sales",response.data)
+      const response = await axiosInstance.get(`${API_URL}/api/get-sales/${id}`);
       setAllLocationBranchProductData({
         serializer: response?.data?.serializer || [],
         serializer_customer: response?.data?.serializer_customer || [],
@@ -59,12 +57,6 @@ function Sales({ salesInvoiceData }) {
       });
     }
   };
-
-
-
-
-
-
   const calculateTableBodyHeight = () => {
     const rowHeight = 80;
     const maxHeight = 525;
@@ -89,23 +81,8 @@ function Sales({ salesInvoiceData }) {
     setTableBodyHeight(calculateTableBodyHeight());
   }, [salesInvoiceData]);
 
-
-
-
   const columns = [
-    // {
-    //   name: "id",
-    //   label: "Sr No",
-    //   options: {
-    //     setCellHeaderProps: () => ({
-    //       style: {
-    //         backgroundColor: "#366FA1",
-    //         color: "#ffffff",
-    //       },
-    //     }),
-    //   },
-    // },
-    {
+   {
       name: "customer_name",
       label: "Name",
       options: {
@@ -201,7 +178,7 @@ function Sales({ salesInvoiceData }) {
       options: {
         customBodyRenderLite: (dataIndex) => {
           const rowData = salesInvoiceData[dataIndex];
-          return <div>{/* <BankCard rowId={rowData.id} /> */} <SalesCard rowId={rowData.id} allLocationBranchProductData={allLocationBranchProductData} fetchAllLocBranchDetails={fetchAllLocBranchDetails} /> </div>;
+          return <div><SalesCard rowId={rowData.id} allLocationBranchProductData={allLocationBranchProductData} fetchAllLocBranchDetails={fetchAllLocBranchDetails} /> </div>;
         },
         setCellHeaderProps: () => ({
           style: {
@@ -224,9 +201,7 @@ function Sales({ salesInvoiceData }) {
     tableBodyHeight,
     tableBodyMaxHeight,
     onTableChange: (action, state) => {
-      // console.log(action);
-      // console.dir(state);
-    },
+      },
     selectableRows: "none",
     selectableRowsHeader: false,
     rowsPerPage: 13,

@@ -1,20 +1,23 @@
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 function PurchaseInvoice() {
   const { id, rowId } = useParams();
-  //   console.log("res", useParams());
-  const [invoiceData, setInvoiceData] = useState(null);
+  // const role = getUserRole();
+  console.log("res", useParams());
+  const [invoiceData, setInvoiceData] = useState([""]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const goBack = () => {
-      navigate(-1); // same as history.goBack()
-    };
+  const goBack = () => {
+    navigate(-1); // same as history.goBack()
+  };
   console.log("gggggggg", invoiceData)
   useEffect(() => {
     const fetchBankDetails = async () => {
@@ -22,6 +25,7 @@ function PurchaseInvoice() {
         const response = await axios.get(
           `${API_URL}/api/purchase-view/${id}/${rowId}`
         );
+        console.log("res", response.data);
         setInvoiceData(response.data);
         setLoading(false);
       } catch (error) {
@@ -31,10 +35,12 @@ function PurchaseInvoice() {
     };
     fetchBankDetails();
   }, [id, rowId]);
-  // console.log("res", invoiceData);
+
+
   const handlePrint = () => {
     window.print();
   };
+
   return (
     <>
       <div className="py-5">
@@ -64,8 +70,7 @@ function PurchaseInvoice() {
                 Office Location: {invoiceData?.client_location_name || "Not Available"}
               </p>
               <p className="text-gray-600">
-                Address:
-                {invoiceData?.address || "Not Available"}
+                Address: {invoiceData?.address || "Not Available"}
               </p>
               <p className="text-gray-600">
                 Contact: {invoiceData?.contact || "Not Available"}

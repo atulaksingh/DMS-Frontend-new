@@ -60,13 +60,13 @@ function SalesInvoice({ invoiceData }) {
             <p className="text-gray-600">
               Customer and Vendor Type :{" "}
               {invoiceData?.customer_customer === "True" &&
-              invoiceData?.customer_vendor === "True"
+                invoiceData?.customer_vendor === "True"
                 ? "Both"
                 : invoiceData?.customer_customer === "True"
-                ? "Customer"
-                : invoiceData?.customer_vendor === "True"
-                ? "Vendor"
-                : "Not Available"}
+                  ? "Customer"
+                  : invoiceData?.customer_vendor === "True"
+                    ? "Vendor"
+                    : "Not Available"}
             </p>
           </div>
         </div>
@@ -79,32 +79,32 @@ function SalesInvoice({ invoiceData }) {
           <div>UNIT</div>
           <div>UNIT PRICE</div>
           <div>GST Rate</div>
-          
+
           <div className="text-right">AMOUNT</div>
 
         </div>
 
         {/* Table Rows */}
-      {invoiceData?.product_summaries?.map((product, index) => (
-  <div key={product.id || index} className="text-sm text-gray-700 border-b py-2 grid grid-cols-6 ">
-    {/* DESCRIPTION */}
-    <div className="col-span-2">
-      <p>{product.description_text || "No description available"}</p>
-    </div>
+        {invoiceData?.product_summaries?.map((product, index) => (
+          <div key={product.id || index} className="text-sm text-gray-700 border-b py-2 grid grid-cols-6 ">
+            {/* DESCRIPTION */}
+            <div className="col-span-2">
+              <p>{product.description_text || "No description available"}</p>
+            </div>
 
-    {/* UNIT */}
-    <div>{product.unit || "N/A"}</div>
+            {/* UNIT */}
+            <div>{product.unit || "N/A"}</div>
 
-    {/* UNIT PRICE */}
-    <div>₹{parseFloat(product.rate).toLocaleString("en-IN", { minimumFractionDigits: 2 }) || "0.00"}</div>
+            {/* UNIT PRICE */}
+            <div>₹{parseFloat(product.rate).toLocaleString("en-IN", { minimumFractionDigits: 2 }) || "0.00"}</div>
 
-    {/* GST Rate */}
-    <div>{product.gst_rate || "0.00"}%</div>
+            {/* GST Rate */}
+            <div>{product.gst_rate || "0.00"}%</div>
 
-    {/* AMOUNT */}
-    <div className="text-right">₹{product.product_amount?.toLocaleString("en-IN", { minimumFractionDigits: 2 }) || "0.00"}</div>
-  </div>
-))}
+            {/* AMOUNT */}
+            <div className="text-right">₹{product.product_amount?.toLocaleString("en-IN", { minimumFractionDigits: 2 }) || "0.00"}</div>
+          </div>
+        ))}
 
         {/* Summary */}
         <div className="text-sm text-gray-700 mt-4">

@@ -9,7 +9,7 @@ import { Input, Option, Select, Typography } from "@material-tailwind/react";
 import Modal from "@mui/material/Modal";
 import { DialogFooter, Button } from "@material-tailwind/react";
 import { Link, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect } from "react"; 
 import { useState } from "react";
 import axios from "axios";
 import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
@@ -64,6 +64,40 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
     remark: "",
     files: [],
   });
+  const [errors, setErrors] = useState({});
+
+  const fileFormRules = {
+    document_type: [
+      { test: (v) => v.length > 0, message: "Document type is required" },
+    ],
+    login: [
+      { test: (v) => v.length > 0, message: "Username is required" },
+      { test: (v) => /^[a-zA-Z0-9_]+$/.test(v), message: "Only letters, numbers, and underscores allowed" },
+    ],
+    password: [
+      { test: (v) => v.length > 0, message: "Password is required" },
+      { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
+    ],
+    remark: [
+      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+    ],
+    files: [
+      { test: (v) => v && v.length > 0, message: "At least one file is required" },
+      // {
+      //   test: (v) => v.every(f => f.type === "application/pdf" || f.type.startsWith("image/") || f.type === "application/vnd.ms-excel" || f.type ===
+      //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || f.type === "text/plain"), message: "Only PDF or image files are allowed"
+      // },
+    ],
+  };
+
+  const validateFileField = (name, value) => {
+    const rules = fileFormRules[name];
+    if (!rules) return "";
+    for (let rule of rules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -71,21 +105,24 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateFileField(name, value);
+    setErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-  // Handle file input change
+  
+
   const handleFileChange = (e) => {
-    setFormData({
-      ...formData,
-      files: Array.from(e.target.files), // Convert FileList to an Array
-    });
+    const selectedFiles = Array.from(e.target.files); // FileList → Array
+
+    setFormData((prev) => ({
+      ...prev,
+      files: selectedFiles,  // store as array
+    }));
+
+    // validate with correct array
+    const errorMsg = validateFileField("files", selectedFiles);
+    setErrors((prev) => ({ ...prev, files: errorMsg }));
   };
-  // Handle file input change
-  // const handleFileChange = (e) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     files: e.target.files, // Handles multiple files
-  //   }));
-  // };
 
   const shortenFilename = (filename, maxLength = 20) => {
     if (filename.length <= maxLength) {
@@ -95,9 +132,22 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
     const baseName = filename.slice(0, maxLength - extension.length - 3);
     return `${baseName}...${extension}`;
   };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateFileField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
 
     try {
       const formDataToSend = new FormData();
@@ -114,7 +164,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
       });
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-branchdoc/${branchID}/${rowId}`,
         formDataToSend,
         {
@@ -169,7 +219,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-  // console.log("row123", deleteId);
+
   const handleDeleteOpen = () => {
     setDeleteId(rowId);
     setOpenDeleteModal(true);
@@ -203,60 +253,12 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
     }
   };
 
-  // const handleViewOpen = () => {
-  //   setOpenViewModal(true);
-  //   setAnchorEl(null);
-  // };
-
-  // const handleDeleteClose = () => setOpenDeleteModal(false);
-  // const handleViewClose = () => setOpenViewModal(false);
-  // const handleCreateOpen = async () => {
-  //   setOpenCreateModal(true);
-  //   setAnchorEl(null);
-
-  //   try {
-  //     const response = await axios.get(
-  //       `http://127.0.0.1:8000/api/edit-branchdoc/${branchID}/${rowId}`
-  //     );
-  //     // console.log("dd", response.data);
-  //     setFormData(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching branchDoc data:", error);
-  //     toast.error("Failed to load branchDoc data. Please try again.", {
-  //       position: "top-right",
-  //       autoClose: 2000,
-  //     });
-  //   }
-  // };
-
-  // const handleCreateClose = () => setOpenCreateModal(false);
-  // const [branchDocData, setBranchDocData] = useState(null);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchBranchDocDetails = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `http://127.0.0.1:8000/api/single-branchdoc/${branchID}/${rowId}`
-  //       );
-  //       // console.log("ggg", response.data);
-  //       setBranchDocData(response.data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setError(error);
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchBranchDocDetails();
-  // }, [branchID, rowId]);
-
   const handleViewOpen = () => {
     setOpenViewModal(true);
     setAnchorEl(null);
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/single-branchdoc/${branchID}/${rowId}`
         );
         setBranchDocData(response.data);
@@ -276,7 +278,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-branchdoc/${branchID}/${rowId}`
       );
       // console.log("dd", response.data);
@@ -294,7 +296,6 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
   const [branchDocData, setBranchDocData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -542,6 +543,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
                         name="login"
                         value={formData.login}
                         onChange={handleInputChange}
+                        required
                         placeholder="Login"
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                         labelProps={{ className: "hidden" }}
@@ -567,6 +569,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
                           placeholder="password"
                           value={formData.password}
                           onChange={handleInputChange}
+                          required
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                           labelProps={{
                             className: "hidden",

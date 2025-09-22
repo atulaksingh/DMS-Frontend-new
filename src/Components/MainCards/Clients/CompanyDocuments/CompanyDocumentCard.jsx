@@ -57,7 +57,6 @@ export default function CompanyDocumentCard({ rowId }) {
   const { id } = useParams();
   const dispatch = useDispatch();
   const role = getUserRole();
-  // console.log("rowIdbank", rowId);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
@@ -72,36 +71,80 @@ export default function CompanyDocumentCard({ rowId }) {
   });
   const [attachment, setAttachment] = useState(null); // State for file input
 
+  const [errors, setErrors] = useState({});
+
+  const fileFormRules = {
+    document_type: [
+      { test: (v) => v.length > 0, message: "Document type is required" },
+    ],
+    login: [
+      { test: (v) => v.length > 0, message: "Username is required" },
+      { test: (v) => /^[a-zA-Z0-9_]+$/.test(v), message: "Only letters, numbers, and underscores allowed" },
+    ],
+    password: [
+      { test: (v) => v.length > 0, message: "Password is required" },
+      { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
+    ],
+    remark: [
+      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+    ],
+    files: [
+      { test: (v) => v && v.length > 0, message: "At least one file is required" },
+      // {
+      //   test: (v) => v.every(f => f.type === "application/pdf" || f.type.startsWith("image/") || f.type === "application/vnd.ms-excel" || f.type ===
+      //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || f.type === "text/plain"), message: "Only PDF or image files are allowed"
+      // },
+    ],
+  };
+
+  const validateFileField = (name, value) => {
+    const rules = fileFormRules[name];
+    if (!rules) return "";
+    for (let rule of rules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateFileField(name, value);
+    setErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-  // const handleFileChange = (e) => {
-  //   setFormData({
-  //     ...formData,
-  //     files: Array.from(e.target.files), // Convert FileList to an Array
-  //   });
-  // };
+
   const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // FileList → Array
+
     setFormData((prev) => ({
       ...prev,
-      files: Array.from(e.target.files), // Convert FileList to an array
+      files: selectedFiles,  // store as array
     }));
+
+    // validate with correct array
+    const errorMsg = validateFileField("files", selectedFiles);
+    setErrors((prev) => ({ ...prev, files: errorMsg }));
   };
 
-
-  // const handleFileChange = (e) => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     files: e.target.files, // Handles multiple files
-  //   }));
-  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateFileField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
 
     try {
       // Create a FormData object
@@ -127,7 +170,7 @@ export default function CompanyDocumentCard({ rowId }) {
       }
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-companydoc/${id}/${rowId}`,
         formDataToSend,
         {
@@ -216,62 +259,12 @@ export default function CompanyDocumentCard({ rowId }) {
     }
   };
 
-  // const handleViewOpen = () => {
-  //   setOpenViewModal(true);
-  //   setAnchorEl(null);
-  // };
-
-  // const handleDeleteClose = () => setOpenDeleteModal(false);
-  // const handleViewClose = () => setOpenViewModal(false);
-  // const handleCreateOpen = async () => {
-  //   setOpenCreateModal(true);
-  //   setAnchorEl(null);
-
-  //   try {
-  //     const response = await axios.get(
-  //       `${API_URL}/api/edit-companydoc/${id}/${rowId}`
-  //     );
-  //     // console.log("dd", response.data);
-  //     setFormData(response.data);
-  //   } catch (error) {
-  //     console.error("Error fetching Company Document data:", error);
-  //     toast.error("Failed to load Company Document data. Please try again.", {
-  //       position: "top-right",
-  //       autoClose: 2000,
-  //     });
-  //   }
-  // };
-
-  // const handleCreateClose = () => setOpenCreateModal(false);
-  // const [companyDocData, setcompanyDocData] = useState(null);
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchBankDetails = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_URL}/api/single-fileinfo/${id}/${rowId}`
-  //       );
-  //       // console.log("jjj", response);
-  //       // dispatch(fetchClientDetails(id));
-  //       setcompanyDocData(response.data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setError(error);
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchBankDetails();
-  // }, [id, rowId]);
-
-
   const handleViewOpen = () => {
     setOpenViewModal(true);
     setAnchorEl(null);
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/single-fileinfo/${id}/${rowId}`
         );
         setcompanyDocData(response.data);
@@ -291,7 +284,7 @@ export default function CompanyDocumentCard({ rowId }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-companydoc/${id}/${rowId}`
       );
       // console.log("dd", response.data);
@@ -799,6 +792,7 @@ export default function CompanyDocumentCard({ rowId }) {
                         // onChange={handleLoginChange}
                         value={formData.login}
                         onChange={handleInputChange}
+                        required
                         placeholder="UserName"
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                         labelProps={{ className: "hidden" }}
@@ -835,6 +829,7 @@ export default function CompanyDocumentCard({ rowId }) {
                           // onChange={handlePasswordChange}
                           value={formData.password}
                           onChange={handleInputChange}
+                          required
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                           labelProps={{
                             className: "hidden",

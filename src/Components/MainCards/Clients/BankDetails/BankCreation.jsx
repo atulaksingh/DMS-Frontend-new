@@ -14,12 +14,12 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
-  left: "50%",
+  left: "50%", 
   transform: "translate(-50%, -50%)",
   width: 750,
   bgcolor: "background.paper",
   //   border: "1px solid #000",
-  boxShadow: 24,
+  boxShadow: 24, 
   p: 4,
   borderRadius: "10px",
 };
@@ -39,6 +39,8 @@ function BankCreation() {
     setAnchorEl(null);
   };
 
+  const [bankErrors, setBankErrors] = useState({});
+
   const handleCreateClose = () => setOpenCreateModal(false);
   const [formData, setFormData] = useState({
     account_no: "",
@@ -48,13 +50,82 @@ function BankCreation() {
     branch: "",
     files: [],
   });
+
+  const bankRules = {
+    account_no: [
+      { test: v => v.length > 0, message: "Account number is required" },
+      { test: v => /^\d{9,18}$/.test(v), message: "Account number must be 9 to 18 digits" },
+    ],
+    bank_name: [
+      { test: v => v.length > 0, message: "Bank name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Bank name can only contain alphabets and spaces" },
+    ],
+    ifsc: [
+      { test: v => v.length > 0, message: "IFSC code is required" },
+      // { test: (v) => /^[A-Z]{4}0[A-Z0-9]{6}$/.test(v), message: "IFSC must be in format: 4 letters, 0, followed by 6 characters (e.g., SBIN0001234)" },
+    ],
+    account_type: [
+      { test: v => v.length > 0, message: "Account type is required" },
+      { test: v => ["savings", "current", "salary"].includes(v.toLowerCase()), message: "Account type must be Savings, Current, or Salary" },
+    ],
+    branch: [
+      { test: v => v.length > 0, message: "Branch name is required" },
+      { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch can only contain letters, numbers and spaces" },
+    ],
+    // files: [
+    //   { test: v => v && v.length > 0, message: "At least one file is required" },
+    //   {
+    //     test: v => v.every(f =>
+    //       f.type === "application/pdf" ||
+    //       f.type.startsWith("image/") ||
+    //       f.type === "application/vnd.ms-excel" ||
+    //       f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+    //       f.type === "text/plain"
+    //     ),
+    //     message: "Only PDF, Image, Excel, or TXT files are allowed"
+    //   },
+    // ],
+    files: [
+      { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
+      {
+        test: (v) =>
+          Array.isArray(v) &&
+          v.every(
+            (f) =>
+              f.type === "application/pdf" ||
+              f.type.startsWith("image/") ||
+              f.type === "application/vnd.ms-excel" ||
+              f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+              f.type === "text/plain"
+          ),
+        message: "Only PDF, Image, Excel, or TXT files are allowed",
+      },
+    ],
+
+  };
+
+  const validateBankField = (name, value) => {
+    const fieldRules = bankRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // FileList → Array
+
     setFormData((prev) => ({
       ...prev,
-      files: e.target.files, // Handles multiple files
+      files: selectedFiles,  // store as array
     }));
+
+    // validate with correct array
+    const errorMsg = validateBankField("files", selectedFiles);
+    setBankErrors((prev) => ({ ...prev, files: errorMsg }));
   };
-  // console.log("ffff",formData)
+
   const [attachment, setAttachment] = useState(null); // State for file input
 
   const handleInputChange = (e) => {
@@ -63,11 +134,33 @@ function BankCreation() {
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateBankField(name, value);
+    setBankErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateBankField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setBankErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
+
 
     try {
       // Create a FormData object
@@ -174,6 +267,7 @@ function BankCreation() {
                         placeholder="Account Number"
                         value={formData.account_no}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -202,6 +296,7 @@ function BankCreation() {
                         placeholder="Bank Name"
                         value={formData.bank_name}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -229,6 +324,7 @@ function BankCreation() {
                         placeholder="Account Type"
                         value={formData.account_type}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -257,6 +353,7 @@ function BankCreation() {
                         placeholder="Branch"
                         value={formData.branch}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -284,6 +381,7 @@ function BankCreation() {
                         placeholder="IFSC Code"
                         value={formData.ifsc}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -308,6 +406,7 @@ function BankCreation() {
                         type="file"
                         name="files"
                         onChange={handleFileChange}
+                        required
                         multiple
                         className="file-input file-input-bordered file-input-success w-full max-w-sm"
                       />

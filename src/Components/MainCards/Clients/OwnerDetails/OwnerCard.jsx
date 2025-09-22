@@ -62,7 +62,8 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
   // const [ownerShare, setOwnerShare] = useState("")             
   const [deleteId, setDeleteId] = useState(null);
   const [formData, setFormData] = useState({
-    owner_name: "",
+    first_name: "",
+    last_name: "",
     share: "",
     pan: "",
     aadhar: "",
@@ -74,12 +75,79 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
     is_active: true,
   });
 
+  const [ownerErrors, setOwnerErrors] = useState({});
+
+
+  const ownerRules = {
+    first_name: [
+      { test: v => v.length > 0, message: "First name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "First name can only contain alphabets and spaces" },
+      { test: v => v.length >= 2, message: "First name must be at least 2 characters long" },
+    ],
+    last_name: [
+      { test: v => v.length > 0, message: "Last name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Last name can only contain alphabets and spaces" },
+      { test: v => v.length >= 2, message: "Last name must be at least 2 characters long" },
+    ],
+    share: [
+      // { test: v => v.length > 0, message: "Share is required" },
+      { test: v => /^\d+(\.\d+)?$/.test(v), message: "Share must be a valid number" },
+      { test: v => parseFloat(v) > 0 && parseFloat(v) <= 100, message: "Share must be between 0 and 100" },
+    ],
+    pan: [
+      { test: v => v.length > 0, message: "PAN number is required" },
+      { test: v => /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v), message: "Invalid PAN format (e.g., ABCDE1234F)" },
+    ],
+    aadhar: [
+      { test: v => v.length > 0, message: "Aadhar number is required" },
+      { test: v => /^\d{12}$/.test(v), message: "Aadhar number must be 12 digits" },
+    ],
+    email: [
+      { test: v => v.length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" },
+    ],
+    username: [
+      { test: v => v.length > 0, message: "Username is required" },
+      { test: v => /^[a-zA-Z0-9_]+$/.test(v), message: "Username can only contain letters, numbers, and underscores" },
+    ],
+    it_password: [
+      { test: v => v.length > 0, message: "IT password is required" },
+      { test: v => v.length >= 6, message: "IT password must be at least 6 characters long" },
+    ],
+    mobile_number: [
+      { test: v => v.length > 0, message: "Mobile number is required" },
+      { test: v => /^\d{10}$/.test(v), message: "Mobile number must be exactly 10 digits" },
+    ],
+    user_password: [
+      { test: v => v.length > 0, message: "User password is required" },
+      { test: v => v.length >= 6, message: "User password must be at least 6 characters long" },
+    ],
+    is_admin: [
+      { test: v => typeof v === "boolean", message: "Is Admin must be true or false" },
+    ],
+    is_active: [
+      { test: v => typeof v === "boolean", message: "Is Active must be true or false" },
+    ],
+  };
+
+  const validateOwnerField = (name, value) => {
+    const fieldRules = ownerRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateOwnerField(name, value);
+    setOwnerErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleCheckboxChange = (e) => {
@@ -90,18 +158,30 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
     }));
   };
 
-  const handleActiveCheckboxChange = (e) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      // isadmin: e.target.checked,  // Update isadmin based on checkbox state
-      is_active: e.target.checked, // Update is_active based on checkbox state
-    }));
-  };
+  // const handleActiveCheckboxChange = (e) => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     // isadmin: e.target.checked,  // Update isadmin based on checkbox state
+  //     is_active: e.target.checked, // Update is_active based on checkbox state
+  //   }));
+  // };
 
 
   // console.log("formmmowner", formData);
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateOwnerField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
     try {
       const response = await axiosInstance.post(
         `${API_URL}/api/edit-owner/${id}/${rowId}`,
@@ -123,7 +203,8 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
 
         // Reset the form data
         setFormData({
-          owner_name: "",
+          first_name: "",
+          last_name: "",
           share: "",
           pan: "",
           aadhar: "",
@@ -212,10 +293,6 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
     fetchClientDetails();
 
   };
-  // const handleViewOpen = () => {
-  //   setOpenViewModal(true);
-  //   setAnchorEl(null);
-  // };
 
   const handleDeleteClose = () => setOpenDeleteModal(false);
   const handleViewClose = () => setOpenViewModal(false);
@@ -247,6 +324,19 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  const [isActive, setIsActive] = useState(formData.is_active);
+
+  useEffect(() => {
+    setFormData(formData);
+    setIsActive(formData.is_active);
+  }, [formData]);
+
+  const handleActiveCheckboxChange = (e) => {
+    const checked = e.target.checked;
+    setFormData({ ...formData, is_active: checked });
+  };
+
   return (
     <>
       {/* <ToastContainer /> */}
@@ -287,7 +377,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                             Name :
                           </Typography>
                           <div className="text-gray-700 text-[15px] my-auto">
-                            {ownertData.owner_name}
+                            {ownertData.first_name} {ownertData.last_name}
                           </div>
                         </div>
                         <div className="w-full flex gap-3">
@@ -436,14 +526,14 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
                 <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-3">
-                    <label htmlFor="owner_name">
+                  <div className="col-span-2">
+                    <label htmlFor="first_name">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="block font-semibold mb-2"
                       >
-                        Owner Name
+                        First Name
                       </Typography>
                     </label>
 
@@ -451,19 +541,50 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       <Input
                         type="text"
                         size="lg"
-                        name="owner_name"
-                        placeholder="Owner Name"
-                        value={formData.owner_name}
+                        name="first_name"
+                        placeholder="First Name"
+                        value={formData.first_name}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
                         containerProps={{ className: "min-w-full" }}
+                        disabled={!formData.is_active}
                       />
                     </div>
                   </div>
-                  <div className="col-span-1">
+                  <div className="col-span-2">
+                    <label htmlFor="last_name">
+                      <Typography
+                        variant="small"
+                        color="blue-gray"
+                        className="block font-semibold mb-2"
+                      >
+                        Last Name
+                      </Typography>
+                    </label>
+
+                    <div className="">
+                      <Input
+                        type="text"
+                        size="lg"
+                        name="last_name"
+                        placeholder="Last Name"
+                        value={formData.last_name}
+                        onChange={handleInputChange}
+                        required
+                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        labelProps={{
+                          className: "hidden",
+                        }}
+                        containerProps={{ className: "min-w-full" }}
+                        disabled={!formData.is_active}
+                      />
+                    </div>
+                  </div>
+                  <div className="col-span-2">
                     <label htmlFor="share">
                       <Typography
                         variant="small"
@@ -482,11 +603,13 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         placeholder="Share"
                         value={formData.share}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
                         containerProps={{ className: "min-w-full" }}
+                        disabled={!formData.is_active}
                       />
                     </div>
                   </div>
@@ -509,11 +632,13 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         placeholder="Pan Number"
                         value={formData.pan}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
                         containerProps={{ className: "min-w-full" }}
+                        disabled={!formData.is_active}
                       />
                     </div>
                   </div>
@@ -536,15 +661,16 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         placeholder="Aadhar Number"
                         value={formData.aadhar}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
                         containerProps={{ className: "min-w-full" }}
+                        disabled={!formData.is_active}
                       />
                     </div>
                   </div>
-
                   <div className="col-span-2">
                     <label htmlFor="email">
                       <Typography
@@ -563,6 +689,8 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         name="email"
                         placeholder="Email"
                         value={formData.email}
+                        // required
+                        disabled
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -591,11 +719,13 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         placeholder="UserName"
                         value={formData.username}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
                         containerProps={{ className: "min-w-full" }}
+                        disabled={!formData.is_active}
                       />
                     </div>
                   </div>
@@ -619,11 +749,13 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         placeholder="Password"
                         value={formData.it_password}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                         labelProps={{
                           className: "hidden",
                         }}
                         containerProps={{ className: "min-w-full" }}
+                        disabled={!formData.is_active}
                       />
                       {/* Toggle visibility button */}
                       <button
@@ -658,11 +790,13 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         placeholder="Mobile Number"
                         value={formData.mobile}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
                         containerProps={{ className: "min-w-full" }}
+                        disabled={!formData.is_active}
                       />
                     </div>
                   </div>
@@ -684,6 +818,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         checked={formData.isadmin}
                         onChange={handleCheckboxChange}
                         label="Is Admin"
+                        disabled={!formData.is_active}
                       />
                     </div>
                   </div>
@@ -703,6 +838,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         color="blue"
                         name="is_active"
                         checked={formData.is_active}
+                        // onChange={handleActiveCheckboxChange}
                         onChange={handleActiveCheckboxChange}
                         label="Is Active"
                       />
@@ -724,6 +860,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                   type="submit"
                   //   color="green"
                   // onClick={handleCreateClose}
+                  disabled={!formData.is_active}
                   className="bg-primary"
                 >
                   <span>Confirm</span>

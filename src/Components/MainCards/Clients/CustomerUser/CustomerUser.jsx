@@ -6,10 +6,8 @@ import MUIDataTable from "mui-datatables";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { useParams } from "react-router-dom";
 import CustomerUserCard from "./CustomerUserCard";
 import CustomerUserCreation from "./CustomerUserCreation";
@@ -60,8 +58,20 @@ function CustomerUser({ customerUserData }) {
 
   const columns = [
     {
-      name: "name",
-      label: "Name",
+      name: "first_name",
+      label: "First Name",
+      options: {
+        setCellHeaderProps: () => ({
+          style: {
+            backgroundColor: "#366FA1",
+            color: "#ffffff",
+          },
+        }),
+      },
+    },
+    {
+      name: "last_name",
+      label: "Last Name",
       options: {
         setCellHeaderProps: () => ({
           style: {

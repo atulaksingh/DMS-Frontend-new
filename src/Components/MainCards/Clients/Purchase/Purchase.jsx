@@ -17,6 +17,7 @@ import PurchaseFileCreation from "./PurchaseFileCreation";
 import PurchaseCard from "./PurchaseCard";
 import Date from "./Date";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 // import SalesCreation from "./SalesCreation";
 // import SalesFileCreation from "./SalesFileCreation";
 // import SalesCard from "./SalesCard";
@@ -41,13 +42,13 @@ const styleCreateMOdal = {
 };
 function Purchase({ purchaseInvoiceData, }) {
   console.log("purchaseInvoiceData", purchaseInvoiceData)
-
   const { id } = useParams();
+  const role = getUserRole();
   console.log("useo", useParams())
   const [allLocationBranchProductData, setAllLocationBranchProductData] = useState([])
   const fetchAllLocBranchDetails = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/get-purchase/${id}`);
+      const response = await axiosInstance.get(`${API_URL}/api/get-purchase/${id}`);
       console.log("response purchase", response?.data)
       setAllLocationBranchProductData({
         serializer: response?.data?.serializer || [],
@@ -191,7 +192,7 @@ function Purchase({ purchaseInvoiceData, }) {
       options: {
         customBodyRenderLite: (dataIndex) => {
           const rowData = purchaseInvoiceData[dataIndex];
-          return <div>{/* <BankCard rowId={rowData.id} /> */}
+          return <div>
             <PurchaseCard rowId={rowData.id} allLocationBranchProductData={allLocationBranchProductData} fetchAllLocBranchDetails={fetchAllLocBranchDetails} />
           </div>;
         },
@@ -216,8 +217,6 @@ function Purchase({ purchaseInvoiceData, }) {
     tableBodyHeight,
     tableBodyMaxHeight,
     onTableChange: (action, state) => {
-      // console.log(action);
-      // console.dir(state);
     },
     selectableRows: "none",
     selectableRowsHeader: false,
@@ -272,19 +271,17 @@ function Purchase({ purchaseInvoiceData, }) {
           </div>
 
           <div className="flex align-middle items-center gap-2">
-
-            {/* <Date /> */}
             <PurchaseFileCreation />
             <PurchaseCreation allLocationBranchProductData={allLocationBranchProductData} fetchAllLocBranchDetails={fetchAllLocBranchDetails} />
           </div>
         </div>
         {Array.isArray(purchaseInvoiceData) && purchaseInvoiceData.length > 0 ? (
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={purchaseInvoiceData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider>
-        ):(
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable data={purchaseInvoiceData} columns={columns} options={options} />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
           renderNoData()
         )}
       </div>

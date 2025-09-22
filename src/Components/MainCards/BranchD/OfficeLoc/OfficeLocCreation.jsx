@@ -3,10 +3,10 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import { Country, State, City } from "country-state-city";
 import { Autocomplete, Stack, TextField } from "@mui/material";
@@ -18,14 +18,13 @@ const styleCreateMOdal = {
   transform: "translate(-50%, -50%)",
   width: 750,
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
   p: 4,
   borderRadius: "10px",
 };
 function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = "view" }) {
-  // const { branchID } = useParams(); 
   const { branchID: urlBranchID } = useParams(); // from route (view page)
+  const role = getUserRole();
   const branchID = propBranchID || urlBranchID;  // priority to prop
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -38,21 +37,9 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
   const [countries, setCountries] = useState(Country.getAllCountries());
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
-
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
-  // const handleCountryChange = (country) => {
-  //   setSelectedCountry(country);
-  //   setStates(State.getStatesOfCountry(country?.isoCode));
-  //   setCities([]);
-  //   setSelectedState(null);
-  //   setSelectedCity(null); // Reset city when country changes
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     country: country?.name, // Update formData with selected country
-  //   }));
-  // };
   const handleCountryChange = (country) => {
     const matchedCountry =
       typeof country === "string"
@@ -73,30 +60,6 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
       country: matchedCountry.name,
     }));
   };
-
-  // const handleCountryChange = (country) => {
-  //   // If user typed a string, find the matching country object
-  //   const matchedCountry =
-  //     typeof country === "string"
-  //       ? countries.find(
-  //         (c) => c.name.toLowerCase() === country.toLowerCase()
-  //       )
-  //       : country;
-
-  //   if (!matchedCountry) return;
-
-  //   setSelectedCountry(matchedCountry);
-  //   setStates(State.getStatesOfCountry(matchedCountry.isoCode));
-  //   setCities([]);
-  //   setSelectedState(null);
-  //   setSelectedCity(null); // Reset city when country changes
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     country: matchedCountry.name, // Update formData with selected country
-  //   }));
-  // };
-
-
   const handleStateChange = (state) => {
     setSelectedState(state);
     setCities(City.getCitiesOfState(selectedCountry?.isoCode, state?.isoCode));
@@ -106,7 +69,6 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
       state: state?.name, // Update formData with selected state
     }));
   };
-
   const handleCityChange = (city) => {
     setSelectedCity(city);
     setFormData((prev) => ({
@@ -114,7 +76,6 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
       city: city?.name, // Update formData with selected city
     }));
   };
-
   const handleCreateClose = () => setOpenCreateModal(false);
   const [formData, setFormData] = useState({
     location: "",
@@ -125,17 +86,75 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
     country: "",
   });
 
-  // console.log("formmm", formData);
+  const [officeLocationErrors, setOfficeLocationErrors] = useState({});
+
+  const locationRules = {
+    location: [
+      { test: v => v && v.trim().length > 0, message: "Location is required" },
+      { test: v => /^[A-Za-z0-9\s,.-]+$/.test(v), message: "Location can only contain letters, numbers, spaces, commas, dots, and hyphens" },
+    ],
+    contact: [
+      { test: v => v && String(v).trim().length > 0, message: "Contact number is required" },
+      { test: v => /^\d{10}$/.test(String(v)), message: "Contact number must be exactly 10 digits" },
+    ],
+    address: [
+      { test: v => v && v.trim().length > 0, message: "Address is required" },
+      { test: v => v.length >= 5, message: "Address must be at least 5 characters long" },
+    ],
+    city: [
+      { test: v => v && v.trim().length > 0, message: "City is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "City can only contain alphabets and spaces" },
+    ],
+    state: [
+      { test: v => v && v.trim().length > 0, message: "State is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "State can only contain alphabets and spaces" },
+    ],
+    country: [
+      { test: v => v && v.trim().length > 0, message: "Country is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Country can only contain alphabets and spaces" },
+    ],
+  };
+
+  const validateLocationField = (name, value) => {
+    const fieldRules = locationRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateLocationField(name, value);
+    setOfficeLocationErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateLocationField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setOfficeLocationErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
 
     try {
       // Create a FormData object
@@ -150,7 +169,7 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
       formDataToSend.append("country", formData.country);
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-officelocation/${branchID}`,
         formDataToSend
       );
@@ -239,6 +258,7 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                         placeholder="Location"
                         value={formData.location}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -267,6 +287,7 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                         placeholder="Contact Number"
                         value={formData.contact}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -290,54 +311,6 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                       <div className="">
                         <div className="">
                           <Stack spacing={1} sx={{ width: 300 }}>
-                            {/* <Autocomplete
-                              id="country-select"
-                              options={countries}
-                              freeSolo={true} // Allow free text input
-                              disableClearable={false} // Allow clearing with a single icon
-                              getOptionLabel={(option) =>
-                                typeof option === "string"
-                                  ? option
-                                  : `${option.flag} ${option.name}`
-                              }
-                              onChange={(event, newValue) =>
-                                handleCountryChange(newValue)
-                              }
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.isoCode}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.flag} {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select Country"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                  InputProps={{
-                                    ...params.InputProps,
-                                    endAdornment: (
-                                      <>{params.InputProps.endAdornment}</>
-                                    ),
-                                  }}
-                                />
-                              )}
-                            /> */}
                             <Autocomplete
                               id="country-select"
                               options={countries}
@@ -407,44 +380,6 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                       <div className="">
                         <div className="">
                           <Stack spacing={1} sx={{ width: 300 }}>
-                            {/* <Autocomplete
-                              id="state-select"
-                              options={states}
-                              freeSolo={true}
-                              disableClearable={false}
-                              getOptionLabel={(option) => option.name}
-                              onChange={(event, newValue) =>
-                                handleStateChange(newValue)
-                              }
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.isoCode}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select State"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                />
-                              )}
-                            /> */}
                             <Autocomplete
                               id="state-select"
                               options={states}
@@ -523,48 +458,6 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                       <div className="">
                         <div className="">
                           <Stack spacing={1} sx={{ width: 300 }}>
-                            {/* <Autocomplete
-                              id="city-select"
-                              options={cities}
-                              freeSolo={true}
-                              disableClearable={false}
-                              getOptionLabel={(option) => option.name}
-                              onChange={(event, newValue) => {
-                                setSelectedCity(newValue);
-                                setFormData((prevData) => ({
-                                  ...prevData,
-                                  city: newValue ? newValue.name : "",
-                                }));
-                              }}
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.name}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select City"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "20px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "20px 6px",
-                                    },
-                                  }}
-                                />
-                              )}
-                            /> */}
                             <Autocomplete
                               id="city-select"
                               options={cities}
@@ -649,6 +542,7 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                         placeholder="Address"
                         value={formData.address}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",

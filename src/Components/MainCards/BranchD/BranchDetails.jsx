@@ -7,6 +7,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import BranchDoc from "./BranchDoc/BranchDoc";
 import OfficeLoc from "./OfficeLoc/OfficeLoc";
 import { HomeIcon } from "@heroicons/react/16/solid";
@@ -14,6 +15,7 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 function BranchDetails() {
   const { clientID, branchID } = useParams();
+  const role = getUserRole();
   //   console.log("useee",useParams())
   const [value, setValue] = React.useState("1");
   const [branchData, setBranchData] = useState(null);
@@ -27,7 +29,7 @@ function BranchDetails() {
   };
   const fetchBranchDetails = async () => {
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/detail-branch/${clientID}/${branchID}`
       );
       // console.log("branch------------->", response.data);
@@ -116,7 +118,7 @@ function BranchDetails() {
           <div className="py-3">
             {branchData && (
               <>
-  
+
                 <div className="bg-white shadow-lg rounded-xl px-6 py-3  mx-auto w-full border border-gray-100 mb-10">
                   <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
                     🧾 Branch Details
@@ -125,7 +127,7 @@ function BranchDetails() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[15px] text-gray-800">
                     <div className="flex">
                       <span className="text-gray-500 text-sm min-w-[150px]">
-                         Branch Name:
+                        Branch Name:
                       </span>
                       <span className="font-medium"> {branchData?.branch_name}</span>
                     </div>
@@ -143,7 +145,7 @@ function BranchDetails() {
                     </div>
                     <div className="flex">
                       <span className="text-gray-500 text-sm min-w-[150px]">
-                       State:
+                        State:
                       </span>
                       <span className="font-medium">{branchData?.state}</span>
                     </div>
@@ -153,15 +155,15 @@ function BranchDetails() {
                       </span>
                       <span className="font-medium">  {branchData?.city}</span>
                     </div>
-          
+
                   </div>
 
                   <div className="mt-6">
                     <span className="text-gray-500 text-sm block mb-1">
-                       Address Details
+                      Address Details
                     </span>
                     <div className="bg-gray-50 p-4 rounded-md text-sm leading-relaxed text-gray-700 border">
-                     {branchData?.address}
+                      {branchData?.address}
                     </div>
                   </div>
                 </div>
@@ -169,7 +171,7 @@ function BranchDetails() {
             )}
           </div>
         </div>
-   
+
       </div>
 
       <div className="py-10 px-32">

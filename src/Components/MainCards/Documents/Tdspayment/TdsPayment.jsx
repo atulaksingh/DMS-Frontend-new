@@ -16,6 +16,7 @@ import TdsPaymentFileCreation from "./TdsPaymentFileCreation";
 // import TdsSectionCreationPayment from "./TdsSectionCreationPayment";
 // import TdsSectionPayments from "./TdsSectionPayments";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import TdsSectionPayments from "./TdsSectionPayments";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -39,6 +40,7 @@ const styleCreateMOdal = {
 function TdsPayment({ tdsPaymentData, tdsSectionData }) {
 
   const { id } = useParams();
+  const role = getUserRole();
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
@@ -61,7 +63,7 @@ function TdsPayment({ tdsPaymentData, tdsSectionData }) {
   const [allTdsSectionData, setAllTdsSectionData] = useState([]);
   const fetchAllTdsSectionDetails = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/get-tdssection`);
+      const response = await axiosInstance.get(`${API_URL}/api/get-tdssection`);
       console.log("response tds section", response?.data)
       setAllTdsSectionData({
         tds_section: response?.data?.tds_section || [],
@@ -243,21 +245,21 @@ function TdsPayment({ tdsPaymentData, tdsSectionData }) {
           </div>
           <div className="flex align-middle items-center gap-2">
             <TdsSectionPayments tdsSectionData={tdsSectionData} />
-            <TdsPaymentFileCreation/>
+            <TdsPaymentFileCreation />
             <TdsPaymentCreation allTdsSectionData={allTdsSectionData} fetchAllTdsSectionDetails={fetchAllTdsSectionDetails} />
           </div>
         </div>
         {Array.isArray(tdsPaymentData) && tdsPaymentData.length > 0 ? (
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable
-              data={tdsPaymentData}
-              columns={columns}
-              options={options}
-            />
-          </ThemeProvider>
-        </CacheProvider>
-        ):(
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable
+                data={tdsPaymentData}
+                columns={columns}
+                options={options}
+              />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
           renderNoData()
         )}
       </div>

@@ -193,9 +193,11 @@ export default function Card({ rowId, fetchClients }) {
           <Link to={`/clientDetails/${rowId}`}>
             <MenuItem name="clientview-btn">View</MenuItem>
           </Link>
-          <Link to={`/clientUpdate/${rowId}`}>
-            <MenuItem>Update</MenuItem>
-          </Link>
+          {((role === "superuser")) && (
+            <Link to={`/clientUpdate/${rowId}`}>
+              <MenuItem>Update</MenuItem>
+            </Link>
+          )}
           {/* <MenuItem onClick={openCreateModal}>Delete</MenuItem> */}
           {/* <MenuItem onClick={handleCreateOpen}>Delete</MenuItem>
            */}

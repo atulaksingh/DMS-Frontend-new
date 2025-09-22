@@ -87,18 +87,130 @@ export default function TdsPaymentCard({
 
   const tdsSectionData = allTdsSectionData?.tds_section || [];
 
+  const [tdsPaymentError, setTdsPaymentError] = useState({})
+
+  const taxFormRules = {
+    client_name: [
+      { test: (v) => v.length > 0, message: "Client name is required" },
+      { test: (v) => /^[A-Za-z\s]+$/.test(v), message: "Client name can only contain alphabets and spaces" },
+      { test: (v) => v.length >= 2, message: "Client name must be at least 2 characters long" },
+    ],
+
+    date: [
+      { test: (v) => v.length > 0, message: "Date is required" },
+      { test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "Date must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: (v) => {
+          if (!v) return false;
+          const parts = v.split(/[-/]/).map(Number);
+          if (parts.length !== 3) return false;
+          const [day, month, year] = parts;
+          const inputDate = new Date(year, month - 1, day);
+          const today = new Date();
+          return inputDate <= today && !isNaN(inputDate.getTime());
+        },
+        message: "Date cannot be in the future",
+      },
+    ],
+
+    PAN: [
+      { test: (v) => v.length > 0, message: "PAN number is required" },
+      { test: (v) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v), message: "PAN must be in format ABCDE1234F" },
+    ],
+
+    amount: [
+      { test: (v) => v.length > 0, message: "Amount is required" },
+      { test: (v) => !isNaN(v) && Number(v) > 0, message: "Amount must be a valid positive number" },
+    ],
+
+    cgst: [
+      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0), message: "CGST must be a valid number" },
+    ],
+
+    sgst: [
+      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0), message: "SGST must be a valid number" },
+    ],
+
+    igst: [
+      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0), message: "IGST must be a valid number" },
+    ],
+
+    total_amt: [
+      { test: (v) => v.length > 0, message: "Total amount is required" },
+      { test: (v) => !isNaN(v) && Number(v) >= 0, message: "Total amount must be a valid number" },
+    ],
+
+    tds_rate: [
+      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0 && Number(v) <= 100), message: "TDS rate must be between 0 and 100" },
+    ],
+
+    tds_amount: [
+      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0), message: "TDS amount must be a valid number" },
+    ],
+
+    net_amount: [
+      { test: (v) => v.length > 0, message: "Net amount is required" },
+      { test: (v) => !isNaN(v) && Number(v) >= 0, message: "Net amount must be a valid number" },
+    ],
+
+    tds_payment_date: [
+      { test: (v) => v === "" || /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "TDS payment date must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: (v) => {
+          if (!v) return true; // optional
+          const parts = v.split(/[-/]/).map(Number);
+          if (parts.length !== 3) return false;
+          const [day, month, year] = parts;
+          const inputDate = new Date(year, month - 1, day);
+          const today = new Date();
+          return inputDate <= today && !isNaN(inputDate.getTime());
+        },
+        message: "TDS payment date cannot be in the future",
+      },
+    ],
+
+    tds_challan_no: [
+      { test: (v) => v === "" || /^[A-Za-z0-9]+$/.test(v), message: "TDS challan no can only contain letters and numbers" },
+    ],
+  };
+
+  const validateTdsPayment = (name, value) => {
+    const fieldRules = taxFormRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateTdsPayment(name, value);
+    setTdsPaymentError((prev) => ({ ...prev, [name]: errorMsg }));
   };
   // Handle file input change
 
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateTdsPayment(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
+
 
     try {
       // Create a FormData object
@@ -121,7 +233,7 @@ export default function TdsPaymentCard({
       formDataToSend.append("tds_challan_no", formData.tds_challan_no);
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-tdspayment/${id}/${rowId}`,
         formDataToSend,
         {
@@ -216,7 +328,7 @@ export default function TdsPaymentCard({
     setOpenViewModal(true);
     setAnchorEl(null);
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/single-tdspayment/${id}/${rowId}`
       );
       setTdsPaymentData(response.data);
@@ -234,7 +346,7 @@ export default function TdsPaymentCard({
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-tdspayment/${id}/${rowId}`
       );
       // console.log("dd", response.data);
@@ -307,27 +419,6 @@ export default function TdsPaymentCard({
   };
 
 
-  // const [selectedDate, setSelectedDate] = useState(null); //....
-  // const handleDateChange = (date) => {
-  //   if (date instanceof Date && !isNaN(date)) {
-  //     const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
-  //     setSelectedDate(date); // Keep original date for display
-  //     setFormData({ ...formData, date: formattedDate }); // Store in required format
-  //     // setSelectedToDate(date); // Set selected date to to_date
-  //     // setFormData({ ...formData, to_date: formattedDate }); // Store in required format
-  //   }
-  // };
-  // console.log("TDS Section Data:", tdsSectionData);
-
-
-
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
-
-  // if (error) {
-  //   return <div>Error loading client details: {error.message}</div>;
-  // }
   return (
     <>
       {/* <ToastContainer /> */}
@@ -630,6 +721,7 @@ export default function TdsPaymentCard({
                     placeholder="Client Name"
                     value={formData.client_name}
                     onChange={handleInputChange}
+                    required
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
                     labelProps={{
@@ -649,17 +741,16 @@ export default function TdsPaymentCard({
                       Date
                     </Typography>
                   </label>
-                  <div className="relative w-full">
+                  {/* <div className="relative w-full">
                     <DatePicker
                       ref={dateRef}
                       selected={selectedDate}
-                      // onChange={(date) => setSelectedDate(date)}
                       onChange={handleDateChange}
+                      required
                       dateFormat="dd/MM/yyyy"
                       className="w-full !border !border-[#cecece] w-[350px] bg-white py-2 pl-3 pr-10 text-gray-900 
                                                                                                           focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md 
                                                                                                           outline-none"
-                      //  className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                       placeholderText="dd/mm/yyyy"
                       value={formData.date}
                       showYearDropdown
@@ -670,6 +761,26 @@ export default function TdsPaymentCard({
                     <FaRegCalendarAlt
                       className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                       onClick={() => dateRef.current.setFocus()} // Focus the correct DatePicker
+                    />
+                  </div> */}
+                  <div className="flex items-center w-full border border-[#cecece] rounded-md bg-white">
+                    <DatePicker
+                      ref={dateRef}
+                      selected={selectedDate}
+                      onChange={handleDateChange}
+                      dateFormat="dd/MM/yyyy"
+                      className="flex-1 py-2 pl-3 pr-2 text-gray-900 outline-none rounded-md"
+                      placeholderText="dd/mm/yyyy"
+                      value={formData.date}
+                      showYearDropdown
+                      required
+                      name="date_of_incorporation"
+                      scrollableYearDropdown
+                      yearDropdownItemNumber={25}
+                    />
+                    <FaRegCalendarAlt
+                      className="ml-20 text-gray-500 cursor-pointer"
+                      onClick={() => dateRef.current.setFocus()}
                     />
                   </div>
                 </div>
@@ -692,6 +803,7 @@ export default function TdsPaymentCard({
                     placeholder="PAN"
                     value={formData.PAN}
                     onChange={handleInputChange}
+                    required
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
                     labelProps={{
@@ -718,6 +830,7 @@ export default function TdsPaymentCard({
                     placeholder="Amount"
                     value={formData.amount}
                     onChange={handleInputChange}
+                    required
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
                     labelProps={{
@@ -744,6 +857,7 @@ export default function TdsPaymentCard({
                     placeholder="CGST"
                     value={formData.cgst}
                     onChange={handleInputChange}
+                    required
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
                     labelProps={{
@@ -770,6 +884,7 @@ export default function TdsPaymentCard({
                     placeholder="SGST"
                     value={formData.sgst}
                     onChange={handleInputChange}
+                    required
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
                     labelProps={{
@@ -796,6 +911,7 @@ export default function TdsPaymentCard({
                     placeholder="IGST"
                     value={formData.igst}
                     onChange={handleInputChange}
+                    required
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
                     labelProps={{
@@ -822,6 +938,7 @@ export default function TdsPaymentCard({
                     placeholder="Total Amount"
                     value={formData.total_amt}
                     onChange={handleInputChange}
+                    required
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
                     labelProps={{
@@ -847,6 +964,7 @@ export default function TdsPaymentCard({
                     name="tds_rate"
                     placeholder="TDS Rate"
                     value={formData.tds_rate}
+                    required
                     onChange={handleInputChange}
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
@@ -892,17 +1010,16 @@ export default function TdsPaymentCard({
                     </Typography>
                   </label>
                   <div className="">
-                    <div className="relative w-full">
+                    {/* <div className="relative w-full">
                       <DatePicker
                         ref={tdsDateRef}
                         selected={selectedTdsDate}
-                        // onChange={(date) => setSelectedDate(date)}
+                        required
                         onChange={handleToDateChange}
                         dateFormat="dd/MM/yyyy"
                         className="w-full !border !border-[#cecece] w-[350px] bg-white py-2 pl-3 pr-10 text-gray-900 
                                                                                                         focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md 
                                                                                                         outline-none"
-                        //  className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         placeholderText="dd/mm/yyyy"
                         value={formData.tds_payment_date}
                         showYearDropdown
@@ -913,6 +1030,26 @@ export default function TdsPaymentCard({
                       <FaRegCalendarAlt
                         className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                         onClick={() => tdsDateRef.current.setFocus()} // Focus the correct DatePicker
+                      />
+                    </div> */}
+                    <div className="flex items-center w-full border border-[#cecece] rounded-md bg-white">
+                      <DatePicker
+                        ref={tdsDateRef}
+                        selected={selectedTdsDate}
+                        onChange={handleToDateChange}
+                        dateFormat="dd/MM/yyyy"
+                        className="flex-1 py-2 pl-3 pr-2 text-gray-900 outline-none rounded-md"
+                        placeholderText="dd/mm/yyyy"
+                        value={formData.tds_payment_date}
+                        showYearDropdown
+                        required
+                        name="date_of_incorporation"
+                        scrollableYearDropdown
+                        yearDropdownItemNumber={25}
+                      />
+                      <FaRegCalendarAlt
+                        className="ml-20 text-gray-500 cursor-pointer"
+                        onClick={() => tdsDateRef.current.setFocus()}
                       />
                     </div>
                   </div>
@@ -935,6 +1072,7 @@ export default function TdsPaymentCard({
                     placeholder="TDS Challan No."
                     value={formData.tds_challan_no}
                     onChange={handleInputChange}
+                    required
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
                     labelProps={{
@@ -968,6 +1106,7 @@ export default function TdsPaymentCard({
                           ? option
                           : option.name || ""
                       }
+                      required
                       onChange={handleTdsSectionOnChange}
                       // value={tdsSecData.name || ""} // Bind value to formData.gst_no
                       value={formData.tds_section || ""}
@@ -1046,6 +1185,7 @@ export default function TdsPaymentCard({
                     name="tds_amount"
                     placeholder="TDS Amount"
                     value={formData.tds_amount}
+                    required
                     onChange={handleInputChange}
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
@@ -1073,6 +1213,7 @@ export default function TdsPaymentCard({
                     placeholder="Net Amount"
                     value={formData.net_amount}
                     onChange={handleInputChange}
+                    required
                     className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                     containerProps={{ className: "min-w-full" }}
                     labelProps={{

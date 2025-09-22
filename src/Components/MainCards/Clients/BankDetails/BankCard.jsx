@@ -9,7 +9,7 @@ import { Input, Typography } from "@material-tailwind/react";
 import Modal from "@mui/material/Modal";
 import { DialogFooter, Button } from "@material-tailwind/react";
 import { Link, useParams } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect } from "react"; 
 import { useState } from "react";
 import axios from "axios";
 import { FaFileAlt } from "react-icons/fa";
@@ -54,12 +54,12 @@ export default function BankCard({ rowId }) {
   // console.log("rowIdbank", rowId);
   const dispatch = useDispatch();
   const role = getUserRole();
-
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [bankErrors, setBankErrors] = useState({});
   const [formData, setFormData] = useState({
     account_no: "",
     bank_name: "",
@@ -69,22 +69,92 @@ export default function BankCard({ rowId }) {
     files: [],
   });
 
+  const bankRules = {
+    account_no: [
+      // { test: v => v.length > 0, message: "Account number is required" },
+      { test: v => /^\d{9,18}$/.test(v), message: "Account number must be 9 to 18 digits" },
+    ],
+    bank_name: [
+      { test: v => v.length > 0, message: "Bank name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Bank name can only contain alphabets and spaces" },
+    ],
+    ifsc: [
+      { test: v => v.length > 0, message: "IFSC code is required" },
+      // { test: (v) => /^[A-Z]{4}0[A-Z0-9]{6}$/.test(v), message: "IFSC must be in format: 4 letters, 0, followed by 6 characters (e.g., SBIN0001234)" },
+    ],
+    account_type: [
+      { test: v => v.length > 0, message: "Account type is required" },
+      { test: v => ["savings", "current", "salary"].includes(v.toLowerCase()), message: "Account type must be Savings, Current, or Salary" },
+    ],
+    branch: [
+      { test: v => v.length > 0, message: "Branch name is required" },
+      { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch can only contain letters, numbers and spaces" },
+    ],
+    files: [
+      { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
+      // {
+      //   test: (v) =>
+      //     Array.isArray(v) &&
+      //     v.every(
+      //       (f) =>
+      //         f.type === "application/pdf" ||
+      //         f.type?.startsWith("image/") ||
+      //         f.type === "application/vnd.ms-excel" ||
+      //         f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      //         f.type === "text/plain"
+      //     ),
+      //   message: "Only PDF, Image, Excel, or TXT files are allowed",
+      // },
+    ],
+
+  };
+
+  const validateBankField = (name, value) => {
+    const fieldRules = bankRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateBankField(name, value);
+    setBankErrors((prev) => ({ ...prev, [name]: errorMsg }));
+
   };
+
   const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // ✅ define it
     setFormData((prev) => ({
       ...prev,
-      files: Array.from(e.target.files), // Convert FileList to an array
+      files: selectedFiles,
     }));
+
+    const errorMsg = validateBankField("files", selectedFiles);
+    setBankErrors((prev) => ({ ...prev, files: errorMsg }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateBankField(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
 
     try {
       // Create a FormData object  to send the form fields to the server 
@@ -209,7 +279,7 @@ export default function BankCard({ rowId }) {
     setAnchorEl(null);
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/single-bank/${id}/${rowId}`
         );
         setBankData(response.data);
@@ -249,31 +319,6 @@ export default function BankCard({ rowId }) {
   const [bankData, setBankData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchBankDetails = async () => {
-  //     try {
-  //       const response = await axios.get(
-  //         `${API_URL}/api/single-bank/${id}/${rowId}`
-  //       );
-  //       setBankData(response.data);
-  //       setLoading(false);
-  //     } catch (error) {
-  //       setError(error);
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchBankDetails();
-  // }, [id, rowId]);
-
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
-
-  // if (error) {
-  //   return <div>Error loading client details: {error.message}</div>;
-  // }
-
   const shortenFilename = (filename, maxLength = 20) => {
     if (filename.length <= maxLength) {
       return filename;
@@ -495,6 +540,7 @@ export default function BankCard({ rowId }) {
                         placeholder="Account Number"
                         value={formData.account_no}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -523,6 +569,7 @@ export default function BankCard({ rowId }) {
                         placeholder="Bank Name"
                         value={formData.bank_name}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -550,6 +597,7 @@ export default function BankCard({ rowId }) {
                         placeholder="Account Type"
                         value={formData.account_type}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -558,6 +606,8 @@ export default function BankCard({ rowId }) {
                       />
                     </div>
                   </div>
+
+
 
                   <div className="col-span-2">
                     <label htmlFor="branch">
@@ -578,6 +628,7 @@ export default function BankCard({ rowId }) {
                         placeholder="Branch"
                         value={formData.branch}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
@@ -605,6 +656,7 @@ export default function BankCard({ rowId }) {
                         placeholder="IFSC Code"
                         value={formData.ifsc}
                         onChange={handleInputChange}
+                        required
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",

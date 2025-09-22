@@ -178,6 +178,12 @@ function BranchDoc({ branchDocumentsData, fetchBranchDetails }) {
     },
   });
 
+  const renderNoData = () => (
+    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+      No branch document data available !!
+    </div>
+  );
+
   return (
     <>
       <ToastContainer />
@@ -191,7 +197,7 @@ function BranchDoc({ branchDocumentsData, fetchBranchDetails }) {
             <BranchDocCreation fetchBranchDetails={fetchBranchDetails} />
           </div>
         </div>
-        <CacheProvider value={muiCache}>
+        {/* <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable
               data={branchDocumentsData}
@@ -199,7 +205,21 @@ function BranchDoc({ branchDocumentsData, fetchBranchDetails }) {
               options={options}
             />
           </ThemeProvider>
-        </CacheProvider>
+        </CacheProvider> */}
+        {Array.isArray(branchDocumentsData) && branchDocumentsData.length > 0 ? (
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable
+                title={"Branch Document Details"}
+                data={branchDocumentsData}
+                columns={columns}
+                options={options}
+              />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
+          renderNoData()
+        )}
       </div>
     </>
   );

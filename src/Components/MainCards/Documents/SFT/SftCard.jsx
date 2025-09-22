@@ -83,11 +83,78 @@ export default function SftCard({ rowId }) {
 
   const yearOptions = generateYearRanges(2017, 33);
 
+  const [sftErrors, setSftErrors] = useState({})
+
+  const sftRules = {
+    financial_year: [
+      { test: (v) => v.length > 0, message: "Financial year is required" },
+      { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+      {
+        test: (v) => {
+          if (!/^\d{4}-\d{4}$/.test(v)) return false;
+          const [start, end] = v.split("-").map(Number);
+          return end === start + 1; // year should be consecutive
+        },
+        message: "Financial year must be consecutive (e.g., 2023-2024)",
+      },
+    ],
+
+    // month: [
+    //   { test: (v) => v.length > 0, message: "Month is required" },
+    //   {
+    //     test: (v) =>
+    //       [
+    //         "january", "february", "march", "april", "may", "june",
+    //         "july", "august", "september", "october", "november", "december",
+    //       ].includes(v.toLowerCase()),
+    //     message: "Month must be a valid month name (e.g., January)",
+    //   },
+    // ],
+
+    files: [
+      {
+        test: (v) => Array.isArray(v) && v.length > 0,
+        message: "At least one file is required",
+      },
+      // {
+      //   test: (v) =>
+      //     Array.isArray(v) &&
+      //     v.every(
+      //       (f) =>
+      //         f &&
+      //         typeof f === "object" &&
+      //         "type" in f &&
+      //         (
+      //           f.type === "application/pdf" ||
+      //           f.type.startsWith("image/") ||
+      //           f.type === "application/vnd.ms-excel" ||
+      //           f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      //           f.type === "text/plain"
+      //         )
+      //     ),
+      //   message: "Only PDF, Image, Excel, or TXT files are allowed",
+      // },
+    ],
+  };
+
+  const validateSft = (name, value) => {
+    const fieldRules = sftRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
   const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // ✅ define it
     setFormData((prev) => ({
       ...prev,
-      files: Array.from(e.target.files), // Converts file list to an array
+      files: selectedFiles,
     }));
+
+    const errorMsg = validateSft("files", selectedFiles);
+    setSftErrors((prev) => ({ ...prev, files: errorMsg }));
   };
 
   useEffect(() => {
@@ -119,6 +186,18 @@ export default function SftCard({ rowId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    let hasError = false;
+    for (let [field, value] of Object.entries(formData)) {
+      const errorMsg = validateSft(field, value);
+      if (errorMsg) {
+        toast.error(errorMsg);
+        hasError = true;
+        break; // stop at first error
+      }
+    }
+
+    if (hasError) return; // ❌ Stop submit if validation failed
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("financial_year", formData.financial_year);
@@ -132,7 +211,7 @@ export default function SftCard({ rowId }) {
       }
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-sft/${id}/${rowId}`,
         formDataToSend,
         {
@@ -227,7 +306,7 @@ export default function SftCard({ rowId }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-sft/${id}/${rowId}`
       );
       const data = response.data;
@@ -250,7 +329,7 @@ export default function SftCard({ rowId }) {
     setAnchorEl(null);
     const fetchSftDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/single-sft/${id}/${rowId}`
         );
         setSftData(response.data);
@@ -419,6 +498,7 @@ export default function SftCard({ rowId }) {
                   </Typography>
                   <Select
                     options={yearOptions}
+                    required
                     value={yearOptions.find((option) => option.value === formData.financial_year) || null}
                     onChange={(selectedOption) => {
                       setFormData((prev) => ({
@@ -441,6 +521,7 @@ export default function SftCard({ rowId }) {
                   {isEditingMonth ? (
                     <DatePicker
                       selected={selectedMonth}
+                      required
                       onChange={handleMonthChange}
                       dateFormat="MMMM yyyy"
                       showMonthYearPicker
@@ -638,7 +719,7 @@ export default function SftCard({ rowId }) {
           {role === "superuser" && (
             <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem>
           )}
-        </Menu> 
+        </Menu>
       </div>
     </>
   );

@@ -6,10 +6,8 @@ import MUIDataTable from "mui-datatables";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { useParams } from "react-router-dom";
 import CVCard from "./CVCard";
 // import CVCards from "./cvcards";
@@ -32,8 +30,6 @@ const styleCreateMOdal = {
   borderRadius: "10px",
 };
 function CV({ cvData }) {
-
-
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height

@@ -3,6 +3,7 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -25,6 +26,7 @@ const styleCreateMOdal = {
 };
 function PfFileCreation({ fetchPfTotals }) {
   const { id } = useParams();
+  const role = getUserRole();
   const dispatch = useDispatch();
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -36,7 +38,7 @@ function PfFileCreation({ fetchPfTotals }) {
   const handleDownloadTemplate = async () => {
     try {
       // API call to get the file URL
-      const response = await axios.get(`${API_URL}/api/get-excel-file`);
+      const response = await axiosInstance.get(`${API_URL}/api/get-excel-file`);
       console.log("API Response:", response.data); // Debugging line
 
       if (response.data && response.data.length > 0) {
@@ -62,13 +64,8 @@ function PfFileCreation({ fetchPfTotals }) {
       alert("Failed to download the file. Please try again.");
     }
   };
-
-
   const handleCreateClose = () => setOpenCreateModal(false);
-
   const [attachment, setAttachment] = useState(null); // State for file input
-
-
   // Handle file input change
   const handleFileChange = (e) => {
     setAttachment(e.target.files[0]);
@@ -87,7 +84,7 @@ function PfFileCreation({ fetchPfTotals }) {
       }
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-file/${id}`,
         formDataToSend,
         {
@@ -159,7 +156,7 @@ function PfFileCreation({ fetchPfTotals }) {
   //     }
 
   //     // Make a POST request to your API
-  //     const response = await axios.post(
+  //     const response = await axiosInstance.post(
   //       `${API_URL}/api/create-file/${id}`,
   //       formDataToSend,
   //       {
@@ -287,12 +284,6 @@ function PfFileCreation({ fetchPfTotals }) {
                     </label>
 
                     <div className="">
-                      {/* <input
-                        type="file"
-                        name="attachment"
-                        onChange={handleFileChange}
-                        className="file-input file-input-bordered file-input-success w-full max-w-sm"
-                      /> */}
                       <div className="">
                         <div className="flex items-center justify-center bg-grey-lighter">
                           <label className="w-52 flex flex-col items-center px-2 py-4 bg-white text-[#366FA1] rounded-lg shadow-lg tracking-wide uppercase border border-[#366FA1] cursor-pointer hover:bg-[#366FA1] hover:text-white">
@@ -311,6 +302,7 @@ function PfFileCreation({ fetchPfTotals }) {
                               name="file"
                               type="file"
                               className="hidden"
+                              required
                               multiple
                               onChange={handleFileChange}
                             />

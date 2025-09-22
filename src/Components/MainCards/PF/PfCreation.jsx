@@ -12,6 +12,7 @@ import { Box } from "@mui/material";
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useParams } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
@@ -37,11 +38,13 @@ const styleCreateMOdal = {
 };
 const PfCreation = ({ fetchPfTotals }) => {
   const { id } = useParams();
+  const role = getUserRole();
   const dispatch = useDispatch();
   const [currentStep, setCurrentStep] = useState(0);
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
+  const date = useRef(null);
 
   const [formData, setFormData] = useState({
     employee_name: "",
@@ -130,21 +133,133 @@ const PfCreation = ({ fetchPfTotals }) => {
       [e.target.name]: e.target.value,
     });
   };
+
+  const [pfErrors, setPfErrors] = useState({});
+
+  const employeeRules = {
+    employee_name: [
+      { test: v => v && v.trim().length > 0, message: "Employee name is required" },
+      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Employee name can only contain alphabets and spaces" },
+    ],
+    employee_code: [
+      { test: v => v && v.trim().length > 0, message: "Employee code is required" },
+      { test: v => /^[A-Za-z0-9_-]+$/.test(v), message: "Employee code can only contain letters, numbers, underscores, and hyphens" },
+    ],
+    uan: [
+      { test: v => v && v.trim().length > 0, message: "UAN is required" },
+      { test: v => /^\d{12}$/.test(String(v)), message: "UAN must be exactly 12 digits" },
+    ],
+    pf_number: [
+      { test: v => v && v.trim().length > 0, message: "PF number is required" },
+      { test: v => /^[A-Za-z0-9/]+$/.test(v), message: "PF number can only contain letters, numbers, and /" },
+    ],
+    // pf_deducted: [
+    //   { test: v => v === "True" || v === "False", message: "PF deducted must be Yes or No" },
+    // ],
+    date_of_joining: [
+      { test: v => v && v.trim().length > 0, message: "Date of joining is required" },
+      { test: v => !isNaN(Date.parse(v)), message: "Date of joining must be a valid date" },
+    ],
+    status: [
+      { test: v => v && v.trim().length > 0, message: "Status is required" },
+      { test: v => ["active", "inactive", "terminated"].includes(v.toLowerCase()), message: "Status must be Active, Inactive, or Terminated" },
+    ],
+    gender: [
+      { test: v => v && v.trim().length > 0, message: "Gender is required" },
+      { test: v => ["male", "female", "other"].includes(v.toLowerCase()), message: "Gender must be Male, Female, or Other" },
+    ],
+    // Salary + Deductions (all must be numbers, >= 0)
+    gross_ctc: [{ test: v => !isNaN(v) && v >= 0, message: "Gross CTC must be a valid number" }],
+    basic_pay: [{ test: v => !isNaN(v) && v >= 0, message: "Basic Pay must be a valid number" }],
+    hra: [{ test: v => !isNaN(v) && v >= 0, message: "HRA must be a valid number" }],
+    statutory_bonus: [{ test: v => !isNaN(v) && v >= 0, message: "Statutory Bonus must be a valid number" }],
+    special_allowance: [{ test: v => !isNaN(v) && v >= 0, message: "Special Allowance must be a valid number" }],
+    pf: [{ test: v => !isNaN(v) && v >= 0, message: "PF must be a valid number" }],
+    gratuity: [{ test: v => !isNaN(v) && v >= 0, message: "Gratuity must be a valid number" }],
+    total_gross_salary: [{ test: v => !isNaN(v) && v >= 0, message: "Total Gross Salary must be a valid number" }],
+
+    number_of_days_in_month: [
+      { test: v => !isNaN(v) && v > 0 && v <= 31, message: "Days in month must be between 1 and 31" },
+    ],
+    present_days: [
+      { test: v => !isNaN(v) && v >= 0 && v <= 31, message: "Present days must be between 0 and 31" },
+    ],
+    lwp: [
+      { test: v => !isNaN(v) && v >= 0, message: "LWP must be a valid number" },
+    ],
+    leave_adjustment: [
+      { test: v => !isNaN(v) && v >= 0, message: "Leave adjustment must be a valid number" },
+    ],
+
+    // Monthly breakdown
+    basic_pay_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "Basic Pay Monthly must be valid" }],
+    hra_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "HRA Monthly must be valid" }],
+    statutory_bonus_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "Statutory Bonus Monthly must be valid" }],
+    special_allowance_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "Special Allowance Monthly must be valid" }],
+    total_gross_salary_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "Total Gross Salary Monthly must be valid" }],
+
+    // Deductions
+    provident_fund: [{ test: v => !isNaN(v) && v >= 0, message: "Provident Fund must be a valid number" }],
+    professional_tax: [{ test: v => !isNaN(v) && v >= 0, message: "Professional Tax must be a valid number" }],
+    advance: [{ test: v => !isNaN(v) && v >= 0, message: "Advance must be a valid number" }],
+    esic_employee: [{ test: v => !isNaN(v) && v >= 0, message: "ESIC Employee must be a valid number" }],
+    tds: [{ test: v => !isNaN(v) && v >= 0, message: "TDS must be a valid number" }],
+    total_deduction: [{ test: v => !isNaN(v) && v >= 0, message: "Total Deduction must be a valid number" }],
+
+    // Net
+    net_pay: [{ test: v => !isNaN(v) && v >= 0, message: "Net Pay must be a valid number" }],
+    advance_esic_employer_cont: [{ test: v => !isNaN(v) && v >= 0, message: "Advance ESIC Employer Contribution must be a valid number" }],
+  };
+
+  const validateEmployeeField = (name, value) => {
+    const fieldRules = employeeRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateEmployeeField(name, value);
+    setPfErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
   const handleMonthInputChange = (name, value) => {
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
+    const errorMsg = validateEmployeeField(name, value);
+    setPfErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    const newErrors = {};
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateEmployeeField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    setPfErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return; // ❌ Stop submit
+    }
 
     try {
       const formDataToSend = new FormData();
@@ -155,7 +270,7 @@ const PfCreation = ({ fetchPfTotals }) => {
       }
 
       // Make the API call
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-pf/${id}`,
         formDataToSend
       );
@@ -264,167 +379,6 @@ const PfCreation = ({ fetchPfTotals }) => {
               <XMarkIcon className="h-4 w-4 stroke-2" />
             </IconButton>
             <form className=" my-5 w-full" onSubmit={handleSubmit}>
-              {/* <div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-4">
-                    <label htmlFor="account_no">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Account Number
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <Input
-                        type="number"
-                        size="lg"
-                        name="account_no"
-                        placeholder="Account Number"
-                        value={formData.account_no}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-span-2">
-                    <label htmlFor="bank_name">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Bank Name
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="bank_name"
-                        placeholder="Bank Name"
-                        value={formData.bank_name}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="account_type">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Account Type
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="account_type"
-                        placeholder="Account Type"
-                        value={formData.account_type}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="col-span-2">
-                    <label htmlFor="branch">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Branch
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="branch"
-                        placeholder="Branch"
-                        value={formData.branch}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="ifsc">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        IFSC Code
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="ifsc"
-                        placeholder="IFSC Code"
-                        value={formData.ifsc}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="attachment">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Attachments
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <input
-                        type="file"
-                        name="attachment"
-                        onChange={handleFileChange}
-                        className="file-input file-input-bordered file-input-success w-full max-w-sm"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div> */}
               <div className="container mx-auto mt-10">
                 <div className="w-full">
                   <div className="flex justify-between mb-4">
@@ -461,12 +415,13 @@ const PfCreation = ({ fetchPfTotals }) => {
 
                           <div className="">
                             <Input
-                              type="number"
+                              type="text"
                               size="lg"
                               name="employee_code"
                               placeholder="Employee Code"
                               value={formData.employee_code}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -494,6 +449,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder=" Employee Name"
                               value={formData.employee_name}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -521,6 +477,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder="UAN Number"
                               value={formData.uan}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -542,12 +499,13 @@ const PfCreation = ({ fetchPfTotals }) => {
 
                           <div className="">
                             <Input
-                              type="number"
+                              type="text"
                               size="lg"
                               name="pf_number"
                               placeholder="PF Number"
                               value={formData.pf_number}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -611,11 +569,12 @@ const PfCreation = ({ fetchPfTotals }) => {
                           </label>
 
                           <div className="">
-                            <div className="relative w-full ">
+                            {/* <div className="relative w-full ">
                               <DatePicker
                                 selected={selectedDate}
                                 // onChange={(date) => setSelectedDate(date)}
                                 onChange={handleDateChange}
+                                required
                                 dateFormat="dd/MM/yyyy"
                                 className="w-full !border !border-[#cecece] bg-white py-2 pl-3 pr-10 w-[385px] text-gray-900 focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"
                                 placeholderText="dd/mm/yyyy"
@@ -629,6 +588,25 @@ const PfCreation = ({ fetchPfTotals }) => {
                                 className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                                 onClick={() => document.querySelector(".react-datepicker__input-container input").focus()}
                               // onClick={() => toDateRef.current.setFocus()} // Focus the correct DatePicker
+                              />
+                            </div> */}
+                            <div className="flex items-center w-full border border-[#cecece] rounded-md bg-white">
+                              <DatePicker
+                                ref={date}
+                                selected={selectedDate}
+                                onChange={handleDateChange}
+                                dateFormat="dd/MM/yyyy"
+                                className="flex-1 py-2 pl-3 pr-2 text-gray-900 outline-none rounded-md"
+                                placeholderText="dd/mm/yyyy"
+                                showYearDropdown
+                                required
+                                name="date_of_incorporation"
+                                scrollableYearDropdown
+                                yearDropdownItemNumber={25}
+                              />
+                              <FaRegCalendarAlt
+                                className="ml-24 text-gray-500 cursor-pointer"
+                                onClick={() => date.current.setFocus()}
                               />
                             </div>
                           </div>
@@ -689,6 +667,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                                 className: "hidden",
                               }}
                               containerProps={{ className: "min-w-[100px]" }}
+                              required
                               value={formData.status} // Controlled component value
                               onChange={(selectedValue) =>
                                 handleInputChange({
@@ -743,6 +722,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                                 mount: { y: 0 },
                                 unmount: { y: 25 },
                               }}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                               labelProps={{
                                 className: "hidden",
@@ -843,6 +823,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                             </Typography>
                             <DatePicker
                               selected={selectedMonth}
+                              required
                               onChange={(date) => {
                                 setSelectedMonth(date);
                                 handleMonthInputChange("month", format(date, "MMMM yyyy"));
@@ -874,6 +855,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder=" Gross Ctc "
                               value={formData.gross_ctc}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -901,6 +883,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder="Basic Pay"
                               value={formData.basic_pay}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -1063,6 +1046,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder="Total Gross Salary"
                               value={formData.total_gross_salary}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -1090,6 +1074,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder="Number of Days In Month"
                               value={formData.number_of_days_in_month}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -1117,6 +1102,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder="Present Days"
                               value={formData.present_days}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -1349,6 +1335,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder="Total Gross Salary Monthly"
                               value={formData.total_gross_salary_monthly}
                               onChange={handleInputChange}
+                              // required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -1511,6 +1498,7 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder="Total Deduction"
                               value={formData.total_deduction}
                               onChange={handleInputChange}
+                              required
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",
@@ -1538,6 +1526,9 @@ const PfCreation = ({ fetchPfTotals }) => {
                               placeholder="Net Pay"
                               value={formData.net_pay}
                               onChange={handleInputChange}
+                              required
+
+
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",

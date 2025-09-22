@@ -5,10 +5,9 @@ import MUIDataTable from "mui-datatables";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useParams } from "react-router-dom";
 import TdsReturnCreation from "./TdsReturnCreation";
 import TdsReturnCard from "./TdsReturnCard";
@@ -34,6 +33,8 @@ const styleCreateMOdal = {
 function TdsReturn({ tdsReturnData }) {
 
   const { id } = useParams();
+  const role = getUserRole();
+  console.log("Role from token:", getUserRole());
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
@@ -57,7 +58,7 @@ function TdsReturn({ tdsReturnData }) {
   const [allTdsSectionData, setAllTdsSectionData] = useState([]);
   const fetchAllTdsSectionDetails = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/get-tdssection`);
+      const response = await axiosInstance.get(`${API_URL}/api/get-tdssection`);
       console.log("response tds section", response?.data)
       setAllTdsSectionData({
         tds_section: response?.data?.tds_section || [],
@@ -243,16 +244,16 @@ function TdsReturn({ tdsReturnData }) {
           </div>
         </div>
         {Array.isArray(tdsReturnData) && tdsReturnData.length > 0 ? (
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable
-              data={tdsReturnData}
-              columns={columns}
-              options={options}
-            />
-          </ThemeProvider>
-        </CacheProvider>
-        ):(
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable
+                data={tdsReturnData}
+                columns={columns}
+                options={options}
+              />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
           renderNoData()
         )}
       </div>
