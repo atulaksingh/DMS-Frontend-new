@@ -130,7 +130,7 @@ export default function CreditNoteCard({ rowId, fileData, fetchInvoiceDetails })
         // dispatch(fetchClientDetails(id));
         fetchInvoiceDetails()
       } else {
-        toast.error("Failed to delete Sales Invoice. Please try again.", {
+        toast.error("Failed to delete Credit Note Invoice. Please try again.", {
           position: "top-right",
           autoClose: 2000,
         });

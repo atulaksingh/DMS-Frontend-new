@@ -67,19 +67,19 @@ const styleCreateModal = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: {
-    xs: "90%", 
-    sm: "90%", 
-    md: "90%", 
-    lg: "90%", 
-    xl: "85%", 
+    xs: "90%",
+    sm: "90%",
+    md: "90%",
+    lg: "90%",
+    xl: "85%",
   },
   bgcolor: "background.paper",
   boxShadow: 24,
   paddingTop: "17px",
   paddingInline: {
-    xs: "20px", 
+    xs: "20px",
     sm: "30px",
-    md: "40px", 
+    md: "40px",
   },
   borderRadius: "10px",
 };
@@ -324,7 +324,7 @@ export default function PurchaseCard({
         setInvoiceData([
           {
             ...response?.data?.purchase_invoice,
-            invoice_type: response?.data?.purchase_invoice?.invoice_type || "", 
+            invoice_type: response?.data?.purchase_invoice?.invoice_type || "",
           },
         ]);
       }
@@ -337,13 +337,13 @@ export default function PurchaseCard({
     }
   };
   const handleInputChangeInvoiceData = (e) => {
-    const { name, value, type, checked } = e.target; 
+    const { name, value, type, checked } = e.target;
     const fieldValue =
       type === "checkbox"
         ? checked
         : type === "file"
           ? e.target.files[0]
-          : value; 
+          : value;
 
     setInvoiceData((prevData) => {
       const updatedData = Array.isArray(prevData) ? [...prevData] : [{}];
@@ -354,7 +354,7 @@ export default function PurchaseCard({
 
       let updatedEntry = {
         ...updatedData[0],
-        [name]: fieldValue, 
+        [name]: fieldValue,
       };
 
       if (name === "tcs") {
@@ -448,7 +448,7 @@ export default function PurchaseCard({
       (option) =>
         option?.location?.toLowerCase() === newInputValue.toLowerCase()
     );
-    
+
     if (matchingLocation) {
       handleLocationChange(matchingLocation);
       setShowBranchInput(false);
@@ -689,12 +689,12 @@ export default function PurchaseCard({
             updatedRow.product_amount =
               (parseFloat(updatedRow.unit) || 0) *
               (parseFloat(updatedRow.rate) || 0).toFixed(2);
-            updatedRow.total_invoice = updatedRow.product_amount; 
+            updatedRow.total_invoice = updatedRow.product_amount;
           } else {
             if (field === "unit" || field === "rate") {
               const unit = parseFloat(updatedRow.unit) || 0;
               const rate = parseFloat(updatedRow.rate) || 0;
-              updatedRow.product_amount = (unit * rate).toFixed(2); 
+              updatedRow.product_amount = (unit * rate).toFixed(2);
             }
             if (updatedRow.gstRate) {
               const gstValue = (
@@ -708,9 +708,9 @@ export default function PurchaseCard({
                 const sgstValue = (gstValue / 2).toFixed(2);
                 updatedRow.cgst = cgstValue;
                 updatedRow.sgst = sgstValue;
-                updatedRow.igst = "0.00"; 
+                updatedRow.igst = "0.00";
               } else if (shouldShowIGST) {
-                updatedRow.cgst = "0.00"; 
+                updatedRow.cgst = "0.00";
                 updatedRow.sgst = "0.00";
                 updatedRow.igst = gstValue;
               }
@@ -761,10 +761,10 @@ export default function PurchaseCard({
             const sgstValue = (gstValue / 2).toFixed(2);
             row.cgst = cgstValue;
             row.sgst = sgstValue;
-            row.igst = "0.00"; 
+            row.igst = "0.00";
           } else if (shouldShowIGST) {
-            row.cgst = "0.00"; 
-            row.sgst = "0.00"; 
+            row.cgst = "0.00";
+            row.sgst = "0.00";
             row.igst = gstValue;
           }
           // Calculate total_invoice for this row
@@ -859,7 +859,7 @@ export default function PurchaseCard({
         unit: "",
         cgst: "0.00",
         sgst: "0.00",
-        igst: "0.00", 
+        igst: "0.00",
       },
     ]);
   };
@@ -871,9 +871,9 @@ export default function PurchaseCard({
   const [purchaseErrors, setPurchaseErrors] = useState({})
 
   const purchaseRules = {
-    location: [
-      { test: v => v.length > 0, message: "Office Location is required" }
-    ],
+    // location: [
+    //   { test: v => v.length > 0, message: "Office Location is required" }
+    // ],
     contact: [
       { test: v => /^\d{10}$/.test(v), message: "Contact must be 10 digits" }
     ],
@@ -889,9 +889,9 @@ export default function PurchaseCard({
     country: [
       { test: v => v.length > 0, message: "Country is required" }
     ],
-    gst_no: [
-      { test: v => v.length > 0, message: "Vendor GST is required" }
-    ],
+    // gst_no: [
+    //   { test: v => v.length > 0, message: "Vendor GST is required" }
+    // ],
     name: [
       { test: v => v.length > 0, message: "Vendor Name is required" }
     ],
@@ -1370,7 +1370,7 @@ export default function PurchaseCard({
                                 {...params}
                                 size="small"
                                 required
-                                value={formData.location || ""}
+                                // value={formData.location || ""}
                                 className="border border-red-500"
                                 placeholder="Location Select"
                                 sx={{
@@ -1501,7 +1501,7 @@ export default function PurchaseCard({
                           }}
                           style={{
                             height: "28px",
-                            padding: "4px 6px", 
+                            padding: "4px 6px",
                             fontSize: "0.875rem",
                             width: 300,
                           }}
@@ -1538,9 +1538,9 @@ export default function PurchaseCard({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", 
-                            padding: "4px 6px", 
-                            fontSize: "0.875rem", 
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1576,9 +1576,9 @@ export default function PurchaseCard({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", 
+                            height: "28px",
                             padding: "4px 6px",
-                            fontSize: "0.875rem", 
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1839,7 +1839,7 @@ export default function PurchaseCard({
                                     .split("/")
                                     .pop()
                                 )
-                                : invoiceData[0]?.attach_e_way_bill.name 
+                                : invoiceData[0]?.attach_e_way_bill.name
                               : "No file uploaded"}
                           </p>
                         </a>
@@ -2194,7 +2194,7 @@ export default function PurchaseCard({
                                             padding: "4px 6px",
                                           },
                                           "& .MuiOutlinedInput-input": {
-                                            padding: "4px 6px", 
+                                            padding: "4px 6px",
                                           },
                                         }}
                                         slotProps={{
@@ -2314,9 +2314,9 @@ export default function PurchaseCard({
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", 
+                                        height: "28px",
                                         padding: "4px 6px",
-                                        fontSize: "0.875rem", 
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2432,8 +2432,8 @@ export default function PurchaseCard({
                                 <TableHead
                                   sx={{
                                     backgroundColor: "#f3f4f6",
-                                    position: "sticky", 
-                                    top: 0, 
+                                    position: "sticky",
+                                    top: 0,
                                     borderBottom: "1px solid #ccc",
 
                                   }}

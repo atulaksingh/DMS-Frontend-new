@@ -224,9 +224,9 @@ function PurchaseCreation({
   ]);
   const [purchaseErrors, setPurchaseErrors] = useState({})
   const purchaseRules = {
-    location: [
-      { test: v => v.length > 0, message: "Office Location is required" }
-    ],
+    // location: [
+    //   { test: v => v.length > 0, message: "Office Location is required" }
+    // ],
     contact: [
       { test: v => /^\d{10}$/.test(v), message: "Contact must be 10 digits" }
     ],
@@ -246,9 +246,9 @@ function PurchaseCreation({
       { test: v => v.length > 0, message: "GST No is required" },
       // { test: v => /^[0-9A-Z]{15}$/.test(v), message: "Invalid GST format" }
     ],
-    gst_no: [
-      { test: v => v.length > 0, message: "Vendor GST is required" }
-    ],
+    // gst_no: [
+    //   { test: v => v.length > 0, message: "Vendor GST is required" }
+    // ],
     name: [
       { test: v => v.length > 0, message: "Vendor Name is required" }
     ],
@@ -260,9 +260,9 @@ function PurchaseCreation({
       { test: v => v.length > 0, message: "Email is required" },
       { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" }
     ],
-    contact_vendor: [
-      { test: v => /^\d{10}$/.test(v), message: "Vendor Contact must be 10 digits" }
-    ],
+    // contact_vendor: [
+    //   { test: v => /^\d{10}$/.test(v), message: "Vendor Contact must be 10 digits" }
+    // ],
     customer_vendor_type: [
       { test: v => v.customer || v.vendor, message: "Select at least Customer or Vendor" }
     ],
@@ -566,17 +566,17 @@ function PurchaseCreation({
         }
       }
       else {
-        setFormData({
+        setFormData((prev) => ({
+          ...prev,
           offLocID: "",
-          location: "",
+          location: newInputValue,   // ✅ preserve new typed name
           contact: "",
           address: "",
           city: "",
           state: "",
           country: "",
           gst_no: "",
-
-        })
+        }));
         setBranchNoGst("")
       }
     }

@@ -3,10 +3,10 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
@@ -50,6 +50,14 @@ function ExpensesFileCreation() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.files || formData.files.length === 0) {
+      toast.error("Please upload at least one file!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return;
+    }
+
     try {
       const formDataToSend = new FormData();
 
@@ -57,7 +65,7 @@ function ExpensesFileCreation() {
         formDataToSend.append("attach_invoice", formData.files[i]);
       }
 
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-expenses/${id}`,
         formDataToSend,
         {
@@ -168,8 +176,6 @@ function ExpensesFileCreation() {
                 <Button
                   conained="contained"
                   type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
                   className="bg-primary"
                 >
                   <span>Confirm</span>

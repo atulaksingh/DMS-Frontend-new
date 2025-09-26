@@ -67,19 +67,19 @@ const styleCreateModal = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: {
-    xs: "90%", 
-    sm: "90%", 
-    md: "90%", 
-    lg: "90%", 
-    xl: "85%", 
+    xs: "90%",
+    sm: "90%",
+    md: "90%",
+    lg: "90%",
+    xl: "85%",
   },
   bgcolor: "background.paper",
   boxShadow: 24,
   paddingTop: "17px",
   paddingInline: {
-    xs: "20px", 
-    sm: "30px", 
-    md: "40px", 
+    xs: "20px",
+    sm: "30px",
+    md: "40px",
   },
   borderRadius: "10px",
 };
@@ -257,9 +257,9 @@ export default function SalesCard({
   const [salesErrors, setSalesErrors] = useState({})
 
   const salesRules = {
-    location: [
-      { test: v => v.length > 0, message: "Office Location is required" }
-    ],
+    // location: [
+    //   { test: v => v.length > 0, message: "Office Location is required" }
+    // ],
     contact: [
       { test: v => /^\d{10}$/.test(v), message: "Contact must be 10 digits" }
     ],
@@ -279,9 +279,9 @@ export default function SalesCard({
       { test: v => v.length > 0, message: "GST No is required" },
       // { test: v => /^[0-9A-Z]{15}$/.test(v), message: "Invalid GST format" }
     ],
-    gst_no: [
-      { test: v => v.length > 0, message: "Vendor GST is required" }
-    ],
+    // gst_no: [
+    //   { test: v => v.length > 0, message: "Vendor GST is required" }
+    // ],
     name: [
       { test: v => v.length > 0, message: "Vendor Name is required" }
     ],
@@ -620,7 +620,7 @@ export default function SalesCard({
       );
     }
   };
-  
+
   const handleInputChangeProductField = async (index, value) => {
     setRows((prevRows) =>
       prevRows.map((row, rowIndex) => {
@@ -1222,7 +1222,7 @@ export default function SalesCard({
             }}
           >
             <Box sx={style} >
-             <>
+              <>
                 <div>
                   <form className=" my-5 w-full ">
                     <SalesInvoice invoiceData={bankData} />
@@ -1247,7 +1247,7 @@ export default function SalesCard({
                   </Button>
                 </DialogFooter>
               </>
-              </Box>
+            </Box>
           </Modal>
         </div>
       </div>
@@ -1331,7 +1331,7 @@ export default function SalesCard({
                                 {...params}
                                 size="small"
                                 required
-                                value={formData.location || ""}
+                                // value={formData.location || ""}
                                 className="border border-red-500"
                                 placeholder="Location Select"
                                 sx={{
@@ -1418,9 +1418,9 @@ export default function SalesCard({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", 
-                            padding: "4px 6px", 
-                            fontSize: "0.875rem", 
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1456,9 +1456,9 @@ export default function SalesCard({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", 
-                            padding: "4px 6px", 
-                            fontSize: "0.875rem", 
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1494,9 +1494,9 @@ export default function SalesCard({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", 
-                            padding: "4px 6px", 
-                            fontSize: "0.875rem", 
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1532,9 +1532,9 @@ export default function SalesCard({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", 
-                            padding: "4px 6px", 
-                            fontSize: "0.875rem", 
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1689,9 +1689,9 @@ export default function SalesCard({
                         }}
                         // containerProps={{ className: "min-w-full" }}
                         style={{
-                          height: "28px", 
-                          padding: "4px 6px", 
-                          fontSize: "0.875rem", 
+                          height: "28px",
+                          padding: "4px 6px",
+                          fontSize: "0.875rem",
                           width: 300,
                         }}
                       />
@@ -1725,9 +1725,9 @@ export default function SalesCard({
                         }}
                         // containerProps={{ className: "min-w-full" }}
                         style={{
-                          height: "28px", 
-                          padding: "4px 6px", 
-                          fontSize: "0.875rem", 
+                          height: "28px",
+                          padding: "4px 6px",
+                          fontSize: "0.875rem",
                           width: 300,
                         }}
                       />
@@ -2120,7 +2120,7 @@ export default function SalesCard({
                                         }}
                                       />
                                     )}
-                                  />                                
+                                  />
                                 </div>
                               </div>
                             </div>
@@ -2152,9 +2152,9 @@ export default function SalesCard({
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", 
-                                        padding: "4px 6px", 
-                                        fontSize: "0.875rem", 
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2228,9 +2228,9 @@ export default function SalesCard({
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", 
-                                        padding: "4px 6px", 
-                                        fontSize: "0.875rem", 
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2347,9 +2347,9 @@ export default function SalesCard({
                                 <TableHead
                                   sx={{
                                     backgroundColor: "#f3f4f6",
-                                    position: "sticky", 
-                                    top: 0, 
-                                    zIndex: 0, 
+                                    position: "sticky",
+                                    top: 0,
+                                    zIndex: 0,
                                   }}
                                 >
                                   <TableRow sx={{ backgroundColor: "#f3f4f6" }}>
@@ -2858,7 +2858,7 @@ export default function SalesCard({
                                               </label>
                                             </div>
                                             <div className="">
-                                              <div className="">                                               
+                                              <div className="">
                                                 <select
                                                   name="invoice_type"
                                                   required
@@ -2980,44 +2980,6 @@ export default function SalesCard({
                             <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4 my-2">
                               <div className="hidden 2xl:block col-span-1"></div>
                               <div className="col-span-1">
-                                {/* <div>
-                                  <div>
-                                    <label htmlFor="invoice_type">
-                                      <Typography
-                                        variant="small"
-                                        color="blue-gray"
-                                        className="block font-semibold mb-1"
-                                      >
-                                        Invoice Type
-                                      </Typography>
-                                    </label>
-                                  </div>
-                                  <div className="">
-                                    <div className="">
-                                      <select
-                                        name="invoice_type"
-                                        className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
-                                        style={{
-                                          height: "28px",
-                                          padding: "4px 6px",
-                                          fontSize: "0.875rem",
-                                          width: 300,
-                                        }}
-                                        value={invoiceData[0].invoice_type || ""}
-                                        onChange={handleInputChangeInvoiceData}
-                                      >
-                                        {filteredInvoiceTypes.map((option) => (
-                                          <option
-                                            key={option}
-                                            value={option.toLowerCase()}
-                                          >
-                                            {option}
-                                          </option>
-                                        ))}
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div> */}
                               </div>
                               <div className="col-span-1">
                                 <div>
@@ -3027,7 +2989,7 @@ export default function SalesCard({
                                       color="blue-gray"
                                       className="block font-semibold mb-1"
                                     >
-                                      Invoice Type
+                                      Select TDS/TCS
                                     </Typography>
                                   </label>
                                 </div>

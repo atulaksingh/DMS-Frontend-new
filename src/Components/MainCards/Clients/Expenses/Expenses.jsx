@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import { Input, Typography } from "@material-tailwind/react";
@@ -12,18 +8,12 @@ import createCache from "@emotion/cache";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { useParams } from "react-router-dom";
 import ExpensesCreation from "./ExpensesCreation";
 import ExpensesFileCreation from "./ExpensesFileCreation";
 import ExpensesCard from "./ExpensesCard";
 import axios from "axios";
-// import ExpensesCreation from "./ExpensesCreation";
-// import ExpensesFileCreation from "./ExpensesFileCreation";
-// import ExpensesCard from "./PurchaseCard";
-// import SalesCreation from "./SalesCreation";
-// import SalesFileCreation from "./SalesFileCreation";
-// import SalesCard from "./SalesCard";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const muiCache = createCache({
   key: "mui-datatables",
@@ -37,7 +27,6 @@ const styleCreateMOdal = {
   transform: "translate(-50%, -50%)",
   width: 750,
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
   p: 4,
   borderRadius: "10px",
@@ -49,8 +38,7 @@ function Expenses({ expensesInvoiceData }) {
   const [allLocationBranchProductData, setAllLocationBranchProductData] = useState([])
   const fetchAllLocBranchDetails = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/get-expenses/${id}`);
-      // console.log("income",response.data)
+      const response = await axiosInstance.get(`${API_URL}/api/get-expenses/${id}`);
       setAllLocationBranchProductData({
         serializer: response?.data?.serializer || [],
         serializer_customer: response?.data?.serializer_customer || [],
@@ -71,13 +59,6 @@ function Expenses({ expensesInvoiceData }) {
   useEffect(() => {
     fetchAllLocBranchDetails();
   }, [id]);
-
-
-
-
-
-
-
 
   const calculateTableBodyHeight = () => {
     const rowHeight = 80;
@@ -104,18 +85,6 @@ function Expenses({ expensesInvoiceData }) {
   }, [expensesInvoiceData]);
 
   const columns = [
-    // {
-    //   name: "id",
-    //   label: "Sr No",
-    //   options: {
-    //     setCellHeaderProps: () => ({
-    //       style: {
-    //         backgroundColor: "#366FA1",
-    //         color: "#ffffff",
-    //       },
-    //     }),
-    //   },
-    // },
     {
       name: "customer_name",
       label: "Name",
@@ -212,7 +181,7 @@ function Expenses({ expensesInvoiceData }) {
       options: {
         customBodyRenderLite: (dataIndex) => {
           const rowData = expensesInvoiceData[dataIndex];
-          return <div>{/* <BankCard rowId={rowData.id} /> */}
+          return <div>
             {/* <PurchaseCard rowId={rowData.id} fileData={expensesInvoiceData.attach_e_way_bill}/>  */}
             <ExpensesCard rowId={rowData.id} allLocationBranchProductData={allLocationBranchProductData} fetchAllLocBranchDetails={fetchAllLocBranchDetails} />
           </div>;
@@ -238,9 +207,7 @@ function Expenses({ expensesInvoiceData }) {
     tableBodyHeight,
     tableBodyMaxHeight,
     onTableChange: (action, state) => {
-      // console.log(action);
-      // console.dir(state);
-    },
+      },
     selectableRows: "none",
     selectableRowsHeader: false,
     rowsPerPage: 13,
@@ -304,12 +271,12 @@ function Expenses({ expensesInvoiceData }) {
           </div>
         </div>
         {Array.isArray(expensesInvoiceData) && expensesInvoiceData.length > 0 ? (
-        <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={expensesInvoiceData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider>
-        ):(
+          <CacheProvider value={muiCache}>
+            <ThemeProvider theme={theme}>
+              <MUIDataTable data={expensesInvoiceData} columns={columns} options={options} />
+            </ThemeProvider>
+          </CacheProvider>
+        ) : (
           renderNoData()
         )}
       </div>

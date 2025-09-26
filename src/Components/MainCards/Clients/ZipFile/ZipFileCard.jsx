@@ -8,7 +8,6 @@ import MenuItem from "@mui/material/MenuItem";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Box from "@mui/material/Box";
 import { Input, Typography } from "@material-tailwind/react";
-// import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import { DialogFooter, Button } from "@material-tailwind/react";
 import { Link, useParams } from "react-router-dom";
@@ -24,7 +23,6 @@ import { ToastContainer, toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
-// import "react-toastify/dist/ReactToastify.css";
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -33,7 +31,6 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 800,
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
   paddingTop: "17px", // For vertical (top and bottom) padding
   paddingInline: "40px",

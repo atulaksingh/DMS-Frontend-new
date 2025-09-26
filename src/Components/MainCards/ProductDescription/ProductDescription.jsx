@@ -7,14 +7,12 @@ import MUIDataTable from "mui-datatables";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import { useParams } from "react-router-dom";
 import ProductDescriptionCard from "./ProductDescriptionCard";
 import ProductDescriptionCreation from "./ProductDescriptionCreation";
-
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 
 const muiCache = createCache({

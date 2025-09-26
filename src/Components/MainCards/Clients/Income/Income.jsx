@@ -1,7 +1,3 @@
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { Menu, MenuItem, IconButton } from "@mui/material";
 import { Input, Typography } from "@material-tailwind/react";
@@ -19,6 +15,7 @@ import IncomeFileCreation from "./IncomeFileCreation";
 import IncomeCreation from "./IncomeCreation";
 import IncomeCard from "./IncomeCard";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const muiCache = createCache({
@@ -45,7 +42,7 @@ function Income({ incomeInvoiceData }) {
   const [allLocationBranchProductData, setAllLocationBranchProductData] = useState([])
   const fetchAllLocBranchDetails = async () => {
     try {
-      const response = await axios.get(`${API_URL}/api/get-income/${id}`);
+      const response = await axiosInstance.get(`${API_URL}/api/get-income/${id}`);
       // console.log("insome",response.data)
       setAllLocationBranchProductData({
         serializer: response?.data?.serializer || [],
@@ -96,19 +93,6 @@ function Income({ incomeInvoiceData }) {
   }, [incomeInvoiceData]);
 
   const columns = [
-    // {
-    //   name: "id",
-    //   label: "Sr No",
-    //   options: {
-    //     setCellHeaderProps: () => ({
-    //       style: {
-    //         backgroundColor: "#366FA1",
-    //         color: "#ffffff",
-    //       },
-    //     }),
-    //   },
-    // },
-
     {
       name: "customer_name",
       label: "Name",
@@ -205,7 +189,7 @@ function Income({ incomeInvoiceData }) {
       options: {
         customBodyRenderLite: (dataIndex) => {
           const rowData = incomeInvoiceData[dataIndex];
-          return <div>{/* <BankCard rowId={rowData.id} /> */}
+          return <div>
             {/* <PurchaseCard rowId={rowData.id} fileData={purchaseInvoiceData.attach_e_way_bill}/>  */}
             <IncomeCard rowId={rowData.id} allLocationBranchProductData={allLocationBranchProductData} fetchAllLocBranchDetails={fetchAllLocBranchDetails} />
           </div>;
@@ -231,9 +215,7 @@ function Income({ incomeInvoiceData }) {
     tableBodyHeight,
     tableBodyMaxHeight,
     onTableChange: (action, state) => {
-      // console.log(action);
-      // console.dir(state);
-    },
+     },
     selectableRows: "none",
     selectableRowsHeader: false,
     rowsPerPage: 13,

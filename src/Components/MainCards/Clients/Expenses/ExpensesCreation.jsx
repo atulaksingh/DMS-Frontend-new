@@ -10,10 +10,10 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
@@ -49,19 +49,19 @@ const styleCreateModal = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: {
-    xs: "90%", // Mobile devices (extra-small screens)
-    sm: "90%", // Small screens (e.g., tablets)
-    md: "90%", // Medium screens
-    lg: "90%", // Large screens%
-    xl: "85%", // Large screens
+    xs: "90%",
+    sm: "90%",
+    md: "90%",
+    lg: "90%",
+    xl: "85%",
   },
   bgcolor: "background.paper",
   boxShadow: 24,
   paddingTop: "17px",
   paddingInline: {
-    xs: "20px", // Smaller padding for smaller screens
-    sm: "30px", // Medium padding for small screens
-    md: "40px", // Default padding for medium and larger screens
+    xs: "20px",
+    sm: "30px",
+    md: "40px",
   },
   borderRadius: "10px",
 };
@@ -134,8 +134,6 @@ function ExpensesCreation({
         tcs: "",
         tds: "",
         amount_receivable: "",
-        // utilise_month: "",
-        // utilise_edit: false,
       },
     ]);
     setBranchNoGst("");
@@ -152,7 +150,6 @@ function ExpensesCreation({
   const [selectedTDSTCSRateOption, setSelectedTDSTCSRateOption] = useState("");
   const [selectedTDSTCSectionOption, setSelectedTDSTCSectionOption] =
     useState("");
-  // console.log("123456", selectedTDSTCSOption, selectedTDSTCSOption);
   const [shouldShowIGST, setShouldShowIGST] = useState(false);
   const [shouldShowCGSTSGST, setShouldShowCGSTSGST] = useState(false);
   const [isGstNoEmpty, setIsGstNoEmpty] = useState(true);
@@ -165,15 +162,13 @@ function ExpensesCreation({
     setAnchorEl(null);
   };
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setActiveTab(newValue);
   };
   const handleCreateClose = () => {
-    // console.log("Closing modal");
     setOpenCreateModal(false);
     resetFields();
   };
 
-  // const handleCreateClose = () => setOpenCreateModal(false);
   const [formData, setFormData] = useState({
     offLocID: "",
     location: "",
@@ -224,31 +219,83 @@ function ExpensesCreation({
       totalall_gst: "",
       total_invoice_value: "",
       tds_tcs_rate: 0,
-      // tds_tcs_section: "",
       tcs: "",
       tds: "",
       amount_receivable: "",
-      // utilise_month: "",
-      // utilise_edit: false,
     },
   ]);
-  // console.log("formData", formData);
-  // console.log("vendor", vendorData);
-  // console.log("rowsData", rows);
-  // console.log("invoiceData", invoiceData);
-  // const handleInputChangeInvoiceData = (e) => {
-  //   const { name, value, type } = e.target;
-  //   const fieldValue = type === "file" ? e.target.files[0] : value;
+  const [expensesErrors, setExpensesErrors] = useState({})
 
-  //   setInvoiceData((prevData) => {
-  //     const updatedData = [...prevData];
-  //     updatedData[0] = {
-  //       ...updatedData[0],
-  //       [name]: name === "invoice_type" ? fieldValue.toLowerCase() : fieldValue,
-  //     };
-  //     return updatedData;
-  //   });
-  // };
+  const expensesRules = {
+    // location: [
+    //   { test: v => v.length > 0, message: "Office Location is required" }
+    // ],
+    contact: [
+      { test: v => /^\d{10}$/.test(v), message: "Contact must be 10 digits" }
+    ],
+    address: [
+      { test: v => v.length > 0, message: "Address is required" }
+    ],
+    city: [
+      { test: v => v.length > 0, message: "City is required" }
+    ],
+    state: [
+      { test: v => v.length > 0, message: "State is required" }
+    ],
+    country: [
+      { test: v => v.length > 0, message: "Country is required" }
+    ],
+    // gst_no: [
+    //   { test: v => v.length > 0, message: "Vendor GST is required" }
+    // ],
+    name: [
+      { test: v => v.length > 0, message: "Vendor Name is required" }
+    ],
+    pan: [
+      { test: v => v.length > 0, message: "PAN is required" },
+      { test: v => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v), message: "Invalid PAN format" }
+    ],
+    email: [
+      { test: v => v.length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" }
+    ],
+    contact_vendor: [
+      { test: v => /^\d{10}$/.test(v), message: "Vendor Contact must be 10 digits" }
+    ],
+    customer_vendor_type: [
+      { test: v => v.customer || v.vendor, message: "Select at least Customer or Vendor" }
+    ],
+    invoice_date: [
+      { test: v => v.length > 0, message: "Invoice Date is required" }
+    ],
+    month: [
+      { test: v => v.length > 0, message: "Month is required" }
+    ],
+    product: [
+      { test: v => v.length > 0, message: "Product is required" }
+    ],
+    hsnCode: [
+      { test: v => /^\d+$/.test(v), message: "HSN must be numbers" }
+    ],
+    unit: [
+      { test: v => v.length > 0, message: "Unit is required" }
+    ],
+    rate: [
+      { test: v => v.length > 0, message: "Rate is required" },
+      { test: v => !isNaN(v), message: "Rate must be numeric" }
+    ]
+  };
+
+  const validateExpensesField = (name, value) => {
+    const fieldRules = expensesRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+  const [activeTab, setActiveTab] = useState("1");
 
   const handleInputChangeInvoiceData = (e) => {
     const { name, value, type, checked } = e.target; // Include `checked`
@@ -295,6 +342,9 @@ function ExpensesCreation({
 
       return updatedData;
     });
+
+    const errorMsg = validateExpensesField(name, value);
+    setExpensesErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleInputChange = (e) => {
@@ -340,7 +390,7 @@ function ExpensesCreation({
 
       // Fetch additional data if needed
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-expenses/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         // console.log("Location Data:---->", response.data.branch_gst);
@@ -388,91 +438,47 @@ function ExpensesCreation({
       );
 
       if (matchingLocation) {
-        setFormData({
-          ...formData,
-          offLocID: matchingLocation.id,
-          location: matchingLocation.location,
-          contact: matchingLocation.contact || "",
-          address: matchingLocation.address || "",
-          city: matchingLocation.city || "",
-          state: matchingLocation.state || "",
-          country: matchingLocation.country || "",
-        });
+        try {
+          const response = await axiosInstance.get(
+            `${API_URL}/api/get-income/${id}/?newValue=${matchingLocation.id}&productID=${productID}`
+          );
+          setBranchNoGst(response?.data?.branch_gst);
+          console.log("Full matchingLocation:", matchingLocation);
+          console.log("Branch object:", matchingLocation.branch);
+          console.log("Location Data:---->", response.data.branch_gst);
+
+          setFormData({
+            ...formData,
+            offLocID: matchingLocation.id,
+            location: matchingLocation.location,
+            contact: matchingLocation.contact || "",
+            address: matchingLocation.address || "",
+            city: matchingLocation.city || "",
+            state: matchingLocation.state || "",
+            country: matchingLocation.country || "",
+            gst_no: response?.data?.branch_gst || "",
+            branch: matchingLocation.branch || "",
+          });
+        } catch (error) {
+          console.error("Error fetching location data:", error);
+        }
+      }
+      else {
+        setFormData((prev) => ({
+          ...prev,
+          offLocID: "",
+          location: newInputValue,   // ✅ preserve new typed name
+          contact: "",
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          gst_no: "",
+        }));
+        setBranchNoGst("")
       }
     }
   };
-
-  // const handleGstNoChange = (event, newValue1) => {
-  //   // If user clears the input
-  //   setIsGstNoEmpty(!newValue1);
-  //   if (!newValue1) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: "",
-  //       gst_no: "",
-  //       name: "",
-  //       pan: "",
-  //       vendor_address: "",
-  //       customer: false,
-  //       vendor: false,
-  //       email: "",
-  //       contact: "",
-  //     }));
-  //     return;
-  //   }
-
-  //   if (typeof newValue1 === "string") {
-  //     const matchedCustomer = customerData.find(
-  //       (customer) => customer.gst_no === newValue1
-  //     );
-
-  //     if (matchedCustomer) {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-
-  //         vendorID: matchedCustomer.id,
-  //         gst_no: matchedCustomer.gst_no,
-  //         name: matchedCustomer.name,
-  //         pan: matchedCustomer.pan,
-  //         vendor_address: matchedCustomer.address,
-  //         customer: matchedCustomer.customer,
-  //         vendor: matchedCustomer.vendor,
-  //         email: matchedCustomer.email,
-  //         contact: matchedCustomer.contact
-  //       }));
-  //     } else {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-  //         vendorID: "",
-  //         gst_no: newValue1,
-  //         name: "",
-  //         pan: "",
-  //         vendor_address: "",
-  //         customer: false,
-  //         vendor: false,
-  //         email: "",
-  //         contact: "",
-  //       }));
-  //     }
-  //     return;
-  //   }
-
-  //   if (newValue1 && newValue1.gst_no) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: newValue1.id,
-  //       gst_no: newValue1.gst_no,
-  //       name: newValue1.name || "",
-  //       pan: newValue1.pan || "",
-  //       email: newValue1.email || "",
-  //       contact: newValue1.contact || "",
-  //       vendor_address: newValue1.address || "",
-  //       customer: newValue1.customer || false,
-  //       vendor: newValue1.vendor || false,
-  //     }));
-  //   }
-  // };
-
   const handleGstNoChange = (event, newValue1) => {
     setIsGstNoEmpty(!newValue1);
 
@@ -578,10 +584,9 @@ function ExpensesCreation({
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-expenses/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
-
         const { hsn_code: hsnCode, gst_rate: gstRate } =
           response.data.hsn || {};
 
@@ -604,13 +609,47 @@ function ExpensesCreation({
       );
     }
   };
-
-  const handleInputChangeProductField = (index, value) => {
+  const handleInputChangeProductField = async (index, value) => {
     setRows((prevRows) =>
-      prevRows.map((row, rowIndex) =>
-        rowIndex === index ? { ...row, product: value } : row
-      )
+      prevRows.map((row, rowIndex) => {
+        if (rowIndex === index) {
+          return {
+            ...row,
+            product: value,
+            hsnCode: "",
+            gstRate: "",
+            description: "",
+            unit: "",
+            rate: "",
+            product_amount: "",
+            cgst: 0,
+            sgst: 0,
+            igst: 0,
+            total_invoice: 0,
+
+          }; // reset first
+        }
+        return row;
+      })
     );
+
+    if (value) {
+      try {
+        setRows((prevRows) =>
+          prevRows.map((row, rowIndex) =>
+            rowIndex === index
+              ? { ...row, hsnCode: "", gstRate: "" }
+              : row
+          )
+        );
+        // }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    }
+
+    const errorMsg = validateExpensesField(name, value);
+    setExpensesErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleInputChangeProduct = (index, field, value) => {
@@ -872,6 +911,56 @@ function ExpensesCreation({
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission behavior
 
+    const newErrors = {};
+
+    // Validate Office/Location formData
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateExpensesField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Customer/Vendor vendorData
+    Object.entries(vendorData).forEach(([key, value]) => {
+      const errorMsg = validateExpensesField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Invoice Data (first object only)
+    Object.entries(invoiceData[0]).forEach(([key, value]) => {
+      const errorMsg = validateExpensesField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    if (rows.length === 0 || rows.some(r => !r.product || !r.hsnCode || !r.unit || !r.rate)) {
+      setActiveTab("2");
+      toast.error("Please fill Product details before submitting.");
+      return; // stop here
+    }
+
+    // If any errors → stop and show first toast
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      // Optionally switch tab based on error
+      if (firstErrorField.startsWith("row_")) {
+        setActiveTab("2"); // Product tab
+      } else if (Object.keys(vendorData).includes(firstErrorField)) {
+        setActiveTab("1"); // Vendor tab
+      }
+      return;
+    }
+
+
     const cleanedRows = rows.filter(
       (row) =>
         row.product.trim() !== "" &&
@@ -899,7 +988,7 @@ function ExpensesCreation({
     };
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-expenses-post2/${id}`,
         payload,
         {
@@ -1182,6 +1271,7 @@ function ExpensesCreation({
                             freeSolo
                             id="location-select"
                             disableClearable
+                            required
                             options={offData}
                             getOptionLabel={(option) => option.location || ""}
                             onChange={(event, newValue) =>
@@ -1205,6 +1295,7 @@ function ExpensesCreation({
                                 {...params}
                                 size="small"
                                 value={formData.location || ""}
+                                required
                                 className="border border-red-500"
                                 placeholder="Office Location"
                                 sx={{
@@ -1251,6 +1342,7 @@ function ExpensesCreation({
                           size="md"
                           name="contact"
                           placeholder="Contact No"
+                          required
                           value={formData.contact}
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1289,6 +1381,7 @@ function ExpensesCreation({
                           name="address"
                           placeholder="Address"
                           value={formData.address}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
@@ -1326,6 +1419,7 @@ function ExpensesCreation({
                           name="city"
                           placeholder="City"
                           value={formData.city}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
@@ -1363,15 +1457,16 @@ function ExpensesCreation({
                           name="state"
                           placeholder="State"
                           value={formData.state}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1399,6 +1494,7 @@ function ExpensesCreation({
                           size="lg"
                           name="country"
                           placeholder="Country"
+                          required
                           value={formData.country}
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1406,9 +1502,9 @@ function ExpensesCreation({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1437,6 +1533,7 @@ function ExpensesCreation({
                         name="branchNoGst"
                         placeholder="GST No"
                         value={branchNoGst}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -1473,6 +1570,7 @@ function ExpensesCreation({
                               freeSolo
                               id="branch-select"
                               disableClearable
+                              required
                               options={branch_ser_name}
                               getOptionLabel={(option) =>
                                 option.branch_name || ""
@@ -1499,6 +1597,7 @@ function ExpensesCreation({
                                   {...params}
                                   size="small"
                                   value={formData.branchID || ""}
+                                  required
                                   className="border border-red-500"
                                   placeholder="Branch Select"
                                   inputProps={{
@@ -1553,6 +1652,7 @@ function ExpensesCreation({
                         name="invoice_no"
                         placeholder="Invoice No"
                         value={invoiceData[0].invoice_no}
+                        required
                         onChange={handleInputChangeInvoiceData}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -1560,9 +1660,9 @@ function ExpensesCreation({
                         }}
                         // containerProps={{ className: "min-w-full" }}
                         style={{
-                          height: "28px", // Match this to your Autocomplete's root height
-                          padding: "4px 6px", // Match this padding
-                          fontSize: "0.875rem", // Ensure font size is consistent
+                          height: "28px",
+                          padding: "4px 6px",
+                          fontSize: "0.875rem",
                           width: 300,
                         }}
                       />
@@ -1586,6 +1686,7 @@ function ExpensesCreation({
                       <input
                         type="file"
                         size="md"
+                        required
                         name="attach_invoice"
                         placeholder="Invoice Date"
                         onChange={handleInputChangeInvoiceData}
@@ -1609,6 +1710,7 @@ function ExpensesCreation({
                       <input
                         type="file"
                         size="md"
+                        required
                         name="attach_e_way_bill"
                         placeholder="Eway Bill"
                         onChange={handleInputChangeInvoiceData}
@@ -1632,6 +1734,7 @@ function ExpensesCreation({
                       <div className="relative w-full">
                         <DatePicker
                           ref={month}
+                          required
                           selected={
                             invoiceData[0].month
                               ? parse(invoiceData[0].month, "dd-MM-yyyy", new Date())
@@ -1670,6 +1773,7 @@ function ExpensesCreation({
                     <div className="relative w-full">
                       <DatePicker
                         ref={invoice}
+                        required
                         selected={
                           invoiceData[0].invoice_date
                             ? parse(invoiceData[0].invoice_date, "dd-MM-yyyy", new Date())
@@ -1699,7 +1803,7 @@ function ExpensesCreation({
                 <div className="py-5 px-0">
                   <div className="bg-secondary px-0 py-3 rounded-md ">
                     <Box sx={{ width: "100%", typography: "body1" }}>
-                      <TabContext value={value}>
+                      <TabContext value={activeTab}>
                         <Box
                           sx={{
                             borderBottom: 1,
@@ -1792,6 +1896,7 @@ function ExpensesCreation({
                                     <Autocomplete
                                       sx={{ width: 300 }}
                                       freeSolo
+                                      required
                                       id="gst-no-autocomplete"
                                       disableClearable
                                       options={customerData}
@@ -1812,6 +1917,7 @@ function ExpensesCreation({
                                           {...params}
                                           size="small"
                                           name="gst_no"
+                                          required
                                           value={vendorData.gst_no || ""} // Reset input value when formData.gst_no changes
                                           onChange={(e) =>
                                             handleGstNoChange(e, e.target.value)
@@ -1859,6 +1965,7 @@ function ExpensesCreation({
                                   <Autocomplete
                                     sx={{ width: 300 }}
                                     freeSolo
+                                    required
                                     id="name-autocomplete"
                                     disableClearable
                                     options={customerData}
@@ -1879,6 +1986,7 @@ function ExpensesCreation({
                                         {...params}
                                         size="small"
                                         name="name"
+                                        required
                                         value={vendorData.name || ""} // Reset input value when formData.gst_no changes
                                         onChange={(e) =>
                                           handleNameChange(e, e.target.value)
@@ -1917,9 +2025,9 @@ function ExpensesCreation({
                                       }}
                                       // containerProps={{ className: "min-w-full" }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px", 
+                                        padding: "4px 6px", 
+                                        fontSize: "0.875rem", 
                                         width: 300,
                                       }}
                                     />
@@ -1946,6 +2054,7 @@ function ExpensesCreation({
                                       type="text"
                                       size="lg"
                                       name="pan"
+                                      required
                                       placeholder="PAN No"
                                       value={vendorData.pan}
                                       onChange={handleInputChangeCL}
@@ -1954,9 +2063,9 @@ function ExpensesCreation({
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -1983,6 +2092,7 @@ function ExpensesCreation({
                                       type="text"
                                       size="lg"
                                       name="vendor_address"
+                                      required
                                       placeholder="Customer Address"
                                       value={vendorData.vendor_address}
                                       onChange={handleInputChangeCL}
@@ -2020,6 +2130,7 @@ function ExpensesCreation({
                                       type="email"
                                       size="lg"
                                       name="email"
+                                      required
                                       placeholder="Email"
                                       value={vendorData.email}
                                       onChange={handleInputChangeCL}
@@ -2028,9 +2139,9 @@ function ExpensesCreation({
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2058,6 +2169,7 @@ function ExpensesCreation({
                                       size="lg"
                                       name="contact"
                                       placeholder="Contact No"
+                                      required
                                       value={vendorData.contact}
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -2283,6 +2395,7 @@ function ExpensesCreation({
                                           id={`product-autocomplete-${index}`}
                                           disableClearable
                                           options={product_ser_Data}
+                                          required
                                           getOptionLabel={(option) =>
                                             option.product_name || ""
                                           }
@@ -2312,6 +2425,7 @@ function ExpensesCreation({
                                             <TextField
                                               {...params}
                                               size="small"
+                                              required
                                               placeholder="select product"
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
@@ -2333,6 +2447,7 @@ function ExpensesCreation({
                                           name="description"
                                           id={`description-${index}`}
                                           value={row.description}
+                                          required
                                           onChange={(e) =>
                                             handleInputChangeProduct(
                                               index,
@@ -2359,6 +2474,7 @@ function ExpensesCreation({
                                         <TextField
                                           id={`hsn_code-${index}`}
                                           name="hsn_code"
+                                          required
                                           value={row.hsnCode}
                                           onChange={(e) => {
                                             const inputValue = e.target.value;
@@ -2391,6 +2507,7 @@ function ExpensesCreation({
                                           value={row.unit}
                                           name="unit"
                                           id={`unit-${index}`}
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2421,6 +2538,7 @@ function ExpensesCreation({
                                           name="rate"
                                           id={`rate-${index}`}
                                           value={row.rate}
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2448,6 +2566,7 @@ function ExpensesCreation({
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.product_amount}
+                                          required
                                           onChange={(e) =>
                                             handleInputChangeProduct(
                                               index,
@@ -2482,6 +2601,7 @@ function ExpensesCreation({
                                           value={row.gstRate}
                                           name="gst_rate"
                                           id={`gst_rate-${index}`}
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2512,6 +2632,7 @@ function ExpensesCreation({
                                           <TableCell sx={{ padding: "6px" }}>
                                             <TextField
                                               value={row.cgst || ""}
+                                              required
                                               onChange={(e) =>
                                                 handleInputChangeProduct(
                                                   index,
@@ -2544,6 +2665,7 @@ function ExpensesCreation({
                                           <TableCell sx={{ padding: "6px" }}>
                                             <TextField
                                               value={row.sgst || ""}
+                                              required
                                               onChange={(e) =>
                                                 handleInputChangeProduct(
                                                   index,
@@ -2580,6 +2702,7 @@ function ExpensesCreation({
                                         <TableCell sx={{ padding: "6px" }}>
                                           <TextField
                                             value={row.igst || ""}
+                                            required
                                             onChange={(e) =>
                                               handleInputChangeProduct(
                                                 index,
@@ -2614,6 +2737,7 @@ function ExpensesCreation({
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.total_invoice}
+                                          required
                                           onChange={(e) =>
                                             handleInputChangeProduct(
                                               index,
@@ -2689,33 +2813,26 @@ function ExpensesCreation({
                                               <div className="">
                                                 <select
                                                   name="invoice_type"
+                                                  required
                                                   className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
                                                   style={{
-                                                    height: "28px", // Match this to your Autocomplete's root height
-                                                    padding: "4px 6px", // Match this padding
-                                                    fontSize: "0.875rem", // Ensure font size is consistent
+                                                    height: "28px",
+                                                    padding: "4px 6px",
+                                                    fontSize: "0.875rem",
                                                     width: 300,
                                                   }}
-                                                  value={invoiceData[0].invoice_type} // Ensures the selected value matches the state
+                                                  value={invoiceData[0].invoice_type}
                                                   onChange={handleInputChangeInvoiceData}
                                                 >
-                                                  {vendorData.gst_no === "" // Check if gst_no is empty
-                                                    ? // Show only these options when gst_no is empty
-                                                    [
-                                                      "Select Entity Type",
-                                                      "Unregistered Local",
-                                                      "Unregistered Non-Local",
-                                                    ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                  <option value="">Select Invoice Type</option>
+
+                                                  {vendorData.gst_no === ""
+                                                    ? ["Unregistered Local", "Unregistered Non-Local"].map((option) => (
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))
-                                                    : // Show other options when gst_no is not empty
-                                                    [
-                                                      "Select Entity Type",
+                                                    : [
                                                       "B2B",
                                                       "B2C-L",
                                                       "BSC-O",
@@ -2724,10 +2841,7 @@ function ExpensesCreation({
                                                       "SEZ",
                                                       "Export",
                                                     ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))}
@@ -2744,6 +2858,7 @@ function ExpensesCreation({
                                                 invoiceData[0].taxable_amount
                                               }
                                               variant="outlined"
+                                              required
                                               size="small"
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
@@ -2765,14 +2880,8 @@ function ExpensesCreation({
                                               value={
                                                 invoiceData[0].totalall_gst
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
                                               variant="outlined"
+                                              required
                                               size="small"
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
@@ -2795,14 +2904,8 @@ function ExpensesCreation({
                                                 invoiceData[0]
                                                   .total_invoice_value
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
                                               variant="outlined"
+                                              required
                                               size="small"
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
@@ -2826,68 +2929,6 @@ function ExpensesCreation({
                             <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4 my-2">
                               <div className="hidden 2xl:block col-span-1"></div>
                               <div className="col-span-1">
-                                {/* <div>
-                                  <div>
-                                    <label htmlFor="invoice_type">
-                                      <Typography
-                                        variant="small"
-                                        color="blue-gray"
-                                        className="block font-semibold mb-1"
-                                      >
-                                        Invoice Type
-                                      </Typography>
-                                    </label>
-                                  </div>
-                                  <div className="">
-                                    <div className="">
-                                      <select
-                                        name="invoice_type"
-                                        className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
-                                        style={{
-                                          height: "28px", // Match this to your Autocomplete's root height
-                                          padding: "4px 6px", // Match this padding
-                                          fontSize: "0.875rem", // Ensure font size is consistent
-                                          width: 300,
-                                        }}
-                                        value={invoiceData[0].invoice_type} // Ensures the selected value matches the state
-                                        onChange={handleInputChangeInvoiceData}
-                                      >
-                                        {vendorData.gst_no === "" // Check if gst_no is empty
-                                          ? // Show only these options when gst_no is empty
-                                          [
-                                            "Select Invoice Type",
-                                            "Unregistered Local",
-                                            "Unregistered Non-Local",
-                                          ].map((option) => (
-                                            <option
-                                              key={option}
-                                              value={option.toLowerCase()}
-                                            >
-                                              {option}
-                                            </option>
-                                          ))
-                                          : // Show other options when gst_no is not empty
-                                          [
-                                            "Select Invoice Type",
-                                            "B2B",
-                                            "B2C-L",
-                                            "BSC-O",
-                                            "Nil Rated",
-                                            "Advance Received",
-                                            "SEZ",
-                                            "Export",
-                                          ].map((option) => (
-                                            <option
-                                              key={option}
-                                              value={option.toLowerCase()}
-                                            >
-                                              {option}
-                                            </option>
-                                          ))}
-                                      </select>
-                                    </div>
-                                  </div>
-                                </div> */}
                               </div>
                               <div className="col-span-1">
                                 <div>
@@ -3031,9 +3072,7 @@ function ExpensesCreation({
                                       variant="outlined"
                                       size="small"
                                       name="amount_receivable"
-                                      // value={amount_receivable}
                                       value={invoiceData[0].amount_receivable}
-                                      // onChange={handleInputChangeInvoiceData}
                                       sx={{
                                         "& .MuiOutlinedInput-root": {
                                           padding: "1px",
@@ -3072,8 +3111,6 @@ function ExpensesCreation({
                 <Button
                   conained="contained"
                   type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
                   className="bg-primary"
                 >
                   <span>Confirm</span>

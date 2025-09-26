@@ -12,6 +12,7 @@ import { useParams } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 // import "react-toastify/dist/ReactToastify.css";  
 import { Autocomplete } from "@mui/material";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -66,6 +67,12 @@ function ProductDescriptionCreation({ fetchClients }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    if (!formData.product) {
+      toast.error("Please select a valid product from the list!");
+      return;
+    }
+
 
     try {
       // Create a FormData object
@@ -168,7 +175,7 @@ function ProductDescriptionCreation({ fetchClients }) {
                     </label>
 
                     <div className="">
-                      <Autocomplete
+                      {/* <Autocomplete
                         freeSolo
                         id="product"
                         disableClearable
@@ -209,7 +216,32 @@ function ProductDescriptionCreation({ fetchClients }) {
                             }}
                           />
                         )}
+                      /> */}
+                      <Autocomplete
+                        id="product"
+                        disableClearable
+                        options={customerData}
+                        getOptionLabel={(option) => String(option.product_name)} // always return string
+                        onChange={(event, newValue) => {
+                          // Only set formData.product if a valid option is selected
+                          setFormData(prev => ({ ...prev, product: newValue ? newValue.id : null }));
+                        }}
+                        value={customerData.find(option => option.id === formData.product) || null}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option.id}>
+                            {String(option.product_name)}
+                          </li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            size="small"
+                            required
+                            placeholder="Select Product"
+                          />
+                        )}
                       />
+
                     </div>
                   </div>
 
@@ -229,6 +261,7 @@ function ProductDescriptionCreation({ fetchClients }) {
                         type="text"
                         size="lg"
                         name="description"
+                        required
                         placeholder="Description"
                         value={formData.description}
                         onChange={handleInputChange}
@@ -256,6 +289,7 @@ function ProductDescriptionCreation({ fetchClients }) {
                         type="number"
                         size="lg"
                         name="unit"
+                        required
                         placeholder="Unit"
                         value={formData.unit}
                         onChange={handleInputChange}
@@ -283,6 +317,7 @@ function ProductDescriptionCreation({ fetchClients }) {
                         type="number"
                         size="lg"
                         name="rate"
+                        required
                         placeholder="Rate"
                         value={formData.rate}
                         onChange={handleInputChange}

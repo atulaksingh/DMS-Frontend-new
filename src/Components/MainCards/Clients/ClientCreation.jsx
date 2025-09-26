@@ -992,29 +992,6 @@ function ClientCreation() {
                       onClick={handleOpen}
                       required
                     />
-                    {/* <label
-                      htmlFor="fileinfo"
-                      className="cursor-pointer bg-white text-blue-500 hover:text-white border border-[#366FA1] px-4 py-3 rounded-md hover:bg-[#366FA1] inline-block relative"
-                    >
-                      Select PDF/image file.
-                    </label>
-                    <input
-                      id="fileinfo"
-                      name="fileinfo"
-                      type="file"
-                      accept="image/*,application/pdf"
-                      required
-                      style={{
-                        opacity: 0,
-                        width: "100%",     // makes it stretch across the label
-                        height: "40px",    // same height as your label button
-                        position: "relative",
-                        zIndex: 10,
-                        cursor: "pointer",
-                      }}
-                      onChange={handleOpen}
-                    /> */}
-
                   </div>
                 ) : null}
               </div>

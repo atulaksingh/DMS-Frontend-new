@@ -50,19 +50,19 @@ const styleCreateModal = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: {
-    xs: "90%", 
-    sm: "90%", 
-    md: "90%", 
+    xs: "90%",
+    sm: "90%",
+    md: "90%",
     lg: "90%",
-    xl: "85%", 
+    xl: "85%",
   },
   bgcolor: "background.paper",
   boxShadow: 24,
   paddingTop: "17px",
   paddingInline: {
-    xs: "20px", 
-    sm: "30px", 
-    md: "40px", 
+    xs: "20px",
+    sm: "30px",
+    md: "40px",
   },
   borderRadius: "10px",
 };
@@ -230,9 +230,9 @@ function SalesCreation({
   const [salesErrors, setSalesErrors] = useState({})
 
   const salesRules = {
-    location: [
-      { test: v => v.length > 0, message: "Office Location is required" }
-    ],
+    // location: [
+    //   { test: v => v.length > 0, message: "Office Location is required" }
+    // ],
     contact: [
       // { test: v => v.length > 0, message: "Contact number is required" },
       { test: v => /^\d{10}$/.test(v), message: "Contact must be 10 digits" }
@@ -255,9 +255,9 @@ function SalesCreation({
     ],
 
     // vendorData
-    gst_no: [
-      { test: v => v.length > 0, message: "Vendor GST is required" }
-    ],
+    // gst_no: [
+    //   { test: v => v.length > 0, message: "Vendor GST is required" }
+    // ],
     name: [
       { test: v => v.length > 0, message: "Vendor Name is required" }
     ],
@@ -329,7 +329,7 @@ function SalesCreation({
     } else if (type === "file") {
       fieldValue = e.target.files[0];
     } else if (name === "tds_tcs_rate" && value === "") {
-      fieldValue = ""; 
+      fieldValue = "";
     } else {
       fieldValue = value;
     }
@@ -473,17 +473,17 @@ function SalesCreation({
         }
       }
       else {
-        setFormData({
+        setFormData((prev) => ({
+          ...prev,
           offLocID: "",
-          location: "",
+          location: newInputValue,   // ✅ preserve new typed name
           contact: "",
           address: "",
           city: "",
           state: "",
           country: "",
           gst_no: "",
-
-        })
+        }));
         setBranchNoGst("")
       }
     }
@@ -975,7 +975,7 @@ function SalesCreation({
     const payload = {
       formData,
       vendorData,
-      rows: cleanedRows,  
+      rows: cleanedRows,
       invoiceData,
       branchNoGst,
     };
@@ -1452,9 +1452,9 @@ function SalesCreation({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", 
+                            height: "28px",
                             padding: "4px 6px",
-                            fontSize: "0.875rem", 
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -2798,7 +2798,7 @@ function SalesCreation({
                                               </label>
                                             </div>
                                             <div className="">
-                                              <div className="">                                              
+                                              <div className="">
                                                 <select
                                                   name="invoice_type"
                                                   required

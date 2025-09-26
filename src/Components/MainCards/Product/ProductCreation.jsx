@@ -10,6 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import TextField from "@mui/material/TextField";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 // import "react-toastify/dist/ReactToastify.css";
 import { Autocomplete } from "@mui/material";
 const styleCreateMOdal = {
@@ -64,6 +65,12 @@ function ProductCreation({ fetchClients }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    if (!formData.hsn) {
+      toast.error("Please select a valid HSN code from the list!");
+      return;
+    }
+
 
     try {
       // Create a FormData object
@@ -159,10 +166,11 @@ function ProductCreation({ fetchClients }) {
                     </label>
 
                     <div className="">
-                      <Autocomplete
-                        freeSolo
+                      {/* <Autocomplete
+                        // freeSolo
                         id="gst-no-autocomplete"
                         disableClearable
+                        required
                         options={customerData}
                         getOptionLabel={(option) =>
                           option &&
@@ -187,10 +195,11 @@ function ProductCreation({ fetchClients }) {
                             {...params}
                             size="small"
                             name="hsn"
+                            required
                             value={formData.hsn || ""} // Bind value to formData.hsn
-                            onChange={(e) =>
-                              handleGstNoChange(e, e.target.value)
-                            } // Handle changes manually
+                            // onChange={(e) =>
+                            //   handleGstNoChange(e, e.target.value)
+                            // } // Handle changes manually
                             placeholder="Enter or select HSN Code."
                             slotProps={{
                               input: {
@@ -199,6 +208,24 @@ function ProductCreation({ fetchClients }) {
                               },
                             }}
                           />
+                        )}
+                      /> */}
+                      <Autocomplete
+                        id="gst-no-autocomplete"
+                        disableClearable
+                        options={customerData}
+                        // getOptionLabel={(option) => option.hsn_code}
+                        getOptionLabel={(option) =>
+                          option && typeof option === "object" && option.hsn_code
+                            ? String(option.hsn_code)  // convert number to string
+                            : ""
+                        }
+                        onChange={(event, newValue) => {
+                          setFormData(prev => ({ ...prev, hsn: newValue ? newValue.id : null }));
+                        }}
+                        value={customerData.find(option => option.id === formData.hsn) || null}
+                        renderInput={(params) => (
+                          <TextField {...params} label="HSN Code" required />
                         )}
                       />
                     </div>
@@ -222,6 +249,7 @@ function ProductCreation({ fetchClients }) {
                         name="product_name"
                         placeholder="Product Name"
                         value={formData.product_name}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -247,6 +275,7 @@ function ProductCreation({ fetchClients }) {
                         type="number"
                         size="lg"
                         name="unit_of_measure"
+                        required
                         placeholder="Unit of Measure"
                         value={formData.unit_of_measure}
                         onChange={handleInputChange}

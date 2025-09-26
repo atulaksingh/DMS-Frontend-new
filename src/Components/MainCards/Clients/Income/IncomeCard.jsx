@@ -23,7 +23,6 @@ const options = ["None", "Atria", "Callisto"];
 
 import {
   Button,
-  // Checkbox,
   DialogFooter,
   Option,
   Radio,
@@ -45,14 +44,12 @@ import {
   TableHead,
   TableRow,
   Paper,
-  // IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import TabPanel from "@mui/lab/TabPanel";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import IncomeInvoice from "./IncomeInvoice";
-//   import { useEffect } from "react";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 const style = {
   position: "absolute",
@@ -61,10 +58,7 @@ const style = {
   transform: "translate(-50%, -50%)",
   width: 1000,
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
-  //   paddingTop: "17px",
-  //   paddingInline: "10px",
   marginBlock: "80px",
   borderRadius: "10px",
 };
@@ -74,19 +68,19 @@ const styleCreateModal = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: {
-    xs: "90%", // Mobile devices (extra-small screens)
-    sm: "90%", // Small screens (e.g., tablets)
-    md: "90%", // Medium screens
-    lg: "90%", // Large screens%
-    xl: "85%", // Large screens
+    xs: "90%",
+    sm: "90%",
+    md: "90%",
+    lg: "90%",
+    xl: "85%",
   },
   bgcolor: "background.paper",
   boxShadow: 24,
   paddingTop: "17px",
   paddingInline: {
-    xs: "20px", // Smaller padding for smaller screens
-    sm: "30px", // Medium padding for small screens
-    md: "40px", // Default padding for medium and larger screens
+    xs: "20px",
+    sm: "30px",
+    md: "40px",
   },
   borderRadius: "10px",
 };
@@ -100,12 +94,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
   const customerData = allLocationBranchProductData?.serializer_customer || [];
   const product_ser_Data = allLocationBranchProductData?.product_serializer || [];
   const branch_ser_name = allLocationBranchProductData?.branch_serializer || [];
-
-
-
-
-
-  // console.log("use",useParams())
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [openViewModal, setOpenViewModal] = React.useState(false);
@@ -120,7 +108,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
       files: e.target.files, // Handles multiple files
     }));
   };
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -134,10 +121,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
   };
   const handleDeleteID = async () => {
     try {
-      const response = (
+      const response = await axiosInstance.delete(
         `${API_URL}/api/delete-income/${id}/${deleteId}`
       );
-      // console.log("res-----bank---->", response);
       setOpenDeleteModal(false);
       if (response.status === 200) {
         toast.success(response.data.message, {
@@ -146,7 +132,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
         });
         dispatch(fetchClientDetails(id));
       } else {
-        toast.error("Failed to delete Sales Invoice. Please try again.", {
+        toast.error("Failed to delete Income Invoice. Please try again.", {
           position: "top-right",
           autoClose: 2000,
         });
@@ -159,17 +145,15 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
       });
     }
   };
-
   const handleViewOpen = () => {
     setViewId(rowId);
     setOpenViewModal(true);
     setAnchorEl(null);
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/income-view/${id}/${rowId}`
         );
-        // console.log("eeeeeee",response.data)
         setBankData(response.data);
         setLoading(false);
       } catch (error) {
@@ -179,30 +163,23 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
     };
     fetchBankDetails();
   };
-
   const handleDeleteClose = () => setOpenDeleteModal(false);
   const handleViewClose = () => setOpenViewModal(false);
   const helloworld = () => setOpenViewModal(false);
-  // dj = new t
-  //   const handleCreateClose = () => setOpenCreateModal(false);
   const [bankData, setBankData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  ///////////////////////////////////////////////////////  sales Update ////////////////////////////////////
+  ///////////////////////////////////////////////////////  income Update ////////////////////////////////////
 
   const [value, setValue] = React.useState("1");
   const [selectedValueInvoiceType, setSelectedValueInvoiceType] = useState("");
-
   const [showBranchInput, setShowBranchInput] = useState(false);
   const [branchNoGst, setBranchNoGst] = useState("");
-  //   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [selectedTDSTCSOption, setSelectedTDSTCSOption] = useState("");
   const [selectedTDSTCSRateOption, setSelectedTDSTCSRateOption] = useState("");
-  const [selectedTDSTCSectionOption, setSelectedTDSTCSectionOption] =
-    useState("");
-  // console.log("123456", selectedTDSTCSOption, selectedTDSTCSOption);
+  const [selectedTDSTCSectionOption, setSelectedTDSTCSectionOption] = useState("");
   const [shouldShowIGST, setShouldShowIGST] = useState(false);
   const [shouldShowCGSTSGST, setShouldShowCGSTSGST] = useState(false);
   const [isGstNoEmpty, setIsGstNoEmpty] = useState(true);
@@ -210,15 +187,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
     "Unregistered Local",
     "Unregistered Non-Local",
   ]);
-  // const handleCreateOpen = () => {
-
-  //   setOpenCreateModal(true);
-  //   setAnchorEl(null);
-  // };
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setActiveTab(newValue);
   };
-
   const handleCreateClose = () => setOpenCreateModal(false);
   const [formData, setFormData] = useState({
     offLocID: "",
@@ -230,7 +201,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
     country: "",
     branchID: "",
   });
-
   const [vendorData, setVendorData] = useState({
     vendorID: "",
     gst_no: "",
@@ -270,23 +240,90 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
       totalall_gst: "",
       total_invoice_value: "",
       tds_tcs_rate: "",
-      // tds_tcs_section: "",
       tcs: "",
       tds: "",
       amount_receivable: "",
     },
   ]);
-  // console.log("formdata", formData);
-  // console.log("vendorData", vendorData);
-  // console.log("rows", rows);
-  // console.log("invoiceData", invoiceData);
-  // console.log("offfff", offData);
+  const [incomeErrors, setIncomeErrors] = useState({})
+
+  const incomeRules = {
+    // location: [
+    //   { test: v => v.length > 0, message: "Office Location is required" }
+    // ],
+    contact: [
+      { test: v => /^\d{10}$/.test(v), message: "Contact must be 10 digits" }
+    ],
+    address: [
+      { test: v => v.length > 0, message: "Address is required" }
+    ],
+    city: [
+      { test: v => v.length > 0, message: "City is required" }
+    ],
+    state: [
+      { test: v => v.length > 0, message: "State is required" }
+    ],
+    country: [
+      { test: v => v.length > 0, message: "Country is required" }
+    ],
+    // gst_no: [
+    //   { test: v => v.length > 0, message: "Vendor GST is required" }
+    // ],
+    name: [
+      { test: v => v.length > 0, message: "Vendor Name is required" }
+    ],
+    pan: [
+      { test: v => v.length > 0, message: "PAN is required" },
+      { test: v => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v), message: "Invalid PAN format" }
+    ],
+    email: [
+      { test: v => v.length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" }
+    ],
+    contact_vendor: [
+      { test: v => /^\d{10}$/.test(v), message: "Vendor Contact must be 10 digits" }
+    ],
+    customer_vendor_type: [
+      { test: v => v.customer || v.vendor, message: "Select at least Customer or Vendor" }
+    ],
+    invoice_date: [
+      { test: v => v.length > 0, message: "Invoice Date is required" }
+    ],
+    month: [
+      { test: v => v.length > 0, message: "Month is required" }
+    ],
+    product: [
+      { test: v => v.length > 0, message: "Product is required" }
+    ],
+    hsnCode: [
+      { test: v => /^\d+$/.test(v), message: "HSN must be numbers" }
+    ],
+    unit: [
+      { test: v => v.length > 0, message: "Unit is required" }
+    ],
+    rate: [
+      { test: v => v.length > 0, message: "Rate is required" },
+      { test: v => !isNaN(v), message: "Rate must be numeric" }
+    ]
+  };
+
+  const validateIncomeField = (name, value) => {
+    const fieldRules = incomeRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
+
+  const [activeTab, setActiveTab] = useState("1");
+
   const handleCreateOpen = async () => {
     setOpenCreateModal(true);
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/get-income/${id}/${rowId}`
       );
       // console.log("dd123", response.data);
@@ -310,7 +347,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
       });
     }
   };
-
   const handleInputChangeInvoiceData = (e) => {
     const { name, value, type } = e.target;
     const fieldValue = type === "file" ? e.target.files[0] : value;
@@ -340,7 +376,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
       return updatedData;
     });
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -360,46 +395,42 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
   const [productID, setProductID] = useState("");
   const [selectedGstNo, setSelectedGstNo] = useState("");
 
-
   const handleLocationChange = async (newValue, isBranch = false) => {
-    if (!newValue) return;
-
-    try {
-      if (isBranch && newValue?.branch_name) {
-        setBranchNoGst(newValue?.gst_no);
-        setFormData((prev) => ({
-          ...prev,
-          branchID: newValue?.id, // Store branch ID
-        }));
-      } else if (newValue?.location) {
-        const updatedFormData = {
-          offLocID: newValue?.id,
-          location: newValue?.location,
-          contact: newValue?.contact || "",
-          address: newValue?.address || "",
-          city: newValue?.city || "",
-          state: newValue?.state || "",
-          country: newValue?.country || "",
-          branchID: newValue?.branch || "",
-        };
-        setFormData(updatedFormData);
-        setShowBranchInput(false);
-
-        const response = await axios.get(
-          `${API_URL}/api/get-purchase/${id}/?newValue=${newValue.id}&productID=${productID}`
-        );
-        setBranchNoGst(response.data.branch_gst || "N/A");
-      }
-    } catch (error) {
-      console.error("Error fetching branch/location data:", error);
-      toast.error("Failed to fetch location data. Please try again.", {
-        position: "top-right",
-        autoClose: 2000,
+    console.log("newwvalue", newValue)
+    if (isBranch && newValue && newValue.branch_name) {
+      setBranchNoGst(newValue?.gst_no);
+      setFormData({
+        ...formData,
+        branchID: newValue.id,
       });
     }
+    else if (newValue && newValue.location) {
+      setFormData({
+        ...formData,
+        offLocID: newValue.id,
+        location: newValue.location,
+        contact: newValue.contact || "",
+        address: newValue.address || "",
+        city: newValue.city || "",
+        state: newValue.state || "",
+        country: newValue.country || "",
+        branchID: newValue.branch || "",
+      });
+      setShowBranchInput(false);
+      try {
+        const response = await axiosInstance.get(
+          `${API_URL}/api/get-income/${id}/?newValue=${newValue.id}&productID=${productID}`
+        );
+        console.log("Location Data:---->", response.data.branch_gst);
+        setBranchNoGst(response?.data?.branch_gst);
+      } catch (error) {
+        console.error("Error fetching location data:", error);
+      }
+    }
+    const errorMsg = validateIncomeField(name, value);
+    setIncomeErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
-  // console.log("123",branchNoGst)
   const handleInputChangeLocation = async (event, newInputValue) => {
     if (!newInputValue) {
       setFormData((prev) => ({
@@ -438,79 +469,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
         branchID: "",
 
       }));
+      setBranchNoGst("")
     }
   };
-
-  // const handleGstNoChange = (event, newValue1) => {
-  //   // If user clears the input
-  //   setIsGstNoEmpty(!newValue1);
-  //   if (!newValue1) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: "",
-  //       gst_no: "",
-  //       name: "",
-  //       pan: "",
-  //       customer_address: "",
-  //       customer: false,
-  //       vendor: false,
-  //       email: "",
-  //       contact: "",
-  //     }));
-  //     return;
-  //   }
-
-  //   if (typeof newValue1 === "string") {
-  //     const matchedCustomer = customerData.find(
-  //       (customer) => customer.gst_no === newValue1
-  //     );
-
-  //     if (matchedCustomer) {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-
-  //         vendorID: matchedCustomer.id,
-  //         gst_no: matchedCustomer.gst_no,
-  //         name: matchedCustomer.name,
-  //         pan: matchedCustomer.pan,
-  //         email: matchedCustomer.email,
-  //         contact: matchedCustomer.contact,
-  //         customer_address: matchedCustomer.address,
-  //         customer: matchedCustomer.customer,
-  //         vendor: matchedCustomer.vendor,
-  //       }));
-  //     } else {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-  //         vendorID: "",
-  //         gst_no: newValue1,
-  //         name: "",
-  //         pan: "",
-  //         email: "",
-  //         contact: "",
-  //         customer_address: "",
-  //         customer: false,
-  //         vendor: false,
-  //       }));
-  //     }
-  //     return;
-  //   }
-
-  //   if (newValue1 && newValue1.gst_no) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: newValue1.id,
-  //       gst_no: newValue1.gst_no,
-  //       name: newValue1.name || "",
-  //       pan: newValue1.pan || "",
-  //       email: newValue1.email || "",
-  //       contact: newValue1.contact || "",
-  //       customer_address: newValue1.address || "",
-  //       customer: newValue1.customer || false,
-  //       vendor: newValue1.vendor || false,
-  //     }));
-  //   }
-  // };
 
   const handleGstNoChange = (event, newValue1) => {
     setIsGstNoEmpty(!newValue1);
@@ -618,7 +579,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-income/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -645,12 +606,47 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
     }
   };
 
-  const handleInputChangeProductField = (index, value) => {
+  const handleInputChangeProductField = async (index, value) => {
     setRows((prevRows) =>
-      prevRows.map((row, rowIndex) =>
-        rowIndex === index ? { ...row, product: value } : row
-      )
+      prevRows.map((row, rowIndex) => {
+        if (rowIndex === index) {
+          return {
+            ...row,
+            product: value,
+            hsnCode: "",
+            gstRate: "",
+            description: "",
+            unit: "",
+            rate: "",
+            product_amount: "",
+            cgst: 0,
+            sgst: 0,
+            igst: 0,
+            total_invoice: 0,
+
+          }; // reset first
+        }
+        return row;
+      })
     );
+
+    if (value) {
+      try {
+        setRows((prevRows) =>
+          prevRows.map((row, rowIndex) =>
+            rowIndex === index
+              ? { ...row, hsnCode: "", gstRate: "" }
+              : row
+          )
+        );
+        // }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    }
+
+    const errorMsg = validateIncomeField("product", value);
+    setIncomeErrors((prev) => ({ ...prev, product: errorMsg }));
   };
 
   const handleInputChangeProduct = (index, field, value) => {
@@ -850,7 +846,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
     invoiceData[0]?.tds_tcs_rate,
     selectedTDSTCSOption,
   ]);
-  // console.log("Amount Receivable:", amountReceivable);
+
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -874,6 +870,54 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
   const [salesInvoice, setSalesInvoice] = useState("100");
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission behavior
+    const newErrors = {};
+
+    // Validate Office/Location formData
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateIncomeField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Customer/Vendor vendorData
+    Object.entries(vendorData).forEach(([key, value]) => {
+      const errorMsg = validateIncomeField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Invoice Data (first object only)
+    Object.entries(invoiceData[0]).forEach(([key, value]) => {
+      const errorMsg = validateIncomeField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    if (rows.length === 0 || rows.some(r => !r.product || !r.hsnCode || !r.unit || !r.rate)) {
+      setActiveTab("2");
+      toast.error("Please fill Product details before submitting.");
+      return; // stop here
+    }
+
+    // If any errors → stop and show first toast
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      // 🔹 Optionally switch tab based on error
+      if (firstErrorField.startsWith("row_")) {
+        setActiveTab("2"); // Product tab
+      } else if (Object.keys(vendorData).includes(firstErrorField)) {
+        setActiveTab("1"); // Vendor tab
+      }
+      return;
+    }
 
     const cleanedRows = rows.filter(
       (row) =>
@@ -893,16 +937,14 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
     }
 
     const payload = {
-      // salesInvoice,
       formData,
       vendorData,
-      // rows,
       rows: cleanedRows,
       invoiceData,
     };
 
     try {
-      const response = await axios.put(
+      const response = await axiosInstance.put(
         `${API_URL}/api/update-income-post/${id}/${rowId}`,
         payload,
         {
@@ -911,8 +953,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
           },
         }
       );
-      // console.log("Data submitted successfully:", response.data);
-      // Handle successful response
       if (response.status === 200) {
         toast.success(response.data.message, {
           position: "top-right",
@@ -1097,8 +1137,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
   const truncateFileName = (fileName, maxLength = 20) => {
     if (typeof fileName !== "string") return "Invalid file name";
     if (fileName.length <= maxLength) return fileName;
-    const start = fileName.slice(0, 10); // First 10 characters
-    const end = fileName.slice(-10); // Last 10 characters
+    const start = fileName.slice(0, 10);
+    const end = fileName.slice(-10);
     return `${start}...${end}`;
   };
 
@@ -1128,8 +1168,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
   };
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
 
-
-
   return (
     <>
       {/* <ToastContainer /> */}
@@ -1144,19 +1182,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
               mount: { scale: 1, y: 0 },
               unmount: { scale: 0.9, y: -100 },
             }}
-          // className="overflow-auto"
           >
             <Box sx={style} className="max-h-full overflow-scroll">
-              {/* <Typography
-                id="modal-modal-title"
-                variant="h5"
-                component="h2"
-                className="text-center border-b-2 border-[#366FA1] pb-3 "
-              >
-                Details View
-              </Typography> */}
-
-              {/* {bankData && ( */}
               <>
                 <div>
                   <form className=" my-5 w-full ">
@@ -1241,6 +1268,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                             id="location-select"
                             disableClearable
                             options={offData}
+                            required
                             getOptionLabel={(option) => option.location || ""}
                             onChange={(event, newValue) =>
                               handleLocationChange(newValue)
@@ -1268,6 +1296,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                               <TextField
                                 {...params}
                                 size="small"
+                                required
                                 placeholder="Office Location"
                                 sx={{
                                   "& .MuiInputBase-root": {
@@ -1306,6 +1335,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                           type="number"
                           size="md"
                           name="contact"
+                          required
                           placeholder="Contact No"
                           value={formData.contact}
                           onChange={handleInputChange}
@@ -1343,6 +1373,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                           type="text"
                           size="md"
                           name="address"
+                          required
                           placeholder="Address"
                           value={formData.address}
                           onChange={handleInputChange}
@@ -1351,9 +1382,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1382,15 +1413,16 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                           name="city"
                           placeholder="City"
                           value={formData.city}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1418,6 +1450,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                           size="lg"
                           name="state"
                           placeholder="State"
+                          required
                           value={formData.state}
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1425,9 +1458,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1456,15 +1489,16 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                           name="country"
                           placeholder="Country"
                           value={formData.country}
+                          required
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                           labelProps={{
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1493,6 +1527,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                         name="branchNoGst"
                         placeholder="GST No"
                         value={branchNoGst}
+                        required
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
@@ -1518,7 +1553,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                             color="blue-gray"
                             className="block font-semibold mb-2"
                           >
-                            Country
+                            Branch
                           </Typography>
                         </label>
                       </div>
@@ -1529,6 +1564,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                               freeSolo
                               id="branch-select"
                               disableClearable
+                              required
                               options={branch_ser_name}
                               getOptionLabel={(option) =>
                                 option.branch_name || ""
@@ -1608,6 +1644,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                         size="md"
                         name="invoice_no"
                         placeholder="Invoice No"
+                        required
                         value={invoiceData[0].invoice_no}
                         onChange={handleInputChangeInvoiceData}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1616,9 +1653,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                         }}
                         // containerProps={{ className: "min-w-full" }}
                         style={{
-                          height: "28px", // Match this to your Autocomplete's root height
-                          padding: "4px 6px", // Match this padding
-                          fontSize: "0.875rem", // Ensure font size is consistent
+                          height: "28px",
+                          padding: "4px 6px",
+                          fontSize: "0.875rem",
                           width: 300,
                         }}
                       />
@@ -1704,21 +1741,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                           color="#366FA1"
                           className="mb-1"
                         />
-
-                        {/* <a
-                          href={`https://admin.dms.zacoinfotech.com${invoiceData[0]?.attach_e_way_bill}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <p className="text-blue-500">
-                            {invoiceData[0]?.attach_e_way_bill
-                              ? truncateFileName(
-                                invoiceData[0].attach_e_way_bill.split("/").pop()
-                                )
-                              : "No file uploaded"}
-                          </p>
-                        </a> */}
-
                         <a
                           href={
                             typeof invoiceData[0]?.attach_e_way_bill ===
@@ -1761,6 +1783,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                     <div className="relative w-full">
                       <DatePicker
                         ref={month}
+                        required
                         selected={
                           invoiceData[0]?.month
                             ? isValid(parse(invoiceData[0].month, "dd-MM-yyyy", new Date()))
@@ -1800,6 +1823,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                     <div className="relative w-full">
                       <DatePicker
                         ref={invoice}
+                        required
                         selected={
                           invoiceData[0]?.invoice_date
                             ? isValid(parse(invoiceData[0].invoice_date, "dd-MM-yyyy", new Date()))
@@ -1831,7 +1855,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                 <div className="py-5 px-0">
                   <div className="bg-secondary px-0 py-3 rounded-md ">
                     <Box sx={{ width: "100%", typography: "body1" }}>
-                      <TabContext value={value}>
+                      <TabContext value={activeTab}>
                         <Box
                           sx={{
                             borderBottom: 1,
@@ -1924,6 +1948,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                     <Autocomplete
                                       sx={{ width: 300 }}
                                       freeSolo
+                                      required
                                       id="gst-no-autocomplete"
                                       disableClearable
                                       options={customerData}
@@ -1944,6 +1969,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                           {...params}
                                           size="small"
                                           name="gst_no"
+                                          required
                                           value={vendorData.gst_no || ""} // Reset input value when formData.gst_no changes
                                           onChange={(e) =>
                                             handleGstNoChange(e, e.target.value)
@@ -1952,11 +1978,11 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                           sx={{
                                             // Adjust the height and padding to reduce overall size
                                             "& .MuiInputBase-root": {
-                                              height: 28, // Set your desired height here
-                                              padding: "4px 6px", // Adjust padding to make it smaller
+                                              height: 28,
+                                              padding: "4px 6px",
                                             },
                                             "& .MuiOutlinedInput-input": {
-                                              padding: "4px 6px", // Input padding
+                                              padding: "4px 6px",
                                             },
                                           }}
                                           slotProps={{
@@ -1993,6 +2019,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                     freeSolo
                                     id="name-autocomplete"
                                     disableClearable
+                                    required
                                     options={customerData}
                                     getOptionLabel={(option) =>
                                       typeof option === "string"
@@ -2011,19 +2038,19 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                         {...params}
                                         size="small"
                                         name="name"
+                                        required
                                         value={vendorData.name || ""} // Reset input value when formData.gst_no changes
                                         onChange={(e) =>
                                           handleNameChange(e, e.target.value)
                                         } // Update input value on type
                                         placeholder="Enter or select Name"
                                         sx={{
-                                          // Adjust the height and padding to reduce overall size
                                           "& .MuiInputBase-root": {
-                                            height: 28, // Set your desired height here
-                                            padding: "4px 6px", // Adjust padding to make it smaller
+                                            height: 28,
+                                            padding: "4px 6px",
                                           },
                                           "& .MuiOutlinedInput-input": {
-                                            padding: "4px 6px", // Input padding
+                                            padding: "4px 6px",
                                           },
                                         }}
                                         slotProps={{
@@ -2035,27 +2062,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       />
                                     )}
                                   />
-                                  {/* <div className="h-7">
-                                    <Input
-                                      type="text"
-                                      size="lg"
-                                      name="name"
-                                      placeholder="Name"
-                                      value={vendorData.name}
-                                      onChange={handleInputChangeCL}
-                                      className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                                      labelProps={{
-                                        className: "hidden",
-                                      }}
-                                      // containerProps={{ className: "min-w-full" }}
-                                      style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
-                                        width: 300,
-                                      }}
-                                    />
-                                  </div> */}
                                 </div>
                               </div>
                             </div>
@@ -2078,6 +2084,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       type="text"
                                       size="lg"
                                       name="pan"
+                                      required
                                       placeholder="PAN No"
                                       value={vendorData.pan}
                                       onChange={handleInputChangeCL}
@@ -2086,9 +2093,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2114,6 +2121,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                     <Input
                                       type="text"
                                       size="lg"
+                                      required
                                       name="customer_address"
                                       placeholder="Customer Address"
                                       value={vendorData.customer_address}
@@ -2152,6 +2160,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       type="email"
                                       size="lg"
                                       name="email"
+                                      required
                                       placeholder="Email"
                                       value={vendorData.email}
                                       onChange={handleInputChangeCL}
@@ -2160,9 +2169,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2189,6 +2198,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       type="text"
                                       size="lg"
                                       name="contact"
+                                      required
                                       placeholder="Contact No"
                                       value={vendorData.contact}
                                       onChange={handleInputChangeCL}
@@ -2277,9 +2287,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                 <TableHead
                                   sx={{
                                     backgroundColor: "#f3f4f6",
-                                    position: "sticky", // Makes the header sticky
-                                    top: 0, // Ensures it sticks to the top of the container
-                                    zIndex: 0, // Keeps it above the table rows
+                                    position: "sticky",
+                                    top: 0,
+                                    zIndex: 0,
                                   }}
                                 >
                                   <TableRow sx={{ backgroundColor: "#f3f4f6" }}>
@@ -2364,7 +2374,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                  {/* <div style={{ maxHeight: "450px", overflowY: "auto" }}> */}
                                   {rows.map((row, index) => (
                                     <TableRow key={index} className="p-0 ">
                                       <TableCell sx={{ padding: "6px" }}>
@@ -2403,6 +2412,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                               {...params}
                                               size="small"
                                               placeholder="select product"
+                                              name="product_name"
+                                              required
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
                                                   padding: "2px",
@@ -2421,6 +2432,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.description}
+                                          type="text"
+                                          name="description"
+                                          required
                                           onChange={(e) =>
                                             handleInputChangeProduct(
                                               index,
@@ -2446,6 +2460,9 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.hsnCode}
+                                          type="text"
+                                          name="hsn_code"
+                                          required
                                           onChange={(e) => {
                                             const inputValue = e.target.value;
                                             // Allow only numbers
@@ -2475,6 +2492,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.unit}
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2504,6 +2522,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                         <TextField
                                           value={row.rate}
                                           type="number"
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2531,6 +2550,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.product_amount}
+                                          type="text"
+                                          required
                                           onChange={(e) =>
                                             handleInputChangeProduct(
                                               index,
@@ -2563,7 +2584,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.gstRate}
-
+                                          type="text"
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2594,6 +2616,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                           <TableCell sx={{ padding: "6px" }}>
                                             <TextField
                                               value={row.cgst || ""}
+                                              type="text"
+                                              required
                                               onChange={(e) =>
                                                 handleInputChangeProduct(
                                                   index,
@@ -2626,6 +2650,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                           <TableCell sx={{ padding: "6px" }}>
                                             <TextField
                                               value={row.sgst || ""}
+                                              type="number"
+                                              required
                                               onChange={(e) =>
                                                 handleInputChangeProduct(
                                                   index,
@@ -2662,6 +2688,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                         <TableCell sx={{ padding: "6px" }}>
                                           <TextField
                                             value={row.igst || ""}
+                                            type="number"
+                                            required
                                             onChange={(e) =>
                                               handleInputChangeProduct(
                                                 index,
@@ -2696,6 +2724,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.total_invoice}
+                                          type="number"
+                                          required
                                           onChange={(e) =>
                                             handleInputChangeProduct(
                                               index,
@@ -2770,33 +2800,27 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                               <div className="">
                                                 <select
                                                   name="invoice_type"
+                                                  required
                                                   className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
                                                   style={{
-                                                    height: "28px", // Match this to your Autocomplete's root height
-                                                    padding: "4px 6px", // Match this padding
-                                                    fontSize: "0.875rem", // Ensure font size is consistent
+                                                    height: "28px",
+                                                    padding: "4px 6px",
+                                                    fontSize: "0.875rem",
                                                     width: 300,
                                                   }}
-                                                  value={invoiceData[0].invoice_type} // Ensures the selected value matches the state
+                                                  value={invoiceData[0].invoice_type}
                                                   onChange={handleInputChangeInvoiceData}
                                                 >
-                                                  {vendorData.gst_no === "" // Check if gst_no is empty
-                                                    ? // Show only these options when gst_no is empty
-                                                    [
-                                                      "Select Entity Type",
-                                                      "Unregistered Local",
-                                                      "Unregistered Non-Local",
-                                                    ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                  {/* placeholder option with empty value */}
+                                                  <option value="">Select Invoice Type</option>
+
+                                                  {vendorData.gst_no === ""
+                                                    ? ["Unregistered Local", "Unregistered Non-Local"].map((option) => (
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))
-                                                    : // Show other options when gst_no is not empty
-                                                    [
-                                                      "Select Entity Type",
+                                                    : [
                                                       "B2B",
                                                       "B2C-L",
                                                       "BSC-O",
@@ -2805,10 +2829,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                                       "SEZ",
                                                       "Export",
                                                     ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))}
@@ -2824,6 +2845,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                               value={
                                                 invoiceData[0].taxable_amount
                                               }
+                                              required
                                               variant="outlined"
                                               size="small"
                                               sx={{
@@ -2846,14 +2868,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                               value={
                                                 invoiceData[0].totalall_gst
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
                                               variant="outlined"
+                                              required
                                               size="small"
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
@@ -2876,13 +2892,7 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                                 invoiceData[0]
                                                   .total_invoice_value
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
+                                              required
                                               variant="outlined"
                                               size="small"
                                               sx={{
@@ -2904,14 +2914,13 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                 </TableBody>
                               </Table>
                             </TableContainer>
-                            {/* </div>
-                        </TabPanel> */}
-                            <div>
-                              <div className="grid grid-cols-4 gap-4 my-2">
-                                <div className="col-span-1"></div>
-                                <div className="col-span-1">
-
-                                  {/* <div>
+                          </div>
+                          <div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4 my-2">
+                              <div className="hidden 2xl:block col-span-1"></div>
+                              <div className="col-span-1">
+                              </div>
+                              <div className="col-span-1">
                                 <div>
                                   <label htmlFor="invoice_type">
                                     <Typography
@@ -2919,189 +2928,148 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                                       color="blue-gray"
                                       className="block font-semibold mb-1"
                                     >
-                                      Invoice Type
+                                      Select TDS/TCS
                                     </Typography>
                                   </label>
                                 </div>
-                                <div className="">
+                                <div className="text-sm ">
+                                  <select
+                                    id="option"
+                                    value={selectedTDSTCSOption}
+                                    onChange={(e) =>
+                                      setSelectedTDSTCSOption(e.target.value)
+                                    }
+                                    className="mt-2 block w-full px-0.5 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                  >
+                                    <option value="" disabled>
+                                      Choose TDS/TCS
+                                    </option>
+                                    <option value="tcs">TCS</option>
+                                    <option value="tds">TDS</option>
+                                  </select>
+                                </div>
+                              </div>
+                              <div className="col-span-1">
+                                <div className=" text-sm ">
                                   <div className="">
-                                    <select
-                                      name="invoice_type"
-                                      className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
-                                      style={{
-                                        height: "28px",
-                                        padding: "4px 6px",
-                                        fontSize: "0.875rem",
-                                        width: 300,
+                                    {selectedTDSTCSOption === "tcs" && (
+                                      <>
+                                        <div>Enter Your {selectedTDSTCSOption}</div>
+                                        <div className="flex gap-5 ">
+                                          <div>
+                                            <input
+                                              id="tcs"
+                                              type="text"
+                                              placeholder="Enter TCS Rate"
+                                              name="tds_tcs_rate"
+                                              value={invoiceData[0].tds_tcs_rate}
+                                              onChange={
+                                                handleInputChangeInvoiceData
+                                              }
+                                              onInput={(e) => {
+                                                e.target.value =
+                                                  e.target.value.replace(
+                                                    /[^0-9.]/g,
+                                                    ""
+                                                  ); // Allows only digits and a decimal point
+                                              }}
+                                              className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            />
+                                          </div>
+                                          <div>
+                                            <input
+                                              id="tcs"
+                                              type="text"
+                                              name="tcs"
+                                              placeholder="Enter TCS value"
+                                              value={invoiceData[0].tcs}
+                                              onChange={
+                                                handleInputChangeInvoiceData
+                                              }
+                                              onInput={(e) => {
+                                                e.target.value =
+                                                  e.target.value.replace(
+                                                    /[^0-9.]/g,
+                                                    ""
+                                                  ); // Allows only digits and a decimal point
+                                              }}
+                                              className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            />
+                                          </div>
+                                        </div>
+                                      </>
+                                    )}
+                                    {selectedTDSTCSOption === "tds" && (
+                                      <>
+                                        <div>Enter Your {selectedTDSTCSOption}</div>
+                                        <div className="flex gap-5 ">
+                                          <div>
+                                            <input
+                                              id="tcs"
+                                              type="text"
+                                              placeholder="Enter TDS Rate"
+                                              name="tds_tcs_rate"
+                                              onChange={
+                                                handleInputChangeInvoiceData
+                                              }
+                                              onInput={(e) => {
+                                                e.target.value =
+                                                  e.target.value.replace(
+                                                    /[^0-9.]/g,
+                                                    ""
+                                                  ); // Allows only digits and a decimal point
+                                              }}
+                                              value={invoiceData[0].tds_tcs_rate}
+                                              className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            />
+                                          </div>
+                                          <div>
+                                            <input
+                                              id="tds"
+                                              type="text"
+                                              name="tds"
+                                              placeholder="Enter TDS value"
+                                              onChange={
+                                                handleInputChangeInvoiceData
+                                              }
+                                              value={invoiceData[0].tds}
+                                              onInput={(e) => {
+                                                e.target.value =
+                                                  e.target.value.replace(
+                                                    /[^0-9.]/g,
+                                                    ""
+                                                  ); // Allows only digits and a decimal point
+                                              }}
+                                              className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                            />
+                                          </div>
+                                        </div>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-12 text-sm mt-7">
+                                  <div className="col-span-6 font-bold">
+                                    Amount Receivable :
+                                  </div>
+                                  <div className="col-span-6">
+                                    <TextField
+                                      variant="outlined"
+                                      size="small"
+                                      name="amount_receivable"
+                                      value={invoiceData[0].amount_receivable}
+                                      sx={{
+                                        "& .MuiOutlinedInput-root": {
+                                          padding: "1px",
+                                          fontSize: "0.875rem",
+                                          minHeight: "1px",
+                                        },
+                                        "& .MuiOutlinedInput-input": {
+                                          padding: "2px",
+                                        },
                                       }}
-                                      value={invoiceData[0].invoice_type || ""}
-                                      onChange={handleInputChangeInvoiceData}
-                                    >
-                                      {filteredInvoiceTypes.map((option) => (
-                                        <option key={option} value={option.toLowerCase()}>
-                                          {option}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </div>
-                                </div>
-                              </div> */}
-
-
-                                </div>
-                                <div className="col-span-1">
-                                  <div>
-                                    <label htmlFor="invoice_type">
-                                      <Typography
-                                        variant="small"
-                                        color="blue-gray"
-                                        className="block font-semibold mb-1"
-                                      >
-                                        Select TDS/TCS
-                                      </Typography>
-                                    </label>
-                                  </div>
-                                  <div className="text-sm my-2">
-                                    <select
-                                      id="option"
-                                      value={selectedTDSTCSOption}
-                                      onChange={(e) =>
-                                        setSelectedTDSTCSOption(e.target.value)
-                                      }
-                                      className="mt-2 block w-full px-0.5 py-1 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                    >
-                                      <option value="" disabled>
-                                        Choose TDS/TCS
-                                      </option>
-                                      <option value="tcs">TCS</option>
-                                      <option value="tds">TDS</option>
-                                    </select>
-                                  </div>
-                                </div>
-                                <div className="col-span-1">
-                                  <div className=" text-sm ">
-                                    <div className="">
-                                      {selectedTDSTCSOption === "tcs" && (
-                                        <>
-                                          <div>Enter Your {selectedTDSTCSOption}</div>
-                                          <div className="flex gap-5 ">
-                                            <div>
-                                              <input
-                                                id="tcs"
-                                                type="text"
-                                                placeholder="Enter TCS Rate"
-                                                name="tds_tcs_rate"
-                                                value={invoiceData[0].tds_tcs_rate}
-                                                onChange={
-                                                  handleInputChangeInvoiceData
-                                                }
-                                                onInput={(e) => {
-                                                  e.target.value =
-                                                    e.target.value.replace(
-                                                      /[^0-9.]/g,
-                                                      ""
-                                                    ); // Allows only digits and a decimal point
-                                                }}
-                                                className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                              />
-                                            </div>
-                                            <div>
-                                              <input
-                                                id="tcs"
-                                                type="text"
-                                                name="tcs"
-                                                placeholder="Enter TCS value"
-                                                value={invoiceData[0].tcs}
-                                                onChange={
-                                                  handleInputChangeInvoiceData
-                                                }
-                                                onInput={(e) => {
-                                                  e.target.value =
-                                                    e.target.value.replace(
-                                                      /[^0-9.]/g,
-                                                      ""
-                                                    ); // Allows only digits and a decimal point
-                                                }}
-                                                className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                              />
-                                            </div>
-                                          </div>
-                                        </>
-                                      )}
-                                      {selectedTDSTCSOption === "tds" && (
-                                        <>
-                                          <div>Enter Your {selectedTDSTCSOption}</div>
-                                          <div className="flex gap-5 ">
-                                            <div>
-                                              <input
-                                                id="tcs"
-                                                type="text"
-                                                placeholder="Enter TDS Rate"
-                                                name="tds_tcs_rate"
-                                                onChange={
-                                                  handleInputChangeInvoiceData
-                                                }
-                                                onInput={(e) => {
-                                                  e.target.value =
-                                                    e.target.value.replace(
-                                                      /[^0-9.]/g,
-                                                      ""
-                                                    ); // Allows only digits and a decimal point
-                                                }}
-                                                value={invoiceData[0].tds_tcs_rate}
-                                                className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                              />
-                                            </div>
-                                            <div>
-                                              <input
-                                                id="tds"
-                                                type="text"
-                                                name="tds"
-                                                placeholder="Enter TDS value"
-                                                onChange={
-                                                  handleInputChangeInvoiceData
-                                                }
-                                                value={invoiceData[0].tds}
-                                                onInput={(e) => {
-                                                  e.target.value =
-                                                    e.target.value.replace(
-                                                      /[^0-9.]/g,
-                                                      ""
-                                                    ); // Allows only digits and a decimal point
-                                                }}
-                                                className="mt-2 block w-full px-2 py-0.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                              />
-                                            </div>
-                                          </div>
-                                        </>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <div className="grid grid-cols-12 text-sm mt-7">
-                                    <div className="col-span-6 font-bold">
-                                      Amount Receivable :
-                                    </div>
-                                    <div className="col-span-6">
-                                      <TextField
-                                        variant="outlined"
-                                        size="small"
-                                        name="amount_receivable"
-                                        // value={amount_receivable}
-                                        value={invoiceData[0].amount_receivable}
-                                        // onChange={handleInputChangeInvoiceData}
-                                        sx={{
-                                          "& .MuiOutlinedInput-root": {
-                                            padding: "1px",
-                                            fontSize: "0.875rem",
-                                            minHeight: "1px",
-                                          },
-                                          "& .MuiOutlinedInput-input": {
-                                            padding: "2px",
-                                          },
-                                        }}
-                                      />
-                                    </div>
+                                    />
                                   </div>
                                 </div>
                               </div>
@@ -3113,61 +3081,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
                   </div>
                 </div>
               </div>
-              {/* <div className="p-4">
-                <label
-                  htmlFor="option"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Select an option
-                </label>
-                <select
-                  id="option"
-                  value={selectedTDSTCSOption}
-                  onChange={(e) => setSelectedTDSTCSOption(e.target.value)}
-                  className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                >
-                  <option value="" disabled>
-                    Choose an option
-                  </option>
-                  <option value="TCS">TCS</option>
-                  <option value="TDS">TDS</option>
-                </select>
-
-                <div className="mt-4">
-                  {selectedTDSTCSOption === "TCS" && (
-                    <div>
-                      <label
-                        htmlFor="tcs"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        TCS Input
-                      </label>
-                      <input
-                        id="tcs"
-                        type="text"
-                        placeholder="Enter TCS value"
-                        className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                  )}
-                  {selectedTDSTCSOption === "TDS" && (
-                    <div>
-                      <label
-                        htmlFor="tds"
-                        className="block text-sm font-medium text-gray-700"
-                      >
-                        TDS Input
-                      </label>
-                      <input
-                        id="tds"
-                        type="text"
-                        placeholder="Enter TDS value"
-                        className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                      />
-                    </div>
-                  )}
-                </div>
-              </div> */}
               <DialogFooter className="p-0">
                 <Button
                   onClick={handleCreateClose}
@@ -3291,8 +3204,6 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
             },
           }}
         >
-          {/* <MenuItem onClick={handleViewOpen}>View</MenuItem> */}
-
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
           <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
           {role === "superuser" && (

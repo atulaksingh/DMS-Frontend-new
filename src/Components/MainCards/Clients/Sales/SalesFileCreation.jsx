@@ -75,7 +75,7 @@ function SalesFileCreation() {
         }
       );
 
-      toast.success("Sales E-way bill uploaded  successfully!", {
+      toast.success("Sales Attach Invoice uploaded  successfully!", {
         position: "top-right",
         autoClose: 2000,
       });

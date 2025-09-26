@@ -8,6 +8,7 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -60,56 +61,16 @@ function ZipFileCreation() {
     }));
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   try {
-  //     const formDataToSend = new FormData();
-  //     formDataToSend.append("type_of_data", formData.type_of_data);
-
-  //     for (let i = 0; i < formData.files.length; i++) {
-  //       formDataToSend.append("files", formData.files[i]);
-  //     }
-
-  //     const response = await axios.post(
-  //       `${API_URL}/api/create-zipupload/${id}`,
-  //       formDataToSend,
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       }
-  //     );
-
-  //     // Check if the response status is success (2xx)
-  //     console.log("Responsssse:", response);
-  //     if (response.status === 200 || response.status === 201) {
-  //       toast.success(`${response.data.message}`, {
-  //         position: "top-right",
-  //         autoClose: 2000,
-  //       });
-  //       dispatch(fetchClientDetails(id));
-  //       handleCreateClose();
-  //       setFormData((prevData) => ({
-  //         ...prevData,
-  //         files: [],
-  //         type_of_data: "",
-  //       }));
-  //     } else {
-  //       throw new Error("Unexpected response");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error submitting data:", error);
-
-  //     toast.error("Failed to create bank details. Please try again.", {
-  //       position: "top-right",
-  //       autoClose: 2000,
-  //     });
-  //   }
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.files || formData.files.length === 0) {
+      toast.error("Please upload at least one file!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return;
+    }
 
     try {
       const formDataToSend = new FormData();
@@ -125,7 +86,7 @@ function ZipFileCreation() {
         console.log(`${pair[0]}:`, pair[1]);
       }
 
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-zipupload/${id}`,
         formDataToSend,
         {
@@ -199,6 +160,7 @@ function ZipFileCreation() {
                         type="text"
                         size="lg"
                         name="type_of_data"
+                        required
                         placeholder="Type of Data"
                         value={formData.type_of_data}
                         // onChange={handleInputChange}
@@ -267,8 +229,6 @@ function ZipFileCreation() {
                 <Button
                   conained="contained"
                   type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
                   className="bg-primary"
                 >
                   <span>Confirm</span>

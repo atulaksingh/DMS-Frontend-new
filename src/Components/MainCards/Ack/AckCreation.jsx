@@ -4,6 +4,7 @@ import Modal from "@mui/material/Modal";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router-dom";
@@ -59,6 +60,80 @@ function AckCreation({ fetchAckDetails }) {
         computation_file: [],
     });
 
+    const [ackErrors, setAckErrors] = useState({})
+
+    const returnFormRules = {
+        return_type: [
+            { test: (v) => v.length > 0, message: "Return type is required" },
+        ],
+        frequency: [
+            { test: (v) => v.length > 0, message: "Frequency is required" },
+            // { test: (v) => ["monthly", "quarterly", "Half Yearly", "yearly"].includes(v.toLowerCase()), message: "Frequency must be Monthly, Quarterly or Yearly" },
+        ],
+        return_period: [
+            { test: (v) => v.length > 0, message: "Return period is required" },
+        ],
+        from_date: [
+            { test: (v) => v.length > 0, message: "From date is required" },
+            {
+                test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v),
+                message: "From date must be in dd/mm/yyyy or dd-mm-yyyy format",
+            },
+        ],
+        to_date: [
+            { test: (v) => v.length > 0, message: "To date is required" },
+            {
+                test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v),
+                message: "To date must be in dd/mm/yyyy or dd-mm-yyyy format",
+            },
+            {
+                test: (v, allValues) => {
+                    if (!allValues.from_date || !v) return true;
+                    const [fd, fm, fy] = allValues.from_date.split(/[-/]/).map(Number);
+                    const [td, tm, ty] = v.split(/[-/]/).map(Number);
+                    const fromDate = new Date(fy, fm - 1, fd);
+                    const toDate = new Date(ty, tm - 1, td);
+                    return toDate >= fromDate;
+                },
+                message: "To date cannot be earlier than From date",
+            },
+        ],
+        client_review: [
+            { test: (v) => v.length > 0, message: "Client review is required" },
+        ],
+        remarks: [
+            { test: (v) => !v || v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+        ],
+        month: [
+            { test: (v) => v.length > 0, message: "Month is required" },
+            // { test: (v) => /^(0?[1-9]|1[0-2])$/.test(v), message: "Month must be between 1 and 12" },
+        ],
+        computation_file: [
+            { test: (v) => v && v.length > 0, message: "Computation file is required" },
+            // {
+            //     test: (v) =>
+            //         v.every(
+            //             (f) =>
+            //                 f.type === "application/pdf" ||
+            //                 f.type.startsWith("image/") ||
+            //                 f.type === "application/vnd.ms-excel" ||
+            //                 f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+            //                 f.type === "text/plain"
+            //         ),
+            //     message: "Computation file must be PDF, Image, Excel or TXT",
+            // },
+        ],
+    };
+
+    const validateReturnField = (name, value, allValues = {}) => {
+        const rules = returnFormRules[name];
+        if (!rules) return "";
+        for (let rule of rules) {
+            if (!rule.test(value, allValues)) return rule.message;
+        }
+        return "";
+    };
+
     const handleFileChange = (e) => {
         setFormData((prev) => ({
             ...prev,
@@ -88,19 +163,10 @@ function AckCreation({ fetchAckDetails }) {
             ...prev,
             [name]: value,
         }));
+
+        const errorMsg = validateReturnField(name, value);
+        setAckErrors(prev => ({ ...prev, [name]: errorMsg }));
     };
-
-    // useEffect(() => {
-    //     if (formData.from_date && formData.to_date) {   //to check if both dates are selected
-    //         const formYear = new Date(formData.from_date).getFullYear(); //get year from from_date
-    //         const toYear = new Date(formData.to_date).getFullYear();  //get year from to_date
-
-    //         setFormData((prev) => ({                          //updating the formData 'prev' means the previous state of form data
-    //             ...prev,                                   // for keepin all existing data unchanged
-    //             return_period: `${formYear}-${toYear}`,    //updating the return_period with fromYear-toYear
-    //         }));
-    //     }
-    // }), [formData.from_date, formData.to_date];         //This tells React to run this effect whenever from_date or to_date changes.
 
     useEffect(() => {
         if (formData.from_date && formData.to_date) {
@@ -120,27 +186,27 @@ function AckCreation({ fetchAckDetails }) {
         }
     }, [formData.from_date, formData.to_date]);
 
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission
 
-        // if (formData.return_file.length === 0) {
-        //     toast.error("Please upload at least one file of Return File before submitting.", {
-        //         position: "top-right",
-        //         autoClose: 2000,
-        //     });
-        //     return; // Stop form submission
-        // }
+        const newErrors = {};
+        Object.entries(formData).forEach(([key, value]) => {
+            const errorMsg = validateReturnField(key, value);
+            if (errorMsg) {
+                newErrors[key] = errorMsg;
+            }
+        });
 
-        // if (formData.computation_file.length === 0) {
-        //     toast.error("Please upload at least one file of Computation before submitting.", {
-        //         position: "top-right",
-        //         autoClose: 2000,
-        //     });
-        //     return; // Stop form submission
-        // }
+        setAckErrors(newErrors);
+        if (Object.keys(newErrors).length > 0) {
+            const firstErrorField = Object.keys(newErrors)[0];
+            toast.error(newErrors[firstErrorField], {
+                position: "top-right",
+                autoClose: 2000,
+            });
+            return; // ❌ Stop submit
+        }
+
         if (!formData.computation_file || formData.computation_file.length === 0) {
             toast.error("Please upload at least one file of Computation before submitting.", {
                 position: "top-right",
@@ -176,7 +242,7 @@ function AckCreation({ fetchAckDetails }) {
             }
 
             // Make a POST request to your API
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `${API_URL}/api/create-acknowledgement/${id}`,
                 formDataToSend,
                 {
@@ -194,9 +260,7 @@ function AckCreation({ fetchAckDetails }) {
                     autoClose: 2000,
                 });
 
-                // Dispatch action to fetch client details
-                // dispatch(fetchClientDetails(id));
-                fetchAckDetails();  
+                fetchAckDetails();
 
                 // Optionally close the modal and reset form
                 handleCreateClose();
@@ -237,16 +301,14 @@ function AckCreation({ fetchAckDetails }) {
 
     };
 
-    //....
     const handleDateChange = (date) => {
         if (date instanceof Date && !isNaN(date)) {
             const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
             setSelectedDate(date); // Keep original date for display
             setFormData({ ...formData, from_date: formattedDate }); // Store in required format
-            // setSelectedToDate(date); // Set selected date to to_date
-            // setFormData({ ...formData, to_date: formattedDate }); // Store in required format
         }
     };
+
     const handleToDateChange = (date) => {
         if (date instanceof Date && !isNaN(date)) {
             const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
@@ -256,7 +318,6 @@ function AckCreation({ fetchAckDetails }) {
             setFormData({ ...formData, to_date: formattedDate }); // Store in required format
         }
     };
-
 
     return (
         <>
@@ -294,6 +355,7 @@ function AckCreation({ fetchAckDetails }) {
                                             <Select
                                                 label="return_type"
                                                 name="return_type"
+                                                aria-required
                                                 size="lg"
                                                 placeholder="Select Return Type"
                                                 value={formData.return_type}
@@ -357,6 +419,7 @@ function AckCreation({ fetchAckDetails }) {
                                                 label="frequency"
                                                 name="frequency"
                                                 size="lg"
+                                                required
                                                 value={formData.frequency}
                                                 onChange={(e) =>
                                                     setFormData((prev) => ({
@@ -395,6 +458,7 @@ function AckCreation({ fetchAckDetails }) {
                                         <div className="relative w-full">
                                             <DatePicker
                                                 ref={fromDateRef}
+                                                required
                                                 selected={selectedDate}
                                                 // onChange={(date) => setSelectedDate(date)}
                                                 onChange={handleDateChange}
@@ -428,6 +492,7 @@ function AckCreation({ fetchAckDetails }) {
                                         <div className="relative w-full">
                                             <DatePicker
                                                 ref={toDateRef}
+                                                required
                                                 selected={selectedToDate}
                                                 // onChange={(date) => setSelectedDate(date)}
                                                 onChange={handleToDateChange}
@@ -464,6 +529,7 @@ function AckCreation({ fetchAckDetails }) {
                                                 type="text"
                                                 size="lg"
                                                 name="return_period"
+                                                required
                                                 placeholder="Return Period"
                                                 value={formData.return_period} // This will auto-fill after date selection\
                                                 // onChange={(e) => setFormData({ ...formData, return_period: e.target.value })}
@@ -498,6 +564,7 @@ function AckCreation({ fetchAckDetails }) {
                                                     handleInputChangemonth("month", format(date, "MMMM yyyy"));
                                                 }}
                                                 showMonthYearPicker
+                                                required
                                                 dateFormat="MMMM YYYY"
                                                 className="w-full !border !border-[#cecece] bg-white py-2 pl-3 pr-10 text-gray-900 
                                                 focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md 
@@ -528,6 +595,7 @@ function AckCreation({ fetchAckDetails }) {
                                                         label="client_review"
                                                         name="client_review"
                                                         size="lg"
+                                                        required
                                                         value={formData.client_review}
                                                         onChange={(e) =>
                                                             setFormData((prev) => ({
@@ -602,6 +670,7 @@ function AckCreation({ fetchAckDetails }) {
                                                         <input
                                                             type="file"
                                                             name="computation_file"
+                                                            required
                                                             onChange={handleFilesChange}
                                                             multiple
                                                             className="file-input file-input-bordered file-input-success w-full max-w-sm"
@@ -624,6 +693,7 @@ function AckCreation({ fetchAckDetails }) {
                                                             type="file"
                                                             name="return_file"
                                                             onChange={handleFileChange}
+                                                            // required
                                                             multiple
                                                             className="file-input file-input-bordered file-input-success w-full max-w-sm"
                                                         />

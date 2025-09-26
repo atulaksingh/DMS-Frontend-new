@@ -227,7 +227,7 @@ function Login() {
                     </div>
                   </div>
 
-                  <Button size="md" className="bg-[#366FA1] text-white" fullWidth type="submit">
+                  <Button size="md" name="login" className="bg-[#366FA1] text-white" fullWidth type="submit">
                     Continue
                   </Button>
                 </form>

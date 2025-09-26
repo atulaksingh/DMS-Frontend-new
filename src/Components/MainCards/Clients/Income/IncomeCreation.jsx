@@ -10,10 +10,10 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
-// import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
@@ -48,19 +48,19 @@ const styleCreateModal = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: {
-    xs: "90%", // Mobile devices (extra-small screens)
-    sm: "90%", // Small screens (e.g., tablets)
-    md: "90%", // Medium screens
-    lg: "90%", // Large screens%
-    xl: "85%", // Large screens
+    xs: "90%",
+    sm: "90%",
+    md: "90%",
+    lg: "90%",
+    xl: "85%",
   },
   bgcolor: "background.paper",
   boxShadow: 24,
   paddingTop: "17px",
   paddingInline: {
-    xs: "20px", // Smaller padding for smaller screens
-    sm: "30px", // Medium padding for small screens
-    md: "40px", // Default padding for medium and larger screens
+    xs: "20px",
+    sm: "30px",
+    md: "40px",
   },
   borderRadius: "10px",
 };
@@ -73,10 +73,8 @@ function IncomeCreation({
 
   const offData = allLocationBranchProductData?.serializer || [];
   const customerData = allLocationBranchProductData?.serializer_customer || [];
-  const product_ser_Data =
-    allLocationBranchProductData?.product_serializer || [];
+  const product_ser_Data = allLocationBranchProductData?.product_serializer || [];
   const branch_ser_name = allLocationBranchProductData?.branch_serializer || [];
-
   const resetFields = () => {
     setFormData({
       offLocID: "",
@@ -142,16 +140,13 @@ function IncomeCreation({
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [value, setValue] = React.useState("1");
   const [selectedValueInvoiceType, setSelectedValueInvoiceType] = useState("");
-
   const [showBranchInput, setShowBranchInput] = useState(false);
   const [branchNoGst, setBranchNoGst] = useState("");
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [selectedTDSTCSOption, setSelectedTDSTCSOption] = useState("");
   const [selectedTDSTCSRateOption, setSelectedTDSTCSRateOption] = useState("");
-  const [selectedTDSTCSectionOption, setSelectedTDSTCSectionOption] =
-    useState("");
-  // console.log("123456", selectedTDSTCSOption, selectedTDSTCSOption);
+  const [selectedTDSTCSectionOption, setSelectedTDSTCSectionOption] = useState("");
   const [shouldShowIGST, setShouldShowIGST] = useState(false);
   const [shouldShowCGSTSGST, setShouldShowCGSTSGST] = useState(false);
   const [isGstNoEmpty, setIsGstNoEmpty] = useState(true);
@@ -164,7 +159,7 @@ function IncomeCreation({
     setAnchorEl(null);
   };
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    setActiveTab(newValue);
   };
 
   const handleCreateClose = () => {
@@ -228,23 +223,84 @@ function IncomeCreation({
       amount_receivable: "",
     },
   ]);
-  // console.log("formData", formData);
-  // console.log("vendor", vendorData);
-  // console.log("rowsData", rows);
-  // console.log("invoiceData", invoiceData);
-  // const handleInputChangeInvoiceData = (e) => {
-  //   const { name, value, type } = e.target;
-  //   const fieldValue = type === "file" ? e.target.files[0] : value;
+  const [activeTab, setActiveTab] = useState("1");
 
-  //   setInvoiceData((prevData) => {
-  //     const updatedData = [...prevData];
-  //     updatedData[0] = {
-  //       ...updatedData[0],
-  //       [name]: name === "invoice_type" ? fieldValue.toLowerCase() : fieldValue,
-  //     };
-  //     return updatedData;
-  //   });
-  // };
+  const [incomeErrors, setIncomeErrors] = useState({})
+
+  const incomeRules = {
+    // location: [
+    //   { test: v => v.length > 0, message: "Office Location is required" }
+    // ],
+    contact: [
+      { test: v => /^\d{10}$/.test(v), message: "Contact must be 10 digits" }
+    ],
+    address: [
+      { test: v => v.length > 0, message: "Address is required" }
+    ],
+    city: [
+      { test: v => v.length > 0, message: "City is required" }
+    ],
+    state: [
+      { test: v => v.length > 0, message: "State is required" }
+    ],
+    country: [
+      { test: v => v.length > 0, message: "Country is required" }
+    ],
+    branchNoGst: [
+      { test: v => v.length > 0, message: "GST No is required" },
+      // { test: v => /^[0-9A-Z]{15}$/.test(v), message: "Invalid GST format" }
+    ],
+    // gst_no: [
+    //   { test: v => v.length > 0, message: "Vendor GST is required" }
+    // ],
+    name: [
+      { test: v => v.length > 0, message: "Vendor Name is required" }
+    ],
+    pan: [
+      { test: v => v.length > 0, message: "PAN is required" },
+      { test: v => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v), message: "Invalid PAN format" }
+    ],
+    email: [
+      { test: v => v.length > 0, message: "Email is required" },
+      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" }
+    ],
+    contact_vendor: [
+      { test: v => /^\d{10}$/.test(v), message: "Vendor Contact must be 10 digits" }
+    ],
+    customer_vendor_type: [
+      { test: v => v.customer || v.vendor, message: "Select at least Customer or Vendor" }
+    ],
+    invoice_no: [
+      { test: v => v.length > 0, message: "Invoice No is required" }
+    ],
+    invoice_date: [
+      { test: v => v.length > 0, message: "Invoice Date is required" }
+    ],
+    month: [
+      { test: v => v.length > 0, message: "Month is required" }
+    ],
+    product: [
+      { test: v => v.length > 0, message: "Product is required" }
+    ],
+    hsnCode: [
+      { test: v => /^\d+$/.test(v), message: "HSN must be numbers" }
+    ],
+    unit: [
+      { test: v => v.length > 0, message: "Unit is required" }
+    ],
+    rate: [
+      { test: v => !isNaN(v), message: "Rate must be numeric" }
+    ]
+  };
+
+  const validateIncomeField = (name, value) => {
+    const fieldRules = incomeRules[name];
+    if (!fieldRules) return "";
+    for (let rule of fieldRules) {
+      if (!rule.test(value)) return rule.message;
+    }
+    return "";
+  };
 
   const handleInputChangeInvoiceData = (e) => {
     const { name, value, type } = e.target;
@@ -255,7 +311,7 @@ function IncomeCreation({
     } else if (type === "file") {
       fieldValue = e.target.files[0];
     } else if (name === "tds_tcs_rate" && value === "") {
-      fieldValue = ""; // Default to 0.00 if empty
+      fieldValue = "";
     } else {
       fieldValue = value;
     }
@@ -285,6 +341,9 @@ function IncomeCreation({
       updatedData[0] = updatedEntry;
       return updatedData;
     });
+
+    const errorMsg = validateIncomeField(name, value);
+    setIncomeErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleInputChange = (e) => {
@@ -308,7 +367,6 @@ function IncomeCreation({
 
   const handleLocationChange = async (newValue, isBranch = false) => {
     if (isBranch && newValue && newValue.branch_name) {
-      // console.log("branchiddd--->",isBranch,newValue,newValue.branch_name)
       setBranchNoGst(newValue?.gst_no);
       setFormData({
         ...formData,
@@ -328,19 +386,17 @@ function IncomeCreation({
       });
       setShowBranchInput(false); // Hide branch input when a location is selected
 
-      // Fetch additional data if needed
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-income/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
-        // console.log("Location Data:---->", response.data.branch_gst);
         setBranchNoGst(response.data.branch_gst);
       } catch (error) {
         console.error("Error fetching location data:", error);
       }
     }
   };
-  // console.log("123",branchNoGst)
+
   const handleInputChangeLocation = async (event, newInputValue) => {
     if (newInputValue === "") {
       setFormData({
@@ -378,90 +434,47 @@ function IncomeCreation({
       );
 
       if (matchingLocation) {
-        setFormData({
-          ...formData,
-          offLocID: matchingLocation.id,
-          location: matchingLocation.location,
-          contact: matchingLocation.contact || "",
-          address: matchingLocation.address || "",
-          city: matchingLocation.city || "",
-          state: matchingLocation.state || "",
-          country: matchingLocation.country || "",
-        });
+        try {
+          const response = await axiosInstance.get(
+            `${API_URL}/api/get-income/${id}/?newValue=${matchingLocation.id}&productID=${productID}`
+          );
+          setBranchNoGst(response?.data?.branch_gst);
+          console.log("Full matchingLocation:", matchingLocation);
+          console.log("Branch object:", matchingLocation.branch);
+          console.log("Location Data:---->", response.data.branch_gst);
+
+          setFormData({
+            ...formData,
+            offLocID: matchingLocation.id,
+            location: matchingLocation.location,
+            contact: matchingLocation.contact || "",
+            address: matchingLocation.address || "",
+            city: matchingLocation.city || "",
+            state: matchingLocation.state || "",
+            country: matchingLocation.country || "",
+            gst_no: response?.data?.branch_gst || "",
+            branch: matchingLocation.branch || "",
+          });
+        } catch (error) {
+          console.error("Error fetching location data:", error);
+        }
+      }
+      else {
+        setFormData((prev) => ({
+          ...prev,
+          offLocID: "",
+          location: newInputValue,   // ✅ preserve new typed name
+          contact: "",
+          address: "",
+          city: "",
+          state: "",
+          country: "",
+          gst_no: "",
+        }));
+        setBranchNoGst("")
       }
     }
   };
-
-  // const handleGstNoChange = (event, newValue1) => {
-  //   // If user clears the input
-  //   setIsGstNoEmpty(!newValue1);
-  //   if (!newValue1) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: "",
-  //       gst_no: "",
-  //       name: "",
-  //       pan: "",
-  //       customer_address: "",
-  //       customer: false,
-  //       vendor: false,
-  //       email: "",
-  //       contact: "",
-  //     }));
-  //     return;
-  //   }
-
-  //   if (typeof newValue1 === "string") {
-  //     const matchedCustomer = customerData.find(
-  //       (customer) => customer.gst_no === newValue1
-  //     );
-
-  //     if (matchedCustomer) {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-
-  //         vendorID: matchedCustomer.id,
-  //         gst_no: matchedCustomer.gst_no,
-  //         name: matchedCustomer.name,
-  //         pan: matchedCustomer.pan,
-  //         customer_address: matchedCustomer.address,
-  //         customer: matchedCustomer.customer,
-  //         vendor: matchedCustomer.vendor,
-  //         email: matchedCustomer.email,
-  //         contact: matchedCustomer.contact
-  //       }));
-  //     } else {
-  //       setVendorData((prevVendorData) => ({
-  //         ...prevVendorData,
-  //         vendorID: "",
-  //         gst_no: newValue1,
-  //         name: "",
-  //         pan: "",
-  //         customer_address: "",
-  //         customer: false,
-  //         vendor: false,
-  //         email: "",
-  //         contact: "",
-  //       }));
-  //     }
-  //     return;
-  //   }
-
-  //   if (newValue1 && newValue1.gst_no) {
-  //     setVendorData((prevVendorData) => ({
-  //       ...prevVendorData,
-  //       vendorID: newValue1.id,
-  //       gst_no: newValue1.gst_no,
-  //       name: newValue1.name || "",
-  //       pan: newValue1.pan || "",
-  //       email: newValue1.email || "",
-  //       contact: newValue1.contact || "",
-  //       customer_address: newValue1.address || "",
-  //       customer: newValue1.customer || false,
-  //       vendor: newValue1.vendor || false,
-  //     }));
-  //   }
-  // };
 
   const handleGstNoChange = (event, newValue1) => {
     setIsGstNoEmpty(!newValue1);
@@ -513,9 +526,11 @@ function IncomeCreation({
         contact: "",
       });
     }
+    const errorMsg = validateIncomeField(name, value);
+    setIncomeErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
-  const handleNameChange = (event, newValue2) => {
+  const handleNameChange = (name, newValue2) => {
     if (!newValue2) {
       setVendorData((prev) => ({
         ...prev,
@@ -563,13 +578,15 @@ function IncomeCreation({
         contact: "",
       }));
     }
+    const errorMsg = validateIncomeField(name, value);
+    setIncomeErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleProductChange = async (index, newValue) => {
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-income/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -596,12 +613,47 @@ function IncomeCreation({
     }
   };
 
-  const handleInputChangeProductField = (index, value) => {
+  const handleInputChangeProductField = async (index, value) => {
     setRows((prevRows) =>
-      prevRows.map((row, rowIndex) =>
-        rowIndex === index ? { ...row, product: value } : row
-      )
+      prevRows.map((row, rowIndex) => {
+        if (rowIndex === index) {
+          return {
+            ...row,
+            product: value,
+            hsnCode: "",
+            gstRate: "",
+            description: "",
+            unit: "",
+            rate: "",
+            product_amount: "",
+            cgst: 0,
+            sgst: 0,
+            igst: 0,
+            total_invoice: 0,
+
+          }; // reset first
+        }
+        return row;
+      })
     );
+
+    if (value) {
+      try {
+        setRows((prevRows) =>
+          prevRows.map((row, rowIndex) =>
+            rowIndex === index
+              ? { ...row, hsnCode: "", gstRate: "" }
+              : row
+          )
+        );
+        // }
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
+    }
+
+    const errorMsg = validateIncomeField(name, value);
+    setIncomeErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleInputChangeProduct = (index, field, value) => {
@@ -841,7 +893,6 @@ function IncomeCreation({
     selectedTDSTCSOption,
   ]);
 
-  // console.log("Amount Receivable:", amountReceivable);
   const handleAddRow = () => {
     setRows([
       ...rows,
@@ -862,6 +913,55 @@ function IncomeCreation({
   const [salesInvoice, setSalesInvoice] = useState("100");
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission behavior
+
+    const newErrors = {};
+
+    // Validate Office/Location formData
+    Object.entries(formData).forEach(([key, value]) => {
+      const errorMsg = validateIncomeField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Customer/Vendor vendorData
+    Object.entries(vendorData).forEach(([key, value]) => {
+      const errorMsg = validateIncomeField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    // Validate Invoice Data (first object only)
+    Object.entries(invoiceData[0]).forEach(([key, value]) => {
+      const errorMsg = validateIncomeField(key, value);
+      if (errorMsg) {
+        newErrors[key] = errorMsg;
+      }
+    });
+
+    if (rows.length === 0 || rows.some(r => !r.product || !r.hsnCode || !r.unit || !r.rate)) {
+      setActiveTab("2");
+      toast.error("Please fill Product details before submitting.");
+      return; // stop here
+    }
+
+    // If any errors → stop and show first toast
+    if (Object.keys(newErrors).length > 0) {
+      const firstErrorField = Object.keys(newErrors)[0];
+      toast.error(newErrors[firstErrorField], {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      // Optionally switch tab based on error
+      if (firstErrorField.startsWith("row_")) {
+        setActiveTab("2"); // Product tab
+      } else if (Object.keys(vendorData).includes(firstErrorField)) {
+        setActiveTab("1"); // Vendor tab
+      }
+      return;
+    }
 
     const cleanedRows = rows.filter(
       (row) =>
@@ -890,7 +990,7 @@ function IncomeCreation({
     };
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-income-post2/${id}`,
         payload,
         {
@@ -1031,7 +1131,6 @@ function IncomeCreation({
   }, [invoiceData[0]?.invoice_type, vendorData.gst_no, branchNoGst]);
 
   // Auto-detect TCS or TDS on initial load based on prepopulated values
-
   useEffect(() => {
     if (invoiceData[0].tcs && parseFloat(invoiceData[0].tcs) > 0) {
       setSelectedTDSTCSOption("tcs");
@@ -1105,10 +1204,10 @@ function IncomeCreation({
     }
   };
   const [selectedInvoiceDate, setSelectedInvoiceDate] = useState(null);
+
   const handleToDateChange = (date) => {
     if (date instanceof Date && !isNaN(date)) {
       const formattedDate = format(date, "dd-MM-yyyy"); // Convert to DD-MM-YYYY
-
       // Invoice Data ke first object ka invoice_date update karein
       setInvoiceData((prevData) =>
         prevData.map((item, index) =>
@@ -1119,8 +1218,6 @@ function IncomeCreation({
   };
 
   const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState(false);
-
-
   return (
     <>
       {/* <ToastContainer /> */}
@@ -1130,7 +1227,6 @@ function IncomeCreation({
           onClose={handleCreateClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
-        // className="overflow-auto"
         >
           <Box sx={styleCreateModal} className="max-h-full overflow-scroll">
             <Typography
@@ -1174,6 +1270,7 @@ function IncomeCreation({
                             freeSolo
                             id="location-select"
                             disableClearable
+                            required
                             options={offData}
                             getOptionLabel={(option) => option.location || ""}
                             onChange={(event, newValue) =>
@@ -1196,6 +1293,7 @@ function IncomeCreation({
                               <TextField
                                 {...params}
                                 size="small"
+                                required
                                 value={formData.location || ""}
                                 className="border border-red-500"
                                 placeholder="Office Location"
@@ -1243,6 +1341,7 @@ function IncomeCreation({
                           size="md"
                           name="contact"
                           placeholder="Contact No"
+                          required
                           value={formData.contact}
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1279,6 +1378,7 @@ function IncomeCreation({
                           type="text"
                           size="md"
                           name="address"
+                          required
                           placeholder="Address"
                           value={formData.address}
                           onChange={handleInputChange}
@@ -1287,9 +1387,9 @@ function IncomeCreation({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1317,6 +1417,7 @@ function IncomeCreation({
                           size="lg"
                           name="city"
                           placeholder="City"
+                          required
                           value={formData.city}
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1324,9 +1425,9 @@ function IncomeCreation({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1354,6 +1455,7 @@ function IncomeCreation({
                           size="lg"
                           name="state"
                           placeholder="State"
+                          required
                           value={formData.state}
                           onChange={handleInputChange}
                           className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -1361,9 +1463,9 @@ function IncomeCreation({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1390,6 +1492,7 @@ function IncomeCreation({
                           type="text"
                           size="lg"
                           name="country"
+                          required
                           placeholder="Country"
                           value={formData.country}
                           onChange={handleInputChange}
@@ -1398,9 +1501,9 @@ function IncomeCreation({
                             className: "hidden",
                           }}
                           style={{
-                            height: "28px", // Match this to your Autocomplete's root height
-                            padding: "4px 6px", // Match this padding
-                            fontSize: "0.875rem", // Ensure font size is consistent
+                            height: "28px",
+                            padding: "4px 6px",
+                            fontSize: "0.875rem",
                             width: 300,
                           }}
                         />
@@ -1427,6 +1530,7 @@ function IncomeCreation({
                         type="text"
                         size="md"
                         name="branchNoGst"
+                        required
                         placeholder="GST No"
                         value={branchNoGst}
                         onChange={handleInputChange}
@@ -1464,6 +1568,7 @@ function IncomeCreation({
                             <Autocomplete
                               freeSolo
                               id="branch-select"
+                              required
                               disableClearable
                               options={branch_ser_name}
                               getOptionLabel={(option) =>
@@ -1491,6 +1596,7 @@ function IncomeCreation({
                                   {...params}
                                   size="small"
                                   value={formData.branchID || ""}
+                                  required
                                   className="border border-red-500"
                                   placeholder="Branch Select"
                                   inputProps={{
@@ -1543,6 +1649,7 @@ function IncomeCreation({
                         type="text"
                         size="md"
                         name="invoice_no"
+                        required
                         placeholder="Invoice No"
                         value={invoiceData[0].invoice_no}
                         onChange={handleInputChangeInvoiceData}
@@ -1550,11 +1657,10 @@ function IncomeCreation({
                         labelProps={{
                           className: "hidden",
                         }}
-                        // containerProps={{ className: "min-w-full" }}
                         style={{
-                          height: "28px", // Match this to your Autocomplete's root height
-                          padding: "4px 6px", // Match this padding
-                          fontSize: "0.875rem", // Ensure font size is consistent
+                          height: "28px",
+                          padding: "4px 6px",
+                          fontSize: "0.875rem",
                           width: 300,
                         }}
                       />
@@ -1577,6 +1683,7 @@ function IncomeCreation({
                       <input
                         type="file"
                         size="md"
+                        required
                         name="attach_invoice"
                         placeholder="Invoice Date"
                         onChange={handleInputChangeInvoiceData}
@@ -1600,6 +1707,7 @@ function IncomeCreation({
                       <input
                         type="file"
                         size="md"
+                        required
                         name="attach_e_way_bill"
                         placeholder="Eway Bill"
                         onChange={handleInputChangeInvoiceData}
@@ -1622,6 +1730,7 @@ function IncomeCreation({
                     <div className="relative w-full">
                       <DatePicker
                         ref={month}
+                        required
                         selected={
                           invoiceData[0].month
                             ? parse(invoiceData[0].month, "dd-MM-yyyy", new Date())
@@ -1659,6 +1768,7 @@ function IncomeCreation({
                     <div className="relative w-full">
                       <DatePicker
                         ref={invoice}
+                        required
                         selected={
                           invoiceData[0].invoice_date
                             ? parse(invoiceData[0].invoice_date, "dd-MM-yyyy", new Date())
@@ -1687,7 +1797,7 @@ function IncomeCreation({
                 <div className="py-5 px-0">
                   <div className="bg-secondary px-0 py-3 rounded-md ">
                     <Box sx={{ width: "100%", typography: "body1" }}>
-                      <TabContext value={value}>
+                      <TabContext value={activeTab}>
                         <Box
                           sx={{
                             borderBottom: 1,
@@ -1702,22 +1812,22 @@ function IncomeCreation({
                             aria-label="customized tabs example"
                             TabIndicatorProps={{
                               sx: {
-                                display: "none", // Hide the default tab indicator
+                                display: "none",
                                 padding: 0,
                                 margin: 0,
                               },
                             }}
                             sx={{
-                              padding: 0, // Remove any default padding from the TabList
-                              minHeight: "20px", // Set a specific minHeight for the TabList
+                              padding: 0,
+                              minHeight: "20px",
                             }}
                           >
                             <Tab
                               label="Customer And Vendor Details"
                               value="1"
                               sx={{
-                                padding: "0px 10px", // Adjust padding as needed
-                                minHeight: "0px", // Reduced min height
+                                padding: "0px 10px",
+                                minHeight: "0px",
                                 lineHeight: "2.2",
                                 fontSize: "0.75rem",
                                 "&.Mui-selected": {
@@ -1738,8 +1848,8 @@ function IncomeCreation({
                               label="Product Details"
                               value="2"
                               sx={{
-                                padding: "0px 10px", // Adjust padding as needed
-                                minHeight: "25px", // Reduced min height
+                                padding: "0px 10px",
+                                minHeight: "25px",
                                 lineHeight: "2.2",
                                 fontSize: "0.75rem",
                                 "&.Mui-selected": {
@@ -1776,10 +1886,10 @@ function IncomeCreation({
                                 </div>
                                 <div className="col-span-8">
                                   <div className="">
-                                    {/* <Stack spacing={1} sx={{ width: 300 }}> */}
                                     <Autocomplete
                                       sx={{ width: 300 }}
                                       freeSolo
+                                      required
                                       id="gst-no-autocomplete"
                                       disableClearable
                                       options={customerData}
@@ -1800,6 +1910,7 @@ function IncomeCreation({
                                           {...params}
                                           size="small"
                                           name="gst_no"
+                                          required
                                           value={vendorData.gst_no || ""} // Reset input value when formData.gst_no changes
                                           onChange={(e) =>
                                             handleGstNoChange(e, e.target.value)
@@ -1849,6 +1960,7 @@ function IncomeCreation({
                                     freeSolo
                                     id="name-autocomplete"
                                     disableClearable
+                                    required
                                     options={customerData}
                                     getOptionLabel={(option) =>
                                       typeof option === "string"
@@ -1867,6 +1979,7 @@ function IncomeCreation({
                                         {...params}
                                         size="small"
                                         name="name"
+                                        required
                                         value={vendorData.name || ""} // Reset input value when formData.gst_no changes
                                         onChange={(e) =>
                                           handleNameChange(e, e.target.value)
@@ -1891,27 +2004,6 @@ function IncomeCreation({
                                       />
                                     )}
                                   />
-                                  {/* <div className="h-7">
-                                    <Input
-                                      type="text"
-                                      size="lg"
-                                      name="name"
-                                      placeholder="Name"
-                                      value={vendorData.name}
-                                      onChange={handleInputChangeCL}
-                                      className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                                      labelProps={{
-                                        className: "hidden",
-                                      }}
-                                      // containerProps={{ className: "min-w-full" }}
-                                      style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
-                                        width: 300,
-                                      }}
-                                    />
-                                  </div> */}
                                 </div>
                               </div>
                             </div>
@@ -1936,15 +2028,16 @@ function IncomeCreation({
                                       name="pan"
                                       placeholder="PAN No"
                                       value={vendorData.pan}
+                                      required
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                       labelProps={{
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -1972,6 +2065,7 @@ function IncomeCreation({
                                       size="lg"
                                       name="customer_address"
                                       placeholder="Customer Address"
+                                      required
                                       value={vendorData.customer_address}
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -2009,6 +2103,7 @@ function IncomeCreation({
                                       size="lg"
                                       name="email"
                                       placeholder="Email"
+                                      required
                                       value={vendorData.email}
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -2016,9 +2111,9 @@ function IncomeCreation({
                                         className: "hidden",
                                       }}
                                       style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
+                                        height: "28px",
+                                        padding: "4px 6px",
+                                        fontSize: "0.875rem",
                                         width: 300,
                                       }}
                                     />
@@ -2047,6 +2142,7 @@ function IncomeCreation({
                                       name="contact"
                                       placeholder="Contact No"
                                       value={vendorData.contact}
+                                      required
                                       onChange={handleInputChangeCL}
                                       className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                       labelProps={{
@@ -2134,16 +2230,16 @@ function IncomeCreation({
                                 <TableHead
                                   sx={{
                                     backgroundColor: "#f3f4f6",
-                                    position: "sticky", // Makes the header sticky
-                                    top: 0, // Ensures it sticks to the top of the container
-                                    zIndex: 0, // Keeps it above the table rows
+                                    position: "sticky",
+                                    top: 0,
+                                    zIndex: 0,
                                   }}
                                 >
                                   <TableRow className="font-semibold bg-primary text-white">
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2152,7 +2248,7 @@ function IncomeCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2161,7 +2257,7 @@ function IncomeCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2170,7 +2266,7 @@ function IncomeCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2179,7 +2275,7 @@ function IncomeCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2188,7 +2284,7 @@ function IncomeCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2197,7 +2293,7 @@ function IncomeCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2209,7 +2305,7 @@ function IncomeCreation({
                                         <TableCell
                                           className="font-semibold text-gray-600"
                                           sx={{
-                                            color: "white", // Text color
+                                            color: "white",
                                             padding: "4px",
                                           }}
                                         >
@@ -2218,7 +2314,7 @@ function IncomeCreation({
                                         <TableCell
                                           className="font-semibold text-gray-600"
                                           sx={{
-                                            color: "white", // Text color
+                                            color: "white",
                                             padding: "4px",
                                           }}
                                         >
@@ -2231,7 +2327,7 @@ function IncomeCreation({
                                       <TableCell
                                         className="font-semibold text-gray-600"
                                         sx={{
-                                          color: "white", // Text color
+                                          color: "white",
                                           padding: "4px",
                                         }}
                                       >
@@ -2241,7 +2337,7 @@ function IncomeCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     >
@@ -2250,14 +2346,13 @@ function IncomeCreation({
                                     <TableCell
                                       className="font-semibold text-gray-600"
                                       sx={{
-                                        color: "white", // Text color
+                                        color: "white",
                                         padding: "4px",
                                       }}
                                     ></TableCell>
                                   </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                  {/* <div style={{ maxHeight: "450px", overflowY: "auto" }}> */}
                                   {rows.map((row, index) => (
                                     <TableRow key={index} className="p-0 ">
                                       <TableCell sx={{ padding: "6px" }}>
@@ -2266,6 +2361,7 @@ function IncomeCreation({
                                           id={`product-autocomplete-${index}`}
                                           disableClearable
                                           options={product_ser_Data}
+                                          required
                                           getOptionLabel={(option) =>
                                             option.product_name || ""
                                           }
@@ -2296,6 +2392,7 @@ function IncomeCreation({
                                               {...params}
                                               size="small"
                                               placeholder="select product"
+                                              required
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
                                                   padding: "2px",
@@ -2315,6 +2412,7 @@ function IncomeCreation({
                                         <TextField
                                           id={`description-${index}`}
                                           value={row.description}
+                                          required
                                           onChange={(e) =>
                                             handleInputChangeProduct(
                                               index,
@@ -2340,6 +2438,7 @@ function IncomeCreation({
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           id={`hsn_code-${index}`}
+                                          required
                                           value={row.hsnCode}
                                           onChange={(e) => {
                                             const inputValue = e.target.value;
@@ -2371,6 +2470,7 @@ function IncomeCreation({
                                         <TextField
                                           value={row.unit}
                                           id={`unit-${index}`}
+                                          required
                                           onChange={(e) => {
                                             const value = e.target.value;
                                             if (/^\d*$/.test(value)) {
@@ -2400,6 +2500,7 @@ function IncomeCreation({
                                         <TextField
                                           name="rate"
                                           id={`rate-${index}`}
+                                          required
                                           value={row.rate}
                                           onChange={(e) => {
                                             const value = e.target.value;
@@ -2428,6 +2529,7 @@ function IncomeCreation({
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.product_amount}
+                                          required
                                           onChange={(e) =>
                                             handleInputChangeProduct(
                                               index,
@@ -2449,11 +2551,11 @@ function IncomeCreation({
                                           }}
                                           slotProps={{
                                             inputLabel: {
-                                              shrink: true, // Ensures the label stays visible
+                                              shrink: true,
                                             },
                                           }}
                                           inputProps={{
-                                            readOnly: true, // Making the field read-only
+                                            readOnly: true,
                                           }}
                                         />
                                       </TableCell>
@@ -2461,6 +2563,7 @@ function IncomeCreation({
                                         <TextField
                                           name="gst_rate"
                                           id={`gst_rate-${index}`}
+                                          required
                                           value={row.gstRate}
                                           onChange={(e) => {
                                             const value = e.target.value;
@@ -2492,6 +2595,7 @@ function IncomeCreation({
                                           <TableCell sx={{ padding: "6px" }}>
                                             <TextField
                                               value={row.cgst || ""}
+                                              required
                                               onChange={(e) =>
                                                 handleInputChangeProduct(
                                                   index,
@@ -2524,6 +2628,7 @@ function IncomeCreation({
                                           <TableCell sx={{ padding: "6px" }}>
                                             <TextField
                                               value={row.sgst || ""}
+                                              required
                                               onChange={(e) =>
                                                 handleInputChangeProduct(
                                                   index,
@@ -2545,7 +2650,7 @@ function IncomeCreation({
                                               }}
                                               slotProps={{
                                                 inputLabel: {
-                                                  shrink: true, // Ensures the label stays visible
+                                                  shrink: true,
                                                 },
                                               }}
                                               inputProps={{
@@ -2560,6 +2665,7 @@ function IncomeCreation({
                                         <TableCell sx={{ padding: "6px" }}>
                                           <TextField
                                             value={row.igst || ""}
+                                            required
                                             onChange={(e) =>
                                               handleInputChangeProduct(
                                                 index,
@@ -2594,6 +2700,7 @@ function IncomeCreation({
                                       <TableCell sx={{ padding: "6px" }}>
                                         <TextField
                                           value={row.total_invoice}
+                                          required
                                           onChange={(e) =>
                                             handleInputChangeProduct(
                                               index,
@@ -2669,33 +2776,26 @@ function IncomeCreation({
                                               <div className="">
                                                 <select
                                                   name="invoice_type"
+                                                  required
                                                   className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
                                                   style={{
-                                                    height: "28px", // Match this to your Autocomplete's root height
-                                                    padding: "4px 6px", // Match this padding
-                                                    fontSize: "0.875rem", // Ensure font size is consistent
+                                                    height: "28px",
+                                                    padding: "4px 6px",
+                                                    fontSize: "0.875rem",
                                                     width: 300,
                                                   }}
-                                                  value={invoiceData[0].invoice_type} // Ensures the selected value matches the state
+                                                  value={invoiceData[0].invoice_type}
                                                   onChange={handleInputChangeInvoiceData}
                                                 >
-                                                  {vendorData.gst_no === "" // Check if gst_no is empty
-                                                    ? // Show only these options when gst_no is empty
-                                                    [
-                                                      "Select Entity Type",
-                                                      "Unregistered Local",
-                                                      "Unregistered Non-Local",
-                                                    ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                  <option value="">Select Invoice Type</option>
+
+                                                  {vendorData.gst_no === ""
+                                                    ? ["Unregistered Local", "Unregistered Non-Local"].map((option) => (
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))
-                                                    : // Show other options when gst_no is not empty
-                                                    [
-                                                      "Select Entity Type",
+                                                    : [
                                                       "B2B",
                                                       "B2C-L",
                                                       "BSC-O",
@@ -2704,10 +2804,7 @@ function IncomeCreation({
                                                       "SEZ",
                                                       "Export",
                                                     ].map((option) => (
-                                                      <option
-                                                        key={option}
-                                                        value={option.toLowerCase()}
-                                                      >
+                                                      <option key={option} value={option.toLowerCase()}>
                                                         {option}
                                                       </option>
                                                     ))}
@@ -2724,6 +2821,7 @@ function IncomeCreation({
                                                 invoiceData[0].taxable_amount
                                               }
                                               variant="outlined"
+                                              required
                                               size="small"
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
@@ -2745,14 +2843,8 @@ function IncomeCreation({
                                               value={
                                                 invoiceData[0].totalall_gst
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
                                               variant="outlined"
+                                              required
                                               size="small"
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
@@ -2775,15 +2867,9 @@ function IncomeCreation({
                                                 invoiceData[0]
                                                   .total_invoice_value
                                               }
-                                              // onChange={(e) =>
-                                              //   handleInputChangeProduct(
-                                              //     index,
-                                              //     "igst",
-                                              //     e.target.value
-                                              //   )
-                                              // }
                                               variant="outlined"
                                               size="small"
+                                              required
                                               sx={{
                                                 "& .MuiOutlinedInput-root": {
                                                   padding: "2px",
@@ -2807,68 +2893,6 @@ function IncomeCreation({
                           <div className="grid grid-cols-2 md:grid-cols-3 2xl:grid-cols-4 gap-4 my-2">
                             <div className="hidden 2xl:block col-span-1"></div>
                             <div className="col-span-1">
-                              {/* <div>
-                                <div>
-                                  <label htmlFor="invoice_type">
-                                    <Typography
-                                      variant="small"
-                                      color="blue-gray"
-                                      className="block font-semibold mb-1"
-                                    >
-                                      Invoice Type
-                                    </Typography>
-                                  </label>
-                                </div>
-                                <div className="">
-                                  <div className="">
-                                    <select
-                                      name="invoice_type"
-                                      className="!border !border-[#cecece] bg-white pt-1 rounded-md text-gray-900 text-sm ring-4 ring-transparent placeholder-gray-500 focus:!border-[#366FA1] focus:outline-none focus:ring-0 min-w-[80px]"
-                                      style={{
-                                        height: "28px", // Match this to your Autocomplete's root height
-                                        padding: "4px 6px", // Match this padding
-                                        fontSize: "0.875rem", // Ensure font size is consistent
-                                        width: 300,
-                                      }}
-                                      value={invoiceData[0].invoice_type} // Ensures the selected value matches the state
-                                      onChange={handleInputChangeInvoiceData}
-                                    >
-                                      {vendorData.gst_no === "" // Check if gst_no is empty
-                                        ? // Show only these options when gst_no is empty
-                                        [
-                                          "Select Invoice Type",
-                                          "Unregistered Local",
-                                          "Unregistered Non-Local",
-                                        ].map((option) => (
-                                          <option
-                                            key={option}
-                                            value={option.toLowerCase()}
-                                          >
-                                            {option}
-                                          </option>
-                                        ))
-                                        : // Show other options when gst_no is not empty
-                                        [
-                                          "Select Entity Type",
-                                          "B2B",
-                                          "B2C-L",
-                                          "BSC-O",
-                                          "Nil Rated",
-                                          "Advance Received",
-                                          "SEZ",
-                                          "Export",
-                                        ].map((option) => (
-                                          <option
-                                            key={option}
-                                            value={option.toLowerCase()}
-                                          >
-                                            {option}
-                                          </option>
-                                        ))}
-                                    </select>
-                                  </div>
-                                </div>
-                              </div> */}
                             </div>
                             <div className="col-span-1">
                               <div>
@@ -3002,7 +3026,6 @@ function IncomeCreation({
                                   )}
                                 </div>
                               </div>
-
                               <div className="grid grid-cols-12 text-sm mt-7">
                                 <div className="col-span-6 font-bold">
                                   Amount Receivable :
@@ -3012,9 +3035,7 @@ function IncomeCreation({
                                     variant="outlined"
                                     size="small"
                                     name="amount_receivable"
-                                    // value={amount_receivable}
                                     value={invoiceData[0].amount_receivable}
-                                    // onChange={handleInputChangeInvoiceData}
                                     sx={{
                                       "& .MuiOutlinedInput-root": {
                                         padding: "1px",
@@ -3032,68 +3053,12 @@ function IncomeCreation({
                           </div>
                         </TabPanel>
                         <div>
-
                         </div>
                       </TabContext>
                     </Box>
                   </div>
                 </div>
               </div>
-              {/* <div className="p-4">
-                  <label
-                    htmlFor="option"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Select an option
-                  </label>
-                  <select
-                    id="option"
-                    value={selectedTDSTCSOption}
-                    onChange={(e) => setSelectedTDSTCSOption(e.target.value)}
-                    className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  >
-                    <option value="" disabled>
-                      Choose an option
-                    </option>
-                    <option value="TCS">TCS</option>
-                    <option value="TDS">TDS</option>
-                  </select>
-  
-                  <div className="mt-4">
-                    {selectedTDSTCSOption === "TCS" && (
-                      <div>
-                        <label
-                          htmlFor="tcs"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          TCS Input
-                        </label>
-                        <input
-                          id="tcs"
-                          type="text"
-                          placeholder="Enter TCS value"
-                          className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                    )}
-                    {selectedTDSTCSOption === "TDS" && (
-                      <div>
-                        <label
-                          htmlFor="tds"
-                          className="block text-sm font-medium text-gray-700"
-                        >
-                          TDS Input
-                        </label>
-                        <input
-                          id="tds"
-                          type="text"
-                          placeholder="Enter TDS value"
-                          className="mt-2 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                      </div>
-                    )}
-                  </div>
-                </div> */}
               <DialogFooter className="p-0">
                 <Button
                   onClick={handleCreateClose}
@@ -3106,8 +3071,6 @@ function IncomeCreation({
                 <Button
                   conained="contained"
                   type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
                   className="bg-primary"
                 >
                   <span>Confirm</span>

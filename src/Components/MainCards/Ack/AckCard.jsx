@@ -78,8 +78,79 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
         computation_file: [],
     });
 
+    const [ackErrors, setAckErrors] = useState({})
 
-    // console.log("computation Files:", formData);
+    const returnFormRules = {
+        return_type: [
+            { test: (v) => v.length > 0, message: "Return type is required" },
+        ],
+        frequency: [
+            { test: (v) => v.length > 0, message: "Frequency is required" },
+            // { test: (v) => ["monthly", "quarterly", "Half Yearly", "yearly"].includes(v.toLowerCase()), message: "Frequency must be Monthly, Quarterly or Yearly" },
+        ],
+        return_period: [
+            { test: (v) => v.length > 0, message: "Return period is required" },
+        ],
+        from_date: [
+            { test: (v) => v.length > 0, message: "From date is required" },
+            {
+                test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v),
+                message: "From date must be in dd/mm/yyyy or dd-mm-yyyy format",
+            },
+        ],
+        to_date: [
+            { test: (v) => v.length > 0, message: "To date is required" },
+            {
+                test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v),
+                message: "To date must be in dd/mm/yyyy or dd-mm-yyyy format",
+            },
+            {
+                test: (v, allValues) => {
+                    if (!allValues.from_date || !v) return true;
+                    const [fd, fm, fy] = allValues.from_date.split(/[-/]/).map(Number);
+                    const [td, tm, ty] = v.split(/[-/]/).map(Number);
+                    const fromDate = new Date(fy, fm - 1, fd);
+                    const toDate = new Date(ty, tm - 1, td);
+                    return toDate >= fromDate;
+                },
+                message: "To date cannot be earlier than From date",
+            },
+        ],
+        client_review: [
+            { test: (v) => v.length > 0, message: "Client review is required" },
+        ],
+        remarks: [
+            { test: (v) => !v || v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+        ],
+        month: [
+            { test: (v) => v.length > 0, message: "Month is required" },
+            // { test: (v) => /^(0?[1-9]|1[0-2])$/.test(v), message: "Month must be between 1 and 12" },
+        ],
+        computation_file: [
+            { test: (v) => v && v.length > 0, message: "Computation file is required" },
+            // {
+            //     test: (v) =>
+            //         v.every(
+            //             (f) =>
+            //                 f.type === "application/pdf" ||
+            //                 f.type.startsWith("image/") ||
+            //                 f.type === "application/vnd.ms-excel" ||
+            //                 f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+            //                 f.type === "text/plain"
+            //         ),
+            //     message: "Computation file must be PDF, Image, Excel or TXT",
+            // },
+        ],
+    };
+
+    const validateReturnField = (name, value, allValues = {}) => {
+        const rules = returnFormRules[name];
+        if (!rules) return "";
+        for (let rule of rules) {
+            if (!rule.test(value, allValues)) return rule.message;
+        }
+        return "";
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -110,34 +181,6 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
         }));
     };
 
-    // useEffect(() => {
-    //     if (formData.from_date && formData.to_date) {   //to check if both dates are selected
-    //         const formYear = new Date(formData.from_date).getFullYear(); //get year from from_date
-    //         const toYear = new Date(formData.to_date).getFullYear();  //get year from to_date
-
-    //         setFormData((prev) => ({                          //updating the formData 'prev' means the previous state of form data
-    //             ...prev,                                   // for keepin all existing data unchanged
-    //             return_period: `${formYear}-${toYear}`,    //updating the return_period with fromYear-toYear
-    //         }));
-    //     }
-    // }, [formData.from_date, formData.to_date]);         //This tells React to run this effect whenever from_date or to_date changes.
-
-
-    // useEffect(() => {
-    //     if (formData.from_date && formData.to_date) {
-    //         const formDate = new Date(formData.from_date);
-    //         const toDate = new Date(formData.to_date);
-
-    //         const fromMonthYear = formDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-    //         const toMonthYear = toDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-
-    //         setFormData((prev) => ({
-    //             ...prev,
-    //             return_period: `${fromMonthYear} - ${toMonthYear}`,
-    //         }));
-    //     }
-    // }, [formData.from_date, formData.to_date]);
-
     useEffect(() => {
         if (formData.from_date && formData.to_date) {
             const fromDate = new Date(
@@ -156,15 +199,12 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
         }
     }, [formData.from_date, formData.to_date]);
 
-
-
     const handleFilesChange = (e) => {
         setFormData((prev) => ({
             ...prev,
             computation_file: Array.from(e.target.files), // Convert FileList to an array
         }));
     };
-
 
     const handleFileChange = (e) => {
         setFormData((prev) => ({
@@ -198,11 +238,21 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
         }
     };
 
-
-
-
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission
+
+        let hasError = false;
+        for (let [field, value] of Object.entries(formData)) {
+            const errorMsg = validateReturnField(field, value);
+            if (errorMsg) {
+                toast.error(errorMsg);
+                hasError = true;
+                break; // stop at first error
+            }
+        }
+
+        if (hasError) return; // ❌ Stop submit if validation failed
+
 
         try {
             // Create a FormData object
@@ -231,7 +281,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                 });
             }
 
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `${API_URL}/api/edit-acknowledgement/${id}/${rowId}`,
                 formDataToSend,
                 // foDataToSend,
@@ -246,11 +296,8 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                     autoClose: 2000,
                 });
 
-                // Dispatch action to fetch client details
-                // dispatch(fetchClientDetails(id));
                 fetchAckDetails();
 
-                // Optionally close the modal and reset form
                 handleCreateClose();
                 setFormData({
                     return_type: "",
@@ -267,11 +314,6 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                 setSelectedMonth(null);
                 setSelectedYear(null);
 
-                // if (responseData.month) {
-                //     const parsedDate = parseMonthYear(responseData.month); // Ensure function handles errors
-                //     console.log("Selected Month:", parsedDate);
-                //     setSelectedMonth(parsedDate);
-                // }
             } else {
                 // Show error toast if response indicates failure
                 toast.error(
@@ -310,34 +352,6 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
         setOpenDeleteModal(true);
         setAnchorEl(null);
     };
-    // const handleDeleteID = async () => {
-    //     try {
-    //         const response = await axiosInstance.delete(
-    //             `${API_URL}/api/delete-acknowledgement/${id}/${deleteId}`
-    //         );
-    //         // console.log("res-----bank---->", response);
-    //         // dispatch(fetchClientDetails(id));
-    //         setOpenDeleteModal(false);
-    //         if (response.status === 200 || response.status === 201) {
-    //             toast.success(`${response.data.message}`, {
-    //                 position: "top-right",
-    //                 autoClose: 2000,
-    //             });
-    //             fetchAckDetails();
-    //         } else {
-    //             toast.error("Failed to delete bank. Please try again.", {
-    //                 position: "top-right",
-    //                 autoClose: 2000,
-    //             });
-    //         }
-    //     } catch (error) {
-    //         console.error("Error deleting bank data:", error);
-    //         toast.error("Failed to delete bank. Please try again.", {
-    //             position: "top-right",
-    //             autoClose: 2000,
-    //         });
-    //     }
-    // };
 
     const handleDeleteID = async () => {
         try {
@@ -378,7 +392,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
         setAnchorEl(null);
         const fetchAckDetails = async () => {
             try {
-                const response = await axios.get(
+                const response = await axiosInstance.get(
                     `${API_URL}/api/single-acknowledgement/${id}/${rowId}`
                 );
                 setAcknowledgementData(response.data);
@@ -400,7 +414,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
         setAnchorEl(null);
 
         try {
-            const response = await axios.get(
+            const response = await axiosInstance.get(
                 `${API_URL}/api/edit-acknowledgement/${id}/${rowId}`
             );
             setFormData(response.data);
@@ -411,42 +425,10 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
         }
     };
 
-
-    // const downloadComputationFile = async () => {
-    //     try {
-    //         const response = await axios.get(`${API_URL}/api/download-computation-file/${id}/${rowId}`);
-    //         console.log("API Response:", response.data);
-
-    //         if (response.data && response.data.length > 0) {
-    //             for (let i = 0; i < response.data.length; i++) {
-    //                 const fileObj = response.data[i];
-    //                 const filePath = fileObj.file;
-    //                 const fileUrl = `${API_URL}${filePath}`;
-    //                 console.log("File URL:", fileUrl);
-
-    //                 // Add a delay for each download
-    //                 await new Promise((resolve) => setTimeout(resolve, 500)); // 500ms delay
-
-    //                 const anchor = document.createElement("a");
-    //                 anchor.href = fileUrl;
-    //                 anchor.setAttribute("download", filePath.split("/").pop());
-    //                 document.body.appendChild(anchor);
-    //                 anchor.click();
-    //                 document.body.removeChild(anchor);
-    //             }
-    //         } else {
-    //             alert("No computation files found!");
-    //         }
-    //     } catch (error) {
-    //         console.error("Error downloading files:", error);
-    //         alert("Failed to download the files. Please try again.");
-    //     }
-    // };
-
     const downloadComputationFile = async () => {
         try {
             // First get the list of file URLs from your API (assumed JSON array of objects with 'file' key)
-            const response = await axios.get(
+            const response = await axiosInstance.get(
                 `${API_URL}/api/download-computation-file/${id}/${rowId}`
             );
 
@@ -464,7 +446,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                 const fileUrl = `${API_URL}${filePath}`;
 
                 // Fetch the file as a blob
-                const fileResponse = await axios.get(fileUrl, {
+                const fileResponse = await axiosInstance.get(fileUrl, {
                     responseType: "blob",
                 });
 
@@ -498,7 +480,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
     const downloadReturnFile = async () => {
         try {
             // First get the list of file URLs from your API (assumed JSON array of objects with 'file' key)
-            const response = await axios.get(
+            const response = await axiosInstance.get(
                 `${API_URL}/api/download-return-file/${id}/${rowId}`
             );
 
@@ -516,7 +498,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                 const fileUrl = `${API_URL}${filePath}`;
 
                 // Fetch the file as a blob
-                const fileResponse = await axios.get(fileUrl, {
+                const fileResponse = await axiosInstance.get(fileUrl, {
                     responseType: "blob",
                 });
 
@@ -546,38 +528,6 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
             alert("Failed to download the files. Please try again.");
         }
     };
-
-    // const downloadReturnFile = async () => {
-    //     try {
-    //         const response = await axios.get(`${API_URL}/api/download-return-file/${id}/${rowId}`);
-    //         console.log("API Response:", response.data);
-
-    //         if (response.data && response.data.length > 0) {
-    //             for (let i = 0; i < response.data.length; i++) {
-    //                 const fileObj = response.data[i];
-    //                 const filePath = fileObj.file;
-    //                 const fileUrl = `${API_URL}${filePath}`;
-    //                 console.log("File URL:", fileUrl);
-
-    //                 // Add a delay for each download
-    //                 await new Promise((resolve) => setTimeout(resolve, 500)); // 500ms delay
-
-    //                 const anchor = document.createElement("a");
-    //                 anchor.href = fileUrl;
-    //                 anchor.setAttribute("download", filePath.split("/").pop());
-    //                 document.body.appendChild(anchor);
-    //                 anchor.click();
-    //                 document.body.removeChild(anchor);
-    //             }
-    //         } else {
-    //             alert("No return files found!");
-    //         }
-    //     } catch (error) {
-    //         console.error("Error downloading files:", error);
-    //         alert("Failed to download the files. Please try again.");
-    //     }
-    // };
-
 
     const handleCreateClose = () => setOpenCreateModal(false);
     const [acknowledgementData, setAcknowledgementData] = useState(null);
@@ -654,43 +604,36 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                             {acknowledgementData && (
                                 <>
                                     <div>
-                                        <form className=" my-5 w-full ">
-                                            <div className="block px-1">
-                                                <div className="flex gap-6  p-2">
-                                                    <div className="w-full flex gap-3">
-                                                        <Typography
-                                                            variant="h6"
-                                                            color="blue-gray"
-                                                            className=" "
-                                                            size="sm"
-                                                        >
+                                        <form className="my-5 w-full">
+                                            <div className="block px-1 space-y-4">
+                                                {/* Grid Layout for Rows */}
+                                                <div className="grid grid-cols-3 gap-6 p-2">
+                                                    {/* Return Type */}
+                                                    <div className="flex gap-2">
+                                                        <Typography variant="h6" color="blue-gray" size="sm">
                                                             Return Type :
                                                         </Typography>
                                                         <div className="text-gray-700 text-[15px] my-auto">
-                                                            {acknowledgementData.return_type
-                                                            }
+                                                            {acknowledgementData.return_type}
                                                         </div>
                                                     </div>
-                                                    <div className="w-full flex gap-3">
-                                                        <Typography
-                                                            variant="h6"
-                                                            color="blue-gray"
-                                                            className=""
-                                                        >
+
+                                                    {/* Frequency */}
+                                                    <div className="flex gap-2">
+                                                        <Typography variant="h6" color="blue-gray" size="sm">
                                                             Frequency :
                                                         </Typography>
                                                         <div className="text-gray-700 text-[15px] my-auto">
-                                                            {acknowledgementData.frequency.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+                                                            {acknowledgementData.frequency
+                                                                .replace(/_/g, " ")
+                                                                .replace(/\b\w/g, (char) => char.toUpperCase())}
                                                         </div>
                                                     </div>
-                                                    <div className="w-full flex gap-3">
-                                                        <Typography
-                                                            variant="h6"
-                                                            color="blue-gray"
-                                                            className=""
-                                                            size="sm"
-                                                        >
-                                                            From Date:
+
+                                                    {/* From Date */}
+                                                    <div className="flex gap-2">
+                                                        <Typography variant="h6" color="blue-gray" size="sm">
+                                                            From Date :
                                                         </Typography>
                                                         <div className="text-gray-700 text-[15px] my-auto">
                                                             {acknowledgementData.from_date}
@@ -698,61 +641,66 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                                     </div>
                                                 </div>
 
-                                                <div className="flex gap-6   p-2">
-                                                    <div className="w-full flex gap-3">
-                                                        <Typography
-                                                            variant="h6"
-                                                            color="blue-gray"
-                                                            className=""
-                                                            size="sm"
-                                                        >
+                                                <div className="grid grid-cols-3 gap-6 p-2">
+                                                    {/* To Date */}
+                                                    <div className="flex gap-2">
+                                                        <Typography variant="h6" color="blue-gray" size="sm">
                                                             To Date :
                                                         </Typography>
                                                         <div className="text-gray-700 text-[15px] my-auto">
                                                             {acknowledgementData.to_date}
                                                         </div>
                                                     </div>
-                                                    <div className="w-full flex gap-3 items-center whitespace-nowrap">
-                                                        <Typography
-                                                            variant="h6"
-                                                            color="blue-gray"
-                                                            className=""
-                                                            size="sm"
-                                                        >
-                                                            Return Period :
-                                                        </Typography>
-                                                        <div className="text-gray-700 text-[15px] my-auto">
-                                                            {acknowledgementData.return_period.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
-                                                        </div>
-                                                    </div>
-                                                    <div className="w-full flex gap-3">
-                                                        <Typography
-                                                            variant="h6"
-                                                            color="blue-gray"
-                                                            className=""
-                                                            size="sm"
-                                                        >
+
+
+                                                    {/* Month */}
+                                                    <div className="flex gap-2">
+                                                        <Typography variant="h6" color="blue-gray" size="sm">
                                                             Month :
                                                         </Typography>
                                                         <div className="text-gray-700 text-[15px] my-auto">
                                                             {acknowledgementData.month}
                                                         </div>
                                                     </div>
-                                                </div>
 
-                                                <div className="flex gap-6 p-2">
-                                                    <div className="w-full flex gap-3">
+                                                    <div className="flex gap-2">
                                                         <Typography variant="h6" color="blue-gray" size="sm">
                                                             Client Review :
                                                         </Typography>
                                                         <div className="text-gray-700 text-[15px] my-auto">
-                                                            {/* {acknowledgementData.client_review} */}
-                                                            {acknowledgementData.client_review.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+                                                            {acknowledgementData.client_review
+                                                                .replace(/_/g, " ")
+                                                                .replace(/\b\w/g, (char) => char.toUpperCase())}
                                                         </div>
                                                     </div>
 
+                                                </div>
+
+                                                {/* Client Review + Remark */}
+                                                <div className="grid grid-cols-3 gap-6 p-2">
+                                                    {/* Return Period */}
+                                                    <div className="flex items-center gap-2">
+                                                        <Typography
+                                                            variant="h6"
+                                                            color="blue-gray"
+                                                            size="sm"
+                                                            className="min-w-[140px] font-semibold"
+                                                        >
+                                                            Return Period :
+                                                        </Typography>
+                                                        <div className="text-gray-700 text-[15px] whitespace-nowrap">
+                                                            {acknowledgementData.return_period
+                                                                .replace(/_/g, " ")
+                                                                .replace(/\b\w/g, (char) => char.toUpperCase())}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="grid grid-cols-3 gap-6 p-2">
+
+
+
                                                     {acknowledgementData.client_review === "remark" && (
-                                                        <div className="w-full flex gap-3">
+                                                        <div className="flex gap-2 col-span-2">
                                                             <Typography variant="h6" color="blue-gray" size="sm">
                                                                 Remark :
                                                             </Typography>
@@ -762,6 +710,8 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                                         </div>
                                                     )}
                                                 </div>
+
+                                                {/* Computations Files */}
                                                 <div className="p-2">
                                                     <Typography
                                                         variant="h6"
@@ -803,6 +753,8 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                                         )}
                                                     </div>
                                                 </div>
+
+                                                {/* Return Files */}
                                                 <div className="p-2">
                                                     <Typography
                                                         variant="h6"
@@ -847,28 +799,31 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                             </div>
                                         </form>
                                     </div>
-                                    <DialogFooter className="">
+
+                                    {/* Footer Buttons */}
+                                    <DialogFooter className="flex justify-end space-x-3">
                                         <Button
-                                            conained="gradient"
+                                            contained="gradient"
                                             color="red"
                                             onClick={handleViewClose}
-                                            className="mr-1 "
+                                            className="px-5"
                                         >
-                                            <span>Cancel</span>
+                                            Cancel
                                         </Button>
                                         <Button
-                                            conained="gradient"
+                                            contained="gradient"
                                             color="green"
-                                            className="bg-primary"
+                                            className="bg-primary px-5"
                                             onClick={handleViewClose}
                                         >
-                                            <span>Confirm</span>
+                                            Confirm
                                         </Button>
                                     </DialogFooter>
                                 </>
                             )}
                         </Box>
                     </Modal>
+
                 </div>
             </div>
 
@@ -909,6 +864,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                                 label="return_type"
                                                 name="return_type"
                                                 size="lg"
+                                                required
                                                 placeholder="Select Return Type"
                                                 value={formData.return_type}
                                                 onChange={(e) =>
@@ -971,6 +927,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                                 label="frequency"
                                                 name="frequency"
                                                 size="lg"
+                                                required
                                                 value={formData.frequency}
                                                 onChange={(e) =>
                                                     setFormData((prev) => ({
@@ -1007,23 +964,11 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                         </label>
 
                                         <div className="">
-                                            {/* <Input
-                                                type="date"
-                                                size="lg"
-                                                name="from_date"
-                                                placeholder="From Date"
-                                                value={formData.from_date}
-                                                onChange={handleInputChange}
-                                                className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                                                labelProps={{
-                                                    className: "hidden",
-                                                }}
-                                                containerProps={{ className: "min-w-full" }}
-                                            /> */}
                                             <div className="relative w-full">
                                                 <DatePicker
                                                     ref={fromDateRef}
                                                     selected={selectedDate}
+                                                    required
                                                     // onChange={(date) => setSelectedDate(date)}
                                                     onChange={handleDateChange}
                                                     dateFormat="dd/MM/yyyy"
@@ -1057,23 +1002,11 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                         </label>
 
                                         <div className="">
-                                            {/* <Input
-                                                type="date"
-                                                size="lg"
-                                                name="to_date"
-                                                placeholder="To Date"
-                                                value={formData.to_date}
-                                                onChange={handleInputChange}
-                                                className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                                                labelProps={{
-                                                    className: "hidden",
-                                                }}
-                                                containerProps={{ className: "min-w-full" }}
-                                            /> */}
                                             <div className="relative w-full">
                                                 <DatePicker
                                                     ref={toDateRef}
                                                     selected={selectedToDate}
+                                                    required
                                                     // onChange={(date) => setSelectedDate(date)}
                                                     onChange={handleToDateChange}
                                                     dateFormat="dd/MM/yyyy"
@@ -1113,6 +1046,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                                 size="lg"
                                                 name="return_period"
                                                 placeholder="Return Period"
+                                                required
                                                 value={formData.return_period} // This will auto-fill after date selection
                                                 readOnly // Prevent manual edits
                                                 className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent 
@@ -1137,10 +1071,9 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                                 selected={selectedMonth}
                                                 onChange={handleMonthChange}
                                                 dateFormat="MMMM yyyy"
+                                                required
                                                 showMonthYearPicker
                                                 className="border p-2"
-                                            // onBlur={() => setIsEditingMonth(false)} // Close picker when focus is lost
-                                            // inputProps={{ readOnly: true }} // Prevent manual typing
                                             />
                                         ) : (
                                             <input
@@ -1173,6 +1106,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                                         name="client_review"
                                                         size="lg"
                                                         value={formData.client_review}
+                                                        required
                                                         onChange={(e) =>
                                                             setFormData((prev) => ({
                                                                 ...prev,
@@ -1242,6 +1176,7 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                                     type="file"
                                                     name="computation_file"
                                                     onChange={handleFilesChange}
+                                                    // required
                                                     multiple
                                                     className="file-input file-input-bordered file-input-success w-full"
                                                 />
@@ -1333,19 +1268,12 @@ export default function AckCard({ rowId, fetchAckDetails, setTabIndex }) {
                                     conained="text"
                                     color="red"
                                     className="mr-1 "
-
-
-
-
-
                                 >
                                     <span>Cancel</span>
                                 </Button>
                                 <Button
                                     conained="contained"
                                     type="submit"
-                                    //   color="green"
-                                    // onClick={handleCreateClose}
                                     className="bg-primary"
                                 >
                                     <span>Confirm</span>

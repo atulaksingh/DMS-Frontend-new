@@ -104,42 +104,6 @@ const Ack = ({ acknowledgementData, fetchAckDetails }) => {
         },
     });
 
-    // const columns = [
-    //     { name: "id", label: "ID", options: { display: false, filter: false, sort: false } },
-    //     { name: "return_type", label: "Return Type" },
-    //     { name: "month", label: "Month" },
-    //     { name: "frequency", label: "Frequency" },
-    //     { name: "return_period", label: "Return Period" },
-    //     { name: "from_date", label: "From Date" },
-    //     { name: "to_date", label: "To Date" },
-    //     {
-    //         name: "Actions",
-    //         options: {
-    //             customBodyRender: (value, tableMeta) => {
-    //                 const rowData = tableMeta.rowData;
-    //                 const actualRow = acknowledgementData.find(row =>
-    //                     row.return_type === rowData[1] && row.return_period === rowData[4] && row.id === rowData[0]);
-    //                 return <AckCard rowId={actualRow?.id} fetchAckDetails={fetchAckDetails} />;
-    //             },
-    //         },
-    //     }
-    // ];
-
-    // const options = {
-    //     search: true,
-    //     download: true,
-    //     print: true,
-    //     viewColumns: true,
-    //     filter: true,
-    //     filterType: "dropdown",
-    //     responsive: "vertical",
-    //     tableBodyHeight: "500px",
-    //     selectableRows: "none",
-    //     rowsPerPage: 13,
-    //     rowsPerPageOptions: [13, 25, 50],
-    // };
-
-
     const columns = [
         {
             name: "return_type",
@@ -206,15 +170,6 @@ const Ack = ({ acknowledgementData, fetchAckDetails }) => {
         {
             name: "Actions",
             options: {
-                // customBodyRenderLite: (dataIndex) => {
-                //     const rowData = acknowledgementData[dataIndex];
-                //     return (
-                //         <div>
-                //             {/* <BankCard rowId={rowData.id} /> */}
-                //             <AckCard rowId={rowData.id} fetchAckDetails={fetchAckDetails} setTabIndex={setTabIndex} />
-                //         </div>
-                //     );
-                // },
                 customBodyRender: (value, tableMeta) => {
                     const rowData = tableMeta.rowData;
                     const actualRow = acknowledgementData.find(row =>

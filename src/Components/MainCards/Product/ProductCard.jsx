@@ -18,6 +18,7 @@ import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { Autocomplete } from "@mui/material";
 import { TextField } from "@mui/material";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -178,6 +179,12 @@ export default function ProductCard({ rowId, fetchClients }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+
+    if (!formData.hsn) {
+      toast.error("Please select a valid HSN code from the list!");
+      return;
+    }
+
 
     try {
       // Create a FormData object
@@ -373,11 +380,12 @@ export default function ProductCard({ rowId, fetchClients }) {
                     </label>
 
                     <div className="">
-                      <Autocomplete
+                      {/* <Autocomplete
                         freeSolo
                         id="gst-no-autocomplete"
                         disableClearable
                         options={customerData}
+                        required
                         getOptionLabel={(option) =>
                           option &&
                             typeof option === "object" &&
@@ -400,6 +408,7 @@ export default function ProductCard({ rowId, fetchClients }) {
                           <TextField
                             {...params}
                             size="small"
+                            required
                             name="hsn"
                             value={formData.hsn || ""} // Bind value to formData.hsn
                             onChange={(e) =>
@@ -414,7 +423,32 @@ export default function ProductCard({ rowId, fetchClients }) {
                             }}
                           />
                         )}
+                      /> */}
+                      <Autocomplete
+                        id="gst-no-autocomplete"
+                        disableClearable
+                        options={customerData}
+                        getOptionLabel={(option) => String(option.hsn_code)} // always string
+                        onChange={(event, newValue) => {
+                          // Only set if a valid option is selected
+                          setFormData(prev => ({ ...prev, hsn: newValue ? newValue.id : null }));
+                        }}
+                        value={customerData.find(option => option.id === formData.hsn) || null}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option.id}>
+                            {String(option.hsn_code)}
+                          </li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            size="small"
+                            required
+                            placeholder="Select HSN Code"
+                          />
+                        )}
                       />
+
                     </div>
                   </div>
 
@@ -434,6 +468,7 @@ export default function ProductCard({ rowId, fetchClients }) {
                         type="text"
                         size="lg"
                         name="product_name"
+                        required
                         placeholder="Product Name"
                         value={formData.product_name}
                         onChange={handleInputChange}
@@ -461,6 +496,7 @@ export default function ProductCard({ rowId, fetchClients }) {
                         type="number"
                         size="lg"
                         name="unit_of_measure"
+                        required
                         placeholder="Unit of Measure"
                         value={formData.unit_of_measure}
                         onChange={handleInputChange}

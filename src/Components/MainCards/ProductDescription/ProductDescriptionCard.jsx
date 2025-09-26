@@ -16,6 +16,7 @@ import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ToastContainer, toast } from "react-toastify";
 import { Autocomplete } from "@mui/material";
 import { TextField } from "@mui/material";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const options = ["None", "Atria", "Callisto"];
 const style = {
   position: "absolute",
@@ -174,6 +175,11 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
 
+    if (!formData.product) {
+      toast.error("Please select a valid product from the list!");
+      return;
+    }
+
     try {
       // Create a FormData object
       const formDataToSend = new FormData();
@@ -228,7 +234,6 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
       });
     }
   };
-
 
   const handleGstNoChange = (event, newValue) => {
     if (newValue && newValue.id) {
@@ -383,7 +388,7 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
                     </label>
 
                     <div className="">
-                      <Autocomplete
+                      {/* <Autocomplete
                         freeSolo
                         id="gst-no-autocomplete"
                         disableClearable
@@ -424,7 +429,32 @@ export default function ProductDescriptionCard({ rowId, fetchClients }) {
                             }}
                           />
                         )}
+                      /> */}
+                      <Autocomplete
+                        id="product-autocomplete"
+                        disableClearable
+                        options={customerData}
+                        getOptionLabel={(option) => String(option.product_name)} // always string
+                        onChange={(event, newValue) => {
+                          // Only set formData.product if a valid option is selected
+                          setFormData(prev => ({ ...prev, product: newValue ? newValue.id : null }));
+                        }}
+                        value={customerData.find(option => option.id === formData.product) || null}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option.id}>
+                            {String(option.product_name)}
+                          </li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            size="small"
+                            required
+                            placeholder="Select Product"
+                          />
+                        )}
                       />
+
                     </div>
                   </div>
 

@@ -135,7 +135,7 @@ export default function DebitNoteCard({ rowId, fileData, fetchInvoiceDetails }) 
         // dispatch(fetchClientDetails(id));
         fetchInvoiceDetails()
       } else {
-        toast.error("Failed to delete Sales Invoice. Please try again.", {
+        toast.error("Failed to delete Debit Note Invoice. Please try again.", {
           position: "top-right",
           autoClose: 2000,
         });

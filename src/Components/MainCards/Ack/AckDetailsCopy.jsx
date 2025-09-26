@@ -146,7 +146,7 @@ function AckDetails() {
     };
     const fetchAckDetails = async () => {
         try {
-            const response = await axios.get(
+            const response = await axiosInstance.get(
                 `${API_URL}/api/detail-ack/${id}`
             );
             // console.log("branch------------->", response.data);

@@ -70,7 +70,7 @@ function PurchaseFileCreation() {
           },
         }
       );
-      toast.success("<Purchase></Purchase> E-way bill uploaded  successfully!", {
+      toast.success("Purchase Attach Invoice uploaded  successfully!", {
         position: "top-right",
         autoClose: 2000,
       });

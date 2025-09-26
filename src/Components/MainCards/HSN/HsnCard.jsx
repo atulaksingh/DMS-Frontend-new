@@ -17,6 +17,7 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 const options = ["None", "Atria", "Callisto"];
 const style = {

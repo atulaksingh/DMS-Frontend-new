@@ -9,6 +9,7 @@ import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -138,10 +139,11 @@ function HsnCreation({ fetchClients }) {
 
                     <div className="">
                       <Input
-                        type="number"
+                        type="text"
                         size="lg"
                         name="hsn_code"
                         placeholder="HSN Code"
+                        required
                         value={formData.hsn_code}
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
@@ -170,6 +172,7 @@ function HsnCreation({ fetchClients }) {
                         size="lg"
                         name="gst_rate"
                         placeholder="GST Rate"
+                        required
                         value={formData.gst_rate}
                         onChange={handleInputChange}
                         className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "

@@ -11,6 +11,7 @@ import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
@@ -45,6 +46,13 @@ function HsnFileCreation() {
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+    if (!attachment) {
+      toast.error("Please upload a file before submitting!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      return;
+    }
 
     try {
       // Create a FormData object
@@ -69,7 +77,7 @@ function HsnFileCreation() {
       );
 
       // console.log(response.data); // Handle success response
-      toast.success("PF File details created successfully!", {
+      toast.success("HSN created successfully!", {
         position: "top-right",
         autoClose: 2000,
       });
@@ -80,7 +88,7 @@ function HsnFileCreation() {
       setAttachment(null); // Clear the file input
     } catch (error) {
       console.error("Error submitting data:", error);
-      toast.error("Failed to create PF File details. Please try again.", {
+      toast.error("Failed to create HSN. Please try again.", {
         position: "top-right",
         autoClose: 2000,
       });
@@ -145,6 +153,7 @@ function HsnFileCreation() {
                             <input
                               name="file"
                               type="file"
+                              // required
                               className="hidden"
                               multiple
                               onChange={handleFileChange}

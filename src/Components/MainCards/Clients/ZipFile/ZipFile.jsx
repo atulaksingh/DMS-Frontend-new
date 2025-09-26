@@ -100,7 +100,6 @@ function ZipFile({ zipFileData }) {
         }),
         customBodyRender: (value) => {
           if (value) {
-            // Extracting the file name from the URL
             const fileName = value.split('/').pop();
 
             return (
@@ -183,9 +182,7 @@ function ZipFile({ zipFileData }) {
       options: {
         customBodyRenderLite: (dataIndex) => {
           const rowData = zipFileData[dataIndex];
-          return <div>{/* <BankCard rowId={rowData.id} /> */}
-            {/* <PurchaseCard rowId={rowData.id} fileData={purchaseInvoiceData.attach_e_way_bill}/>  */}
-            {/* <IncomeCard rowId={rowData.id} fileData={zipFileData.attach_e_way_bill} /> */}
+          return <div>
             <ZipFileCard rowId={rowData.id} />
           </div>;
         },
