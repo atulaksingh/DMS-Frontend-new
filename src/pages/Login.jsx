@@ -153,7 +153,7 @@ function Login() {
                   Log in
                 </Typography>
                 <Typography className="!text-gray-800 text-[14px] font-normal md:max-w-sm">
-                  Enter your email and password to login
+                  Enter your username and password to login
                 </Typography>
               </CardHeader>
               <CardBody>
@@ -167,7 +167,7 @@ function Login() {
                       >
                         <span className="flex items-center gap-2 ">
                           <MdEmail />
-                          Your Email
+                          Your Username
                         </span>
                       </Typography>
                     </label>
@@ -176,7 +176,7 @@ function Login() {
                       <Input
                         type="text"
                         name="username"
-                        placeholder="Email Address"
+                        placeholder="Username"
                         className="!border !border-[#366FA1] bg-white text-gray-900 shadow-lg  ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
