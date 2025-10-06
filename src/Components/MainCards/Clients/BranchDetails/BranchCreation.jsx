@@ -38,6 +38,7 @@ function BranchCreation() {
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
 
+
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
@@ -62,6 +63,7 @@ function BranchCreation() {
       state: state?.name, // Update formData with selected state
     }));
   };
+  console.log("cities", cities);
 
   const handleCityChange = (city) => {
     setSelectedCity(city);
@@ -96,7 +98,7 @@ function BranchCreation() {
   const branchRules = {
     branch_name: [
       { test: v => v.length > 0, message: "Branch name is required" },
-      { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch name can only contain letters, numbers, commas, apostrophes, and spaces" },
+      // { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch name can only contain letters, numbers, commas, apostrophes, and spaces" },
     ],
     contact: [
       { test: v => v.length > 0, message: "Contact number is required" },
@@ -105,7 +107,7 @@ function BranchCreation() {
     gst_no: [
       { test: v => v.length > 0, message: "GST number is required" },
       // { test: v => /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(v), message: "GST number must be valid (e.g., 22AAAAA0000A1Z5)" },
-      { test: v => v.length === 15, message: "GST number must be exactly 15 characters long" },
+      // { test: v => v.length === 15, message: "GST number must be exactly 15 characters long" },
     ],
     country: [
       { test: v => v.length > 0, message: "Country is required" },
@@ -125,7 +127,7 @@ function BranchCreation() {
     ],
     pincode: [
       { test: v => v.length > 0, message: "Pincode is required" },
-      { test: v => /^\d{6}$/.test(v), message: "Pincode must be exactly 6 digits" },
+      // { test: v => /^\d{6}$/.test(v), message: "Pincode must be exactly 6 digits" },
     ],
   };
 

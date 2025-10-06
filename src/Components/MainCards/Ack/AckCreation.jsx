@@ -283,7 +283,7 @@ function AckCreation({ fetchAckDetails }) {
                 setSelectedToDate(null); // Clear the selected date
             } else {
                 // If response doesn't indicate success, show error toast
-                toast.error("Failed to create bank details. Please check your input.", {
+                toast.error("Failed to create Acknowledgement details. Please check your input.", {
                     position: "top-right",
                     autoClose: 2000,
                 });
@@ -291,7 +291,7 @@ function AckCreation({ fetchAckDetails }) {
         } catch (error) {
 
             console.error("Error submitting data:", error);
-            toast.error("Failed to create bank details. Please try again.", {
+            toast.error("Failed to create Acknowledgement details. Please try again.", {
                 position: "top-right",
                 autoClose: 2000,
             });
@@ -469,6 +469,7 @@ function AckCreation({ fetchAckDetails }) {
                                                 //  className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                                 placeholderText="dd/mm/yyyy"
                                                 showYearDropdown
+                                                name="from_date"
                                                 scrollableYearDropdown
                                                 yearDropdownItemNumber={25}
 
@@ -503,6 +504,7 @@ function AckCreation({ fetchAckDetails }) {
                                                 //  className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                                                 placeholderText="dd/mm/yyyy"
                                                 showYearDropdown
+                                                name="to_date"
                                                 scrollableYearDropdown
                                                 yearDropdownItemNumber={25}
 
@@ -566,6 +568,7 @@ function AckCreation({ fetchAckDetails }) {
                                                 showMonthYearPicker
                                                 required
                                                 dateFormat="MMMM YYYY"
+                                                name="month"
                                                 className="w-full !border !border-[#cecece] bg-white py-2 pl-3 pr-10 text-gray-900 
                                                 focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md 
                                                 outline-none"

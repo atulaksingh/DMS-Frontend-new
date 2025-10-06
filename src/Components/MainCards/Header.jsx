@@ -175,6 +175,7 @@ function NavListMenuMaster() {
           <div
             className="flex items-center gap-2 py-2 text-sm pr-4 transition-colors duration-200 
         text-white/70 hover:text-white bg-transparent cursor-pointer"
+         name="clientview-btn"
           >
             Client Details
           </div>

@@ -254,6 +254,7 @@ function AirCreation() {
                 <Select
                   options={yearOptions}
                   required
+                  name="login_year"
                   value={yearOptions.find((option) => option.value === selectedYear)}
                   onChange={(selectedOption) => {
                     setSelectedYear(selectedOption.value);
@@ -278,6 +279,7 @@ function AirCreation() {
                     handleInputChange("month", format(date, "MMMM yyyy"));
                   }}
                   showMonthYearPicker
+                  name="month"
                   dateFormat="MMMM YYYY"
                   className="w-full px-3 py-2 border border-[#cecece] bg-white py-1 text-gray-900 focus:border-[#366FA1]"
                   placeholderText="Select Month"
@@ -310,7 +312,7 @@ function AirCreation() {
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-primary">
+              <Button type="submit" className="bg-primary" name="air_submit">
                 Confirm
               </Button>
             </DialogFooter>

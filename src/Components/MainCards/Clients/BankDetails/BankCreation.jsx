@@ -14,12 +14,12 @@ const API_URL = import.meta.env.VITE_API_BASE_URL;
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
-  left: "50%", 
+  left: "50%",
   transform: "translate(-50%, -50%)",
   width: 750,
   bgcolor: "background.paper",
   //   border: "1px solid #000",
-  boxShadow: 24, 
+  boxShadow: 24,
   p: 4,
   borderRadius: "10px",
 };
@@ -58,7 +58,7 @@ function BankCreation() {
     ],
     bank_name: [
       { test: v => v.length > 0, message: "Bank name is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Bank name can only contain alphabets and spaces" },
+      // { test: v => /^[A-Za-z\s]+$/.test(v), message: "Bank name can only contain alphabets and spaces" },
     ],
     ifsc: [
       { test: v => v.length > 0, message: "IFSC code is required" },
@@ -66,11 +66,11 @@ function BankCreation() {
     ],
     account_type: [
       { test: v => v.length > 0, message: "Account type is required" },
-      { test: v => ["savings", "current", "salary"].includes(v.toLowerCase()), message: "Account type must be Savings, Current, or Salary" },
+      // { test: v => ["savings", "current", "salary"].includes(v.toLowerCase()), message: "Account type must be Savings, Current, or Salary" },
     ],
     branch: [
       { test: v => v.length > 0, message: "Branch name is required" },
-      { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch can only contain letters, numbers and spaces" },
+      // { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch can only contain letters, numbers and spaces" },
     ],
     // files: [
     //   { test: v => v && v.length > 0, message: "At least one file is required" },
@@ -87,19 +87,19 @@ function BankCreation() {
     // ],
     files: [
       { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
-      {
-        test: (v) =>
-          Array.isArray(v) &&
-          v.every(
-            (f) =>
-              f.type === "application/pdf" ||
-              f.type.startsWith("image/") ||
-              f.type === "application/vnd.ms-excel" ||
-              f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-              f.type === "text/plain"
-          ),
-        message: "Only PDF, Image, Excel, or TXT files are allowed",
-      },
+      // {
+      //   test: (v) =>
+      //     Array.isArray(v) &&
+      //     v.every(
+      //       (f) =>
+      //         f.type === "application/pdf" ||
+      //         f.type.startsWith("image/") ||
+      //         f.type === "application/vnd.ms-excel" ||
+      //         f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      //         f.type === "text/plain"
+      //     ),
+      //   message: "Only PDF, Image, Excel, or TXT files are allowed",
+      // },
     ],
 
   };

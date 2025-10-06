@@ -404,12 +404,13 @@ function TdsPaymentCreation({
                         ref={dateRef}
                         selected={selectedDate}
                         onChange={handleDateChange}
+                        name = "date"
                         dateFormat="dd/MM/yyyy"
                         className="flex-1 py-2 pl-3 pr-2 text-gray-900 outline-none rounded-md"
                         placeholderText="dd/mm/yyyy"
                         showYearDropdown
                         required
-                        name="date_of_incorporation"
+                        // name="date_of_incorporation"
                         scrollableYearDropdown
                         yearDropdownItemNumber={25}
                       />
@@ -652,7 +653,8 @@ function TdsPaymentCreation({
                         placeholderText="dd/mm/yyyy"
                         showYearDropdown
                         required
-                        name="date_of_incorporation"
+                        name="tds_payment_date"
+                        // name="date_of_incorporation"
                         scrollableYearDropdown
                         yearDropdownItemNumber={25}
                       />
@@ -746,7 +748,7 @@ function TdsPaymentCreation({
                         <TextField
                           {...params}
                           size="small"
-                          name="name"
+                          name="tds_section"
                           value={formData.tds_section || ""} // Reset input value when formData.gst_no changes
                           onChange={(e) =>
                             handleTdsSectionOnChange(e, e.target.value)

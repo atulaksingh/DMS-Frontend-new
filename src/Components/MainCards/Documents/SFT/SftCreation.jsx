@@ -243,6 +243,7 @@ function SftCreation() {
                 <Select
                   options={yearOptions}
                   required
+                  name="login_year"
                   value={yearOptions.find((option) => option.value === selectedYear)}
                   onChange={(selectedOption) => {
                     setSelectedYear(selectedOption.value);
@@ -262,6 +263,7 @@ function SftCreation() {
                 <DatePicker
                   selected={selectedMonth}
                   required
+                  name="month"
                   onChange={(date) => {
                     setSelectedMonth(date);
                     handleInputChange("month", format(date, "MMMM yyyy"));
@@ -299,7 +301,7 @@ function SftCreation() {
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-primary">
+              <Button type="submit" className="bg-primary" name="sft_submit">
                 Confirm
               </Button>
             </DialogFooter>

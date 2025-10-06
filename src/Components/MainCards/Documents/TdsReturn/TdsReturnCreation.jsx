@@ -420,7 +420,7 @@ function TdsReturnCreation({
                           <TextField
                             {...params}
                             size="small"
-                            name="name"
+                            name="tds_section"
                             value={formData.tds_section || ""} // Reset input value when formData.gst_no changes
                             onChange={(e) =>
                               handleTdsSectionOnChange(e, e.target.value)
@@ -492,7 +492,7 @@ function TdsReturnCreation({
                         showYearDropdown
                         // value={formData.last_filed_return_ack_date}
                         required
-                        name="date_of_incorporation"
+                        name="date"
                         scrollableYearDropdown
                         yearDropdownItemNumber={25}
                       />
@@ -657,7 +657,7 @@ function TdsReturnCreation({
                         showYearDropdown
                         // value={formData.last_filed_return_ack_date}
                         required
-                        name="date_of_incorporation"
+                        name="last_filed_return_ack_date"
                         scrollableYearDropdown
                         yearDropdownItemNumber={25}
                       />

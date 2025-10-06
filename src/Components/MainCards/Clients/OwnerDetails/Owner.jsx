@@ -902,6 +902,7 @@ function Owner({ ownerData }) {
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="owner_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

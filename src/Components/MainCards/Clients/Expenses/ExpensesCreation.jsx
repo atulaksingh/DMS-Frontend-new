@@ -1740,7 +1740,8 @@ function ExpensesCreation({
                               ? parse(invoiceData[0].month, "dd-MM-yyyy", new Date())
                               : null
                           }
-                          value={invoiceData[0].month}
+                          // value={invoiceData[0].month}
+                          name="month"
                           onChange={handleDateChange}
                           dateFormat="dd-MM-yyyy"
                           className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
@@ -1780,6 +1781,7 @@ function ExpensesCreation({
                             : null
                         }
                         onChange={handleToDateChange}
+                        name="invoice_date"
                         dateFormat="dd-MM-yyyy"
                         className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
                                             focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"

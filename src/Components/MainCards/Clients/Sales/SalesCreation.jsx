@@ -1758,9 +1758,10 @@ function SalesCreation({
                             ? parse(invoiceData[0].po_date, "dd-MM-yyyy", new Date())
                             : null
                         }
-                        value={invoiceData[0].po_date}
+                        // value={invoiceData[0].po_date}
                         onChange={handleDateChange}
                         dateFormat="dd-MM-yyyy"
+                        name="po_date"
                         required
                         className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
                                             focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"
@@ -1798,6 +1799,7 @@ function SalesCreation({
                         }
                         onChange={handleToDateChange}
                         required
+                        name="invoice_date"
                         dateFormat="dd-MM-yyyy"
                         className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
                                             focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"

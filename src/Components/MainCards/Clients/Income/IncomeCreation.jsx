@@ -1736,13 +1736,14 @@ function IncomeCreation({
                             ? parse(invoiceData[0].month, "dd-MM-yyyy", new Date())
                             : null
                         }
-                        value={invoiceData[0].month}
+                        // value={invoiceData[0].month}
                         onChange={handleDateChange}
                         dateFormat="dd-MM-yyyy"
                         className="w-full !border !border-[#cecece] bg-white py-0.5 pl-3 text-gray-900 
                                             focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"
                         placeholderText="dd-mm-yyyy"
                         showYearDropdown
+                        name="month"
                         scrollableYearDropdown
                         yearDropdownItemNumber={25}
                       />
@@ -1780,6 +1781,7 @@ function IncomeCreation({
                                             focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md outline-none"
                         placeholderText="dd-mm-yyyy"
                         showYearDropdown
+                        name="invoice_date"
                         scrollableYearDropdown
                         yearDropdownItemNumber={25}
                       />
