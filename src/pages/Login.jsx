@@ -56,6 +56,7 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("API URL:", API_URL);  // ✅ Add this
 
     try {
       console.log("Sending login data:", formData);  // ✅ Add this
