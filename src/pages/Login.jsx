@@ -70,8 +70,8 @@ function Login() {
       if (response.status === 200 || response.status === 201) {
         dispatch(setUser(response.data));
 
-        // localStorage.setItem("user", JSON.stringify(response.data));
-        sessionStorage.setItem("user", JSON.stringify(response.data));
+        localStorage.setItem("user", JSON.stringify(response.data));
+        // sessionStorage.setItem("user", JSON.stringify(response.data));
         window.dispatchEvent(new Event("storage"));
 
         toast.success(`${response.data.message}`, {

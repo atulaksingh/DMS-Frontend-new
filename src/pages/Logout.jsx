@@ -1,3 +1,4 @@
 export const logout = () => {
-  sessionStorage.removeItem("user");
+  // sessionStorage.removeItem("user");
+  localStorage.removeItem("user");
 };
