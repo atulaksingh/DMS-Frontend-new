@@ -128,6 +128,7 @@ import { HomeIcon } from "@heroicons/react/16/solid";
 import Acknowledgement from "./Ack";
 import Ack from "./Ack";
 import { useSelector } from "react-redux";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 function AckDetails() {
     const { id } = useParams();

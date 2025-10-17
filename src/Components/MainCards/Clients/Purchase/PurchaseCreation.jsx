@@ -3069,6 +3069,7 @@ function PurchaseCreation({
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="purchase_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

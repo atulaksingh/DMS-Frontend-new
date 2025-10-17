@@ -229,7 +229,7 @@ export default function AcknowledgementCard({ rowId }) {
                 });
             }
 
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `http://127.0.0.1:8000/api/edit-acknowledgement/${id}/${rowId}`,
                 formDataToSend,
                 // foDataToSend,
@@ -340,7 +340,7 @@ export default function AcknowledgementCard({ rowId }) {
         setAnchorEl(null);
         const fetchBankDetails = async () => {
             try {
-                const response = await axios.get(
+                const response = await axiosInstance.get(
                     `http://127.0.0.1:8000/api/single-acknowledgement/${id}/${rowId}`
                 );
                 setAckData(response.data);
@@ -361,7 +361,7 @@ export default function AcknowledgementCard({ rowId }) {
         setAnchorEl(null);
 
         try {
-            const response = await axios.get(
+            const response = await axiosInstance.get(
                 `http://127.0.0.1:8000/api/edit-acknowledgement/${id}/${rowId}`
             );
             setFormData(response.data);

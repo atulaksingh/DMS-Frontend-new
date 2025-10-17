@@ -11,6 +11,7 @@ import Owner from "./OwnerDetails/Owner";
 import Bank from "./BankDetails/Bank";
 import Branch from "./BranchDetails/Branch";
 import ClientUser from "./ClientUser/ClientUser";
+import CustomerUser from "./CustomerUser/CustomerUser";
 import CompanyDocuments from "./CompanyDocuments/CompanyDocuments";
 import CV from "./CorV/CV";
 import Documents from "../Documents/Documents";
@@ -29,7 +30,11 @@ const navItems = [
   { name: "Owner Details" },
   { name: "Bank Details" },
   { name: "Branch Details" },
-  { name: "Client Users" },
+  // { name: "Client Users" },
+  {
+    name: "Users Creation",
+    subItems: ["Client User", "Customer User"], // <- added
+  },
   { name: "Company Documents" },
   { name: "Documents" },
   { name: "Customer&Vendor" },
@@ -51,6 +56,10 @@ function ClientDetails() {
   };
 
   const dispatch = useDispatch();
+  const [selectedSubTab, setSelectedSubTab] = useState("Client User");
+  const [userTypeTab, setUserTypeTab] = useState("Client User");
+
+
 
   // Select data from Redux store
   const {
@@ -59,6 +68,7 @@ function ClientDetails() {
     bankData,
     branchData,
     clientUserData,
+    customerUserData,
     companyDocData,
     CVData,
     PfData,
@@ -239,7 +249,7 @@ function ClientDetails() {
         {/* Horizontal Nav */}
         <div className="bg-white border-b border-gray-200 shadow-sm w-full overflow-x-auto">
           <div className="flex flex-nowrap gap-4 px-4 py-2 text-sm text-gray-700 min-w-max">
-            {navItems.map((item) => (
+            {/* {navItems.ap((item) => (
               <div
                 key={item.name}
                 className={`cursor-pointer whitespace-nowrap px-2 py-1  ${selectedTab === item.name
@@ -250,7 +260,37 @@ function ClientDetails() {
               >
                 {item.name}
               </div>
+            ))} */}
+            {navItems.map((item) => (
+              <div key={item.name} className="relative group">
+                <div
+                  className={`cursor-pointer whitespace-nowrap px-2 py-1 ${selectedTab === item.name
+                    ? "text-blue-600 font-semibold border-b-2 border-blue-600"
+                    : "hover:text-blue-500"
+                    }`}
+                  onClick={() => setSelectedTab(item.name)}
+                >
+                  {item.name}
+                </div>
+
+                {/* Dropdown for Users Creation */}
+                {/* {item.name === "Users Creation" && selectedTab === "Users Creation" && (
+                  <div className="absolute z-10 bg-white border border-gray-200 shadow-md mt-1 rounded w-40">
+                    {item.subItems.map((subItem) => (
+                      <div
+                        key={subItem}
+                        className={`px-4 py-2 text-sm cursor-pointer hover:bg-gray-100 ${selectedSubTab === subItem ? "bg-gray-100 font-medium" : ""
+                          }`}
+                        onClick={() => setSelectedSubTab(subItem)}
+                      >
+                        {subItem}
+                      </div>
+                    ))}
+                  </div>
+                )} */}
+              </div>
             ))}
+
           </div>
         </div>
 
@@ -526,15 +566,53 @@ function ClientDetails() {
               </div>
             </>
           )}
-          {selectedTab === "Client Users" && (
+          {/* {selectedTab === "Client Users" && (
             <>
               <div className=" px-20 py-6 rounded-md ">
                 <ClientUser clientUserData={clientUserData} />
+              </div>
+            </>
+          )} */}
+          {selectedTab === "Users Creation" && (
+            <>
+              <div className="px-20 py-6 rounded-md">
+                {/* Sub-tabs for user types */}
+                <div className="flex gap-4 mb-4">
+                  <button
+                    className={`px-4 py-2 rounded-md text-sm font-medium border ${userTypeTab === "Client User"
+                      ? "bg-primary hover:bg-[#2d5e85] text-white"
+                      : "bg-white text-gray-700 border-gray-300"
+                      }`}
+                    onClick={() => setUserTypeTab("Client User")}
+                  >
+                    Client User
+                  </button>
+                  <button
+                    className={`px-4 py-2 rounded-md text-sm font-medium border ${userTypeTab === "Customer User"
+                      ? "bg-primary hover:bg-[#2d5e85] text-white"
+                      : "bg-white text-gray-700 border-gray-300"
+                      }`}
+                    onClick={() => setUserTypeTab("Customer User")}
+                  >
+                    User
+                  </button>
+                </div>
 
-                {/* <p>👥 Client users content goes here.</p> */}
+                {/* Render the correct component */}
+                {userTypeTab === "Client User" && (
+                  <ClientUser clientUserData={clientUserData} />
+                )}
+                {userTypeTab === "Customer User" && (
+                  <CustomerUser customerUserData={customerUserData} />
+                  // <div className="text-gray-600 font-medium text-md">
+                  //   📌 Customer User component goes here.
+                  // </div>
+                  // OR: <CustomerUser /> if you have it
+                )}
               </div>
             </>
           )}
+
           {selectedTab === "Company Documents" && (
             <>
               <div className=" px-20 py-6 rounded-md ">

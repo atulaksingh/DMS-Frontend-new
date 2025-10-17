@@ -840,6 +840,7 @@ function TdsPaymentCreation({
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="tdspayment_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

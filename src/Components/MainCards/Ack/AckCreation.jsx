@@ -102,7 +102,7 @@ function AckCreation({ fetchAckDetails }) {
             { test: (v) => v.length > 0, message: "Client review is required" },
         ],
         remarks: [
-            { test: (v) => !v || v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+            { test: (v) => !v || v.length <= 500, message: "Remarks cannot exceed 500 characters" },
         ],
         month: [
             { test: (v) => v.length > 0, message: "Month is required" },
@@ -714,6 +714,7 @@ function AckCreation({ fetchAckDetails }) {
                                     conained="text"
                                     color="red"
                                     className="mr-1 "
+                                    name="ack_cancel"
                                 >
                                     <span>Cancel</span>
                                 </Button>

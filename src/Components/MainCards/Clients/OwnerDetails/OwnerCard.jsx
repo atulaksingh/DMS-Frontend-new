@@ -278,7 +278,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
     setAnchorEl(null);
     const fetchClientDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/single-owner/${id}/${rowId}`
         );
         // console.log("ss", response.data);

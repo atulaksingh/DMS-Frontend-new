@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 function CreditNoteInvoice({ rowId }) {
   const { id, purchID } = useParams();
@@ -12,7 +13,7 @@ function CreditNoteInvoice({ rowId }) {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/creditnote-view/${id}/${purchID}/${rowId}`
         );
         setInvoiceData(response.data);

@@ -2,6 +2,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
 function IncomeDebitNoteInvoice({ rowId }) {
   const { id, incomeID } = useParams();
@@ -13,7 +14,7 @@ function IncomeDebitNoteInvoice({ rowId }) {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/incomedebitnote-view/${id}/${incomeID}/${rowId}`
         );
         setInvoiceData(response.data);

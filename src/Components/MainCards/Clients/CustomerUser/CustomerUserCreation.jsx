@@ -328,6 +328,7 @@ function CustomerUserCreation() {
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="customeruser_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

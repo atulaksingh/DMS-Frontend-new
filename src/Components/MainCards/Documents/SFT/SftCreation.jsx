@@ -298,6 +298,7 @@ function SftCreation() {
                 variant="text"
                 color="red"
                 className="mr-1"
+                name="sft_cancel"
               >
                 Cancel
               </Button>

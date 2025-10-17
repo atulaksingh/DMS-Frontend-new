@@ -12,6 +12,7 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -213,7 +214,7 @@ function DebitNoteCreation({ fetchInvoiceDetails }) {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}`
         );
         // console.log("ggggggg->", response.data);
@@ -250,7 +251,7 @@ function DebitNoteCreation({ fetchInvoiceDetails }) {
 
       // Fetch additional data if needed
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         // console.log("Location Data:---->", response.data.branch_gst);
@@ -381,7 +382,7 @@ function DebitNoteCreation({ fetchInvoiceDetails }) {
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -682,7 +683,7 @@ function DebitNoteCreation({ fetchInvoiceDetails }) {
     };
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-debitnote-post2/${id}/${salesID}`,
         payload,
         {

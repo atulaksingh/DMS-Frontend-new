@@ -76,7 +76,7 @@ function ClientCreation() {
       { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
     ],
     remark: [
-      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+      { test: (v) => v.length <= 500, message: "Remarks cannot exceed 500 characters" },
     ],
     files: [
       { test: (v) => v && v.length > 0, message: "At least one file is required" },
@@ -176,7 +176,7 @@ function ClientCreation() {
       { test: (v) => v.length > 0, message: "Client name is required" },
       { test: (v) => /^[A-Za-z\s]+$/.test(v), message: "Client name can only contain alphabets and spaces" },
       { test: (v) => v.length >= 2, message: "Client name must be at least 2 characters long" },
-      
+
     ],
     entity_type: [
       { test: v => v && v.trim() !== "", message: "Entity type is required" },
@@ -713,7 +713,7 @@ function ClientCreation() {
                 />
               </div> */}
 
-              
+
               <div className="flex items-center w-full border border-[#cecece] rounded-md bg-white">
                 <DatePicker
                   ref={date}

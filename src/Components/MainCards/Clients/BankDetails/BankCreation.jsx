@@ -53,23 +53,23 @@ function BankCreation() {
 
   const bankRules = {
     account_no: [
-      { test: v => v.length > 0, message: "Account number is required" },
-      { test: v => /^\d{9,18}$/.test(v), message: "Account number must be 9 to 18 digits" },
+      { test: v => v.length > 0, message: "Bank Account number is required" },
+      { test: v => /^\d{9,18}$/.test(v), message: "Bank Account number must be 9 to 18 digits" },
     ],
     bank_name: [
       { test: v => v.length > 0, message: "Bank name is required" },
       // { test: v => /^[A-Za-z\s]+$/.test(v), message: "Bank name can only contain alphabets and spaces" },
     ],
     ifsc: [
-      { test: v => v.length > 0, message: "IFSC code is required" },
+      { test: v => v.length > 0, message: "Bank IFSC code is required" },
       // { test: (v) => /^[A-Z]{4}0[A-Z0-9]{6}$/.test(v), message: "IFSC must be in format: 4 letters, 0, followed by 6 characters (e.g., SBIN0001234)" },
     ],
     account_type: [
-      { test: v => v.length > 0, message: "Account type is required" },
+      { test: v => v.length > 0, message: "Bank Account type is required" },
       // { test: v => ["savings", "current", "salary"].includes(v.toLowerCase()), message: "Account type must be Savings, Current, or Salary" },
     ],
     branch: [
-      { test: v => v.length > 0, message: "Branch name is required" },
+      { test: v => v.length > 0, message: "Bank Branch name is required" },
       // { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch can only contain letters, numbers and spaces" },
     ],
     // files: [
@@ -86,7 +86,7 @@ function BankCreation() {
     //   },
     // ],
     files: [
-      { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
+      { test: (v) => Array.isArray(v) && v.length > 0, message: "Bank At least one file is required" },
       // {
       //   test: (v) =>
       //     Array.isArray(v) &&
@@ -420,6 +420,7 @@ function BankCreation() {
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="bank_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

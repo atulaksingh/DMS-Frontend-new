@@ -4,6 +4,7 @@ import Modal from "@mui/material/Modal";
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
 import { useParams } from "react-router-dom";
@@ -14,6 +15,8 @@ import "react-datepicker/dist/react-datepicker.css";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
+const API_URL = import.meta.env.VITE_API_BASE_URL;
+
 const styleCreateMOdal = {
     position: "absolute",
     top: "50%",
@@ -175,7 +178,7 @@ function AcknowledgementCreation() {
             }
 
             // Make a POST request to your API
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `${API_URL}/api/create-acknowledgement/${id}`,
                 formDataToSend,
                 {

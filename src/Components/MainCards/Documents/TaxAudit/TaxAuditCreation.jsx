@@ -87,24 +87,24 @@ function TaxAuditCreation() {
         test: (v) => Array.isArray(v) && v.length > 0,
         message: "At least one file is required",
       },
-      {
-        test: (v) =>
-          Array.isArray(v) &&
-          v.every(
-            (f) =>
-              f &&
-              typeof f === "object" &&
-              "type" in f &&
-              (
-                f.type === "application/pdf" ||
-                f.type.startsWith("image/") ||
-                f.type === "application/vnd.ms-excel" ||
-                f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-                f.type === "text/plain"
-              )
-          ),
-        message: "Only PDF, Image, Excel, or TXT files are allowed",
-      },
+      // {
+      //   test: (v) =>
+      //     Array.isArray(v) &&
+      //     v.every(
+      //       (f) =>
+      //         f &&
+      //         typeof f === "object" &&
+      //         "type" in f &&
+      //         (
+      //           f.type === "application/pdf" ||
+      //           f.type.startsWith("image/") ||
+      //           f.type === "application/vnd.ms-excel" ||
+      //           f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+      //           f.type === "text/plain"
+      //         )
+      //     ),
+      //   message: "Only PDF, Image, Excel, or TXT files are allowed",
+      // },
     ],
   };
 
@@ -298,6 +298,7 @@ function TaxAuditCreation() {
                 variant="text"
                 color="red"
                 className="mr-1"
+                name="taxaudit_cancel"
               >
                 Cancel
               </Button>

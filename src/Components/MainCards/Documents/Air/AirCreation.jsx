@@ -309,6 +309,7 @@ function AirCreation() {
                 variant="text"
                 color="red"
                 className="mr-1"
+                name="air_cancel"
               >
                 Cancel
               </Button>

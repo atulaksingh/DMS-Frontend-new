@@ -9,7 +9,7 @@ import { Input, Option, Select, Typography } from "@material-tailwind/react";
 import Modal from "@mui/material/Modal";
 import { DialogFooter, Button } from "@material-tailwind/react";
 import { Link, useParams } from "react-router-dom";
-import { useEffect } from "react"; 
+import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
@@ -79,7 +79,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
       { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
     ],
     remark: [
-      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+      { test: (v) => v.length <= 500, message: "Remarks cannot exceed 500 characters" },
     ],
     files: [
       { test: (v) => v && v.length > 0, message: "At least one file is required" },
@@ -109,7 +109,7 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
     const errorMsg = validateFileField(name, value);
     setErrors(prev => ({ ...prev, [name]: errorMsg }));
   };
-  
+
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files); // FileList → Array

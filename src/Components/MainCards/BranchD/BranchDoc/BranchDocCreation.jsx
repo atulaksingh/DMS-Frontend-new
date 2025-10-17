@@ -56,7 +56,7 @@ function BranchDocCreation({ fetchBranchDetails }) {
       { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
     ],
     remark: [
-      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+      { test: (v) => v.length <= 500, message: "Remarks cannot exceed 500 characters" },
     ],
     files: [
       { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
@@ -100,7 +100,7 @@ function BranchDocCreation({ fetchBranchDetails }) {
     setErrors(prev => ({ ...prev, [name]: errorMsg }));
 
   };
- 
+
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files); // FileList → Array
@@ -399,6 +399,7 @@ function BranchDocCreation({ fetchBranchDetails }) {
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="branchdoc_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

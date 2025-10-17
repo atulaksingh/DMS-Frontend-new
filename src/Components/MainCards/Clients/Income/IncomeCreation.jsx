@@ -3067,6 +3067,7 @@ function IncomeCreation({
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="income_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

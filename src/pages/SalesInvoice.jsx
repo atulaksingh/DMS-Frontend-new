@@ -1,7 +1,9 @@
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
+const API_URL = import.meta.env.VITE_API_BASE_URL;
 
 function SalesInvoice() {
   const { id, rowId } = useParams();
@@ -19,9 +21,11 @@ function SalesInvoice() {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        // console.log('aaaa')
+        const response = await axiosInstance.get(
           `${API_URL}/api/sales-view/${id}/${rowId}`
         );
+        console.log('response data', id)
         setInvoiceData(response.data);
         setLoading(false);
       } catch (error) {

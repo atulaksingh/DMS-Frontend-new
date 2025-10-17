@@ -40,6 +40,7 @@ import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { clearUser } from "../Redux/authSlice";
@@ -139,7 +140,7 @@ function NavListMenuMaster() {
       }
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `http://127.0.0.1:8000/api/create-sales/${id}`,
         formDataToSend,
         {
@@ -175,7 +176,7 @@ function NavListMenuMaster() {
           <div
             className="flex items-center gap-2 py-2 text-sm pr-4 transition-colors duration-200 
         text-white/70 hover:text-white bg-transparent cursor-pointer"
-         name="clientview-btn"
+            name="clientview-btn"
           >
             Client Details
           </div>

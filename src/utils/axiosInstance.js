@@ -1,4 +1,3 @@
-
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
@@ -19,6 +18,18 @@ instance.interceptors.request.use(
         return config;
     },
     (error) => {
+        return Promise.reject(error);
+    }
+);
+
+instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            // Token invalid or expired → clear session and redirect
+            localStorage.removeItem("user");
+            window.location.href = "/login"; // 👈 redirect to login page
+        }
         return Promise.reject(error);
     }
 );

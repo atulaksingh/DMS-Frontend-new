@@ -189,11 +189,30 @@ import DebitNote from "./Components/MainCards/Clients/DebitNote/DebitNote";
 import IncomeDebitNote from "./Components/MainCards/Clients/IncomeDebitNote/IncomeDebitNote";
 import ExpenseCreditNote from "./Components/MainCards/Clients/ExpenseCreditNote/ExpenseCreditNote";
 import AckDetails from "./Components/MainCards/Ack/AckDetails";
-
+import { useState, useEffect } from "react";
+// import axios from "./axios"; // your axios instance
+import axios from "./utils/axiosInstance"; // your axios instance
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from "./PublicRoute";
 
 function App() {
+
+  const [count, setCount] = useState(0);
+
+  // ✅ Token verification on app load
+  // useEffect(() => {
+  //   const storedUser = localStorage.getItem("user"); // check localStorage
+  //   if (storedUser) {
+  //     const { access } = JSON.parse(storedUser);
+  //     axios
+  //       .post("/api/token/verify/", { token: access })
+  //       .catch(() => {
+  //         // Invalid token → clear storage and redirect
+  //         localStorage.removeItem("user");
+  //         window.location.href = "/login";
+  //       });
+  //   }
+  // }, []);
   return (
     <Router>
       <Header />

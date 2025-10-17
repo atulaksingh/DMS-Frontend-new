@@ -465,6 +465,7 @@ function CVCreation() {
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="cv_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

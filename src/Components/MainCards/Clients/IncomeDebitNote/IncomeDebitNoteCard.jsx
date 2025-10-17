@@ -168,7 +168,7 @@ export default function IncomeDebitNoteCard({ rowId, fileData, fetchInvoiceDetai
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/incomedebitnote-view/${id}/${incomeID}/${rowId}`
         );
         setBankData(response.data);
@@ -279,7 +279,7 @@ export default function IncomeDebitNoteCard({ rowId, fileData, fetchInvoiceDetai
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/get-incomedebitnote/${id}/${incomeID}/${rowId}`
       );
       //   console.log("dd123", response.data);
@@ -355,7 +355,7 @@ export default function IncomeDebitNoteCard({ rowId, fileData, fetchInvoiceDetai
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-incomedebitnote/${id}`
         );
         // console.log("ggggggg->", response.data);
@@ -391,7 +391,7 @@ export default function IncomeDebitNoteCard({ rowId, fileData, fetchInvoiceDetai
         setFormData(updatedFormData);
         setShowBranchInput(false);
 
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-incomedebitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
@@ -506,7 +506,7 @@ export default function IncomeDebitNoteCard({ rowId, fileData, fetchInvoiceDetai
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-incomedebitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -772,7 +772,7 @@ export default function IncomeDebitNoteCard({ rowId, fileData, fetchInvoiceDetai
     };
 
     try {
-      const response = await axios.put(
+      const response = await axiosInstance.put(
         `${API_URL}/api/update-incomedebitnote/${id}/${incomeID}/${rowId}`,
         payload,
         {

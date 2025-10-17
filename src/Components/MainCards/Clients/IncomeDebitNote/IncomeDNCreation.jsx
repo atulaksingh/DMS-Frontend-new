@@ -10,6 +10,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 import DatePicker from "react-datepicker";
@@ -236,7 +237,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/get-incomedebitnote/${id}/${incomeID}`
       );
       //   console.log("dd123", response.data);
@@ -313,7 +314,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}`
         );
         // console.log("ggggggg->", response.data);
@@ -350,7 +351,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
         setFormData(updatedFormData);
         setShowBranchInput(false);
 
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
@@ -465,7 +466,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -731,7 +732,7 @@ function IncomeDNCreation({ fetchInvoiceDetails }) {
     };
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/update-incomedebitnote/${id}/${incomeID}`,
         payload,
         {

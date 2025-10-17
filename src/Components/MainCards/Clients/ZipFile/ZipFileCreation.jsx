@@ -223,6 +223,7 @@ function ZipFileCreation() {
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="zipupload_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

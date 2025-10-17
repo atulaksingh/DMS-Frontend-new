@@ -10,6 +10,7 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -214,7 +215,7 @@ function ExpensesCreditNoteCreation() {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-creditnote/${id}`
         );
         // console.log("ggggggg->", response.data);
@@ -250,7 +251,7 @@ function ExpensesCreditNoteCreation() {
 
       // Fetch additional data if needed
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-creditnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         // console.log("Location Data:---->", response.data.branch_gst);
@@ -379,7 +380,7 @@ function ExpensesCreditNoteCreation() {
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-creditnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -682,7 +683,7 @@ function ExpensesCreditNoteCreation() {
     };
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-expensescreditnote-post2/${id}/${expensesID}`,
         payload,
         {

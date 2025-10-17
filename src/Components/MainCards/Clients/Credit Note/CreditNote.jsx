@@ -11,6 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 import { Link, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import CreditNoteCreation from "./CreditNoteCreation";
 import CreditNoteFileCreation from "./CreditNoteFileCreation";
 import CreditNoteCard from "./CreditNoteCard";
@@ -49,7 +50,7 @@ function CreditNote() {
   // console.log("res", creditNoteData);
   const fetchInvoiceDetails = async () => {
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/creditnote-list/${id}/${purchID}`
       );
       // console.log("gggggggg",response)

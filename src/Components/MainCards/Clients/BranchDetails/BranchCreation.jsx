@@ -788,6 +788,7 @@ function BranchCreation() {
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="branch_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

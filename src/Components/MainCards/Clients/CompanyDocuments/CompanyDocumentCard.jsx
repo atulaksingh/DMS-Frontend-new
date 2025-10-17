@@ -86,7 +86,7 @@ export default function CompanyDocumentCard({ rowId }) {
       { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
     ],
     remark: [
-      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+      { test: (v) => v.length <= 500, message: "Remarks cannot exceed 500 characters" },
     ],
     files: [
       { test: (v) => v && v.length > 0, message: "At least one file is required" },

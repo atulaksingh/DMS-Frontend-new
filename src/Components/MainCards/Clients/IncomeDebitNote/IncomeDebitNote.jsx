@@ -16,6 +16,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link, useLocation, useParams } from "react-router-dom";
 
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import IncomeDebitNoteFileCreation from "./IncomeDebitNoteFileCreation";
 import IncomeDebitNoteCreation from "./IncomeDebitNoteCreation";
 import IncomeDebitNoteCard from "./IncomeDebitNoteCard";
@@ -54,7 +55,7 @@ function IncomeDebitNote() {
 
   const fetchInvoiceDetails = async () => {
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/incomedebitnote-list/${id}/${incomeID}`
       );
       const apiData = response.data;

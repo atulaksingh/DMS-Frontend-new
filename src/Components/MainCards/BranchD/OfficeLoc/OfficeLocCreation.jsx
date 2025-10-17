@@ -559,6 +559,7 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="officelocation_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

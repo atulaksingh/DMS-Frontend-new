@@ -3095,6 +3095,7 @@ function SalesCreation({
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="sales_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

@@ -166,7 +166,7 @@ export default function DebitNoteCard({ rowId, fileData, fetchInvoiceDetails }) 
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/debitnote-view/${id}/${salesID}/${rowId}`
         );
         setBankData(response.data);
@@ -277,7 +277,7 @@ export default function DebitNoteCard({ rowId, fileData, fetchInvoiceDetails }) 
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/get-debitnote-invoice/${id}/${salesID}/${rowId}`
       );
       //   console.log("dd123", response.data);
@@ -353,7 +353,7 @@ export default function DebitNoteCard({ rowId, fileData, fetchInvoiceDetails }) 
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}`
         );
         // console.log("ggggggg->", response.data);
@@ -389,7 +389,7 @@ export default function DebitNoteCard({ rowId, fileData, fetchInvoiceDetails }) 
         setFormData(updatedFormData);
         setShowBranchInput(false);
 
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
@@ -504,7 +504,7 @@ export default function DebitNoteCard({ rowId, fileData, fetchInvoiceDetails }) 
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -770,7 +770,7 @@ export default function DebitNoteCard({ rowId, fileData, fetchInvoiceDetails }) 
     };
 
     try {
-      const response = await axios.put(
+      const response = await axiosInstance.put(
         `${API_URL}/api/update-debitnote-post/${id}/${salesID}/${rowId}`,
         payload,
         {

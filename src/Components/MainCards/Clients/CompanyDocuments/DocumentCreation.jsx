@@ -76,7 +76,7 @@ function DocumentCreation() {
       { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
     ],
     remark: [
-      { test: (v) => v.length <= 200, message: "Remarks cannot exceed 200 characters" },
+      { test: (v) => v.length <= 500, message: "Remarks cannot exceed 500 characters" },
     ],
     files: [
       { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
@@ -192,20 +192,20 @@ function DocumentCreation() {
         handleCreateClose();
 
         // Optionally close the modal and reset form
-        toast.success("Branch Documents details created successfully!", {
+        toast.success("Company Documents details created successfully!", {
           position: "top-right",
           autoClose: 2000,
         });
       } else {
         // Handle error response (if not 200)
-        toast.error("Failed to create Branch documents details. Please try again.", {
+        toast.error("Failed to create company documents details. Please try again.", {
           position: "top-right",
           autoClose: 2000,
         });
       }
     } catch (error) {
       console.error("Error submitting data:", error);
-      toast.error("Failed to create Branch details. Please try again.", {
+      toast.error("Failed to create company details. Please try again.", {
         position: "top-right",
         autoClose: 2000,
       });
@@ -455,6 +455,7 @@ function DocumentCreation() {
                   conained="text"
                   color="red"
                   className="mr-1 "
+                  name="companydoc_cancel"
                 >
                   <span>Cancel</span>
                 </Button>

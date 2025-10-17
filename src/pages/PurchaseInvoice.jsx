@@ -22,7 +22,7 @@ function PurchaseInvoice() {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/purchase-view/${id}/${rowId}`
         );
         console.log("res", response.data);

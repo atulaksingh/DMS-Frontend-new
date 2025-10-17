@@ -10,6 +10,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { ImFilePicture } from "react-icons/im";
 import { ToastContainer, toast } from "react-toastify";
 import { RxSlash } from "react-icons/rx";
@@ -238,7 +239,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/get-debitnote-invoice/${id}/${salesID}`
       );
       //   console.log("dd123", response.data);
@@ -315,7 +316,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}`
         );
         // console.log("ggggggg->", response.data);
@@ -352,7 +353,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
         setFormData(updatedFormData);
         setShowBranchInput(false);
 
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
@@ -467,7 +468,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-debitnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -733,7 +734,7 @@ function NewDCreation({ fetchInvoiceDetails }) {
     };
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/update-debitnote-post/${id}/${salesID}`,
         payload,
         {

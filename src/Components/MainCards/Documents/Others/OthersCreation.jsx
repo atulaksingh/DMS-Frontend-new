@@ -195,7 +195,7 @@ function OthersCreation() {
 
             console.log("FormData being sent:", formDataToSend.get("text")); // Check if text is included
 
-            // const response = await axios.post(`api/create-others/${id}`, formDataToSend, {
+            // const response = await axiosInstance.post(`api/create-others/${id}`, formDataToSend, {
             //     headers: { "Content-Type": "multipart/form-data" }
             // });
 
@@ -359,6 +359,7 @@ function OthersCreation() {
                                 variant="text"
                                 color="red"
                                 className="mr-1"
+                                name="others_cancel"
                             >
                                 Cancel
                             </Button>

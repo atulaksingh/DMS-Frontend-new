@@ -3,6 +3,7 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -41,7 +42,7 @@ function TdsSectionFileCreation() {
     const handleDownloadTemplate = async () => {
         try {
             // API call to get the file URL
-            const response = await axios.get(`${API_URL}/api/get-excel-file`);
+            const response = await axiosInstance.get(`${API_URL}/api/get-excel-file`);
             console.log("API Response:", response.data); // Debugging line
 
             if (response.data && response.data.length > 0) {
@@ -92,7 +93,7 @@ function TdsSectionFileCreation() {
             }
 
             // Make a POST request to your API
-            const response = await axios.post(
+            const response = await axiosInstance.post(
                 `${API_URL}/api/create-tdssectionfile`,
                 formDataToSend,
                 {

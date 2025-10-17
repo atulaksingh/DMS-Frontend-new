@@ -83,7 +83,7 @@ export default function TdsSectionCard({ rowId }) {
       formDataToSend.append("name", formData.name);
 
       // Make a POST request to your API
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/edit-tdssection/${rowId}`,
         formDataToSend,
         {
@@ -165,7 +165,7 @@ export default function TdsSectionCard({ rowId }) {
     setOpenViewModal(true);
     setAnchorEl(null);
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/single-tdssection/${rowId}`
       );
       setTdsSectionData(response.data);
@@ -183,7 +183,7 @@ export default function TdsSectionCard({ rowId }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/edit-tdssection/${rowId}`
       );
       // console.log("dd", response.data);

@@ -172,7 +172,7 @@ function ExpensesCNCreation({ fetchInvoiceDetails }) {
   // useEffect(() => {
   //   const fetchBankDetails = async () => {
   //     try {
-  //       const response = await axios.get(
+  //       const response = await axiosInstance.get(
   //         `${API_URL}/api/creditnote-view/${id}/${purchID}`
   //       );
   //       // console.log("purch",response)
@@ -287,7 +287,7 @@ function ExpensesCNCreation({ fetchInvoiceDetails }) {
     setAnchorEl(null);
 
     try {
-      const response = await axios.get(
+      const response = await axiosInstance.get(
         `${API_URL}/api/get-expensescreditnote/${id}/${expensesID}`
       );
       console.log("dd123", response.data);
@@ -375,7 +375,7 @@ function ExpensesCNCreation({ fetchInvoiceDetails }) {
   useEffect(() => {
     const fetchBankDetails = async () => {
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-creditnote/${id}`
         );
         // console.log("ggggggg->", response.data);
@@ -412,7 +412,7 @@ function ExpensesCNCreation({ fetchInvoiceDetails }) {
         setFormData(updatedFormData);
         setShowBranchInput(false);
 
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-creditnote/${id}/?newValue=${newValue.id}&productID=${productID}`
         );
         setBranchNoGst(response.data.branch_gst || "N/A");
@@ -527,7 +527,7 @@ function ExpensesCNCreation({ fetchInvoiceDetails }) {
     if (newValue) {
       setProductID(newValue.id); // Assuming setProductID is defined elsewhere
       try {
-        const response = await axios.get(
+        const response = await axiosInstance.get(
           `${API_URL}/api/get-creditnote/${id}/?newValue=${selectedLocation}&productID=${newValue.id}`
         );
 
@@ -793,7 +793,7 @@ function ExpensesCNCreation({ fetchInvoiceDetails }) {
     };
 
     try {
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/update-expensescreditnote/${id}/${expensesID}`,
         payload,
         {

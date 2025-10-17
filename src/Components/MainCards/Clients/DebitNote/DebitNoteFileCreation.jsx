@@ -3,6 +3,7 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
+import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
 import { ToastContainer, toast } from "react-toastify";
@@ -57,7 +58,7 @@ function DebitNoteFileCreation({ fetchInvoiceDetails }) {
         formDataToSend.append("attach_e_way_bill", formData.files[i]);
       }
 
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${API_URL}/api/create-debitnote/${id}/${salesID}`,
         formDataToSend,
         {
