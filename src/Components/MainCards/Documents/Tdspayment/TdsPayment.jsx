@@ -44,7 +44,7 @@ function TdsPayment({ tdsPaymentData, tdsSectionData }) {
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
-    const calculatedHeight = tdsPaymentData.length * rowHeight;
+    const calculatedHeight = tdsPaymentData?.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
       : `${calculatedHeight}px`;
@@ -249,7 +249,7 @@ function TdsPayment({ tdsPaymentData, tdsSectionData }) {
             <TdsPaymentCreation allTdsSectionData={allTdsSectionData} fetchAllTdsSectionDetails={fetchAllTdsSectionDetails} />
           </div>
         </div>
-        {Array.isArray(tdsPaymentData) && tdsPaymentData.length > 0 ? (
+        {Array.isArray(tdsPaymentData) && tdsPaymentData?.length > 0 ? (
           <CacheProvider value={muiCache}>
             <ThemeProvider theme={theme}>
               <MUIDataTable

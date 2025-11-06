@@ -34,7 +34,7 @@ function Air({ airData }) {
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
-    const calculatedHeight = airData.length * rowHeight;
+    const calculatedHeight = airData?.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
       : `${calculatedHeight}px`;
@@ -227,7 +227,7 @@ function Air({ airData }) {
             <AirCreation />
           </div>
         </div>
-        {Array.isArray(airData) && airData.length > 0 ? (
+        {Array.isArray(airData) && airData?.length > 0 ? (
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable

@@ -41,11 +41,10 @@ const styleCreateMOdal = {
 };
 function Owner({ ownerData }) {
   if (!ownerData) return <div>No owner data available</div>;
-  const [ownerShare, setOwnerShare] = useState("")
+  const [ownerShare, setOwnerShare] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [ownerErrors, setOwnerErrors] = useState({});
   const [errorMessage, setErrorMessage] = useState("");
-
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -57,10 +56,9 @@ function Owner({ ownerData }) {
     setShowUserPassword(!showUserPassword);
   };
 
-
   const { id } = useParams();
   const role = getUserRole();
-  console.log("Role from token:", getUserRole());
+  // console.log("Role from token:", getUserRole());
   const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     first_name: "",
@@ -82,53 +80,98 @@ function Owner({ ownerData }) {
 
   const ownerRules = {
     first_name: [
-      { test: v => v.length > 0, message: "First name is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "First name can only contain alphabets and spaces" },
-      { test: v => v.length >= 2, message: "First name must be at least 2 characters long" },
+      { test: (v) => v.length > 0, message: "First name is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "First name can only contain alphabets and spaces",
+      },
+      {
+        test: (v) => v.length >= 2,
+        message: "First name must be at least 2 characters long",
+      },
     ],
     last_name: [
-      { test: v => v.length > 0, message: "Last name is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Last name can only contain alphabets and spaces" },
-      { test: v => v.length >= 2, message: "Last name must be at least 2 characters long" },
+      { test: (v) => v.length > 0, message: "Last name is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Last name can only contain alphabets and spaces",
+      },
+      {
+        test: (v) => v.length >= 2,
+        message: "Last name must be at least 2 characters long",
+      },
     ],
     share: [
-      { test: v => v.length > 0, message: "Share is required" },
-      { test: v => /^\d+(\.\d+)?$/.test(v), message: "Share must be a valid number" },
-      { test: v => parseFloat(v) > 0 && parseFloat(v) <= 100, message: "Share must be between 0 and 100" },
+      { test: (v) => v.length > 0, message: "Share is required" },
+      {
+        test: (v) => /^\d+(\.\d+)?$/.test(v),
+        message: "Share must be a valid number",
+      },
+      {
+        test: (v) => parseFloat(v) > 0 && parseFloat(v) <= 100,
+        message: "Share must be between 0 and 100",
+      },
     ],
     pan: [
-      { test: v => v.length > 0, message: "PAN number is required" },
-      { test: v => /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v), message: "Invalid PAN format (e.g., ABCDE1234F)" },
+      { test: (v) => v.length > 0, message: "PAN number is required" },
+      {
+        test: (v) => /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v),
+        message: "Invalid PAN format (e.g., ABCDE1234F)",
+      },
     ],
     aadhar: [
-      { test: v => v.length > 0, message: "Aadhar number is required" },
-      { test: v => /^\d{12}$/.test(v), message: "Aadhar number must be 12 digits" },
+      { test: (v) => v.length > 0, message: "Aadhar number is required" },
+      {
+        test: (v) => /^\d{12}$/.test(v),
+        message: "Aadhar number must be 12 digits",
+      },
     ],
     email: [
-      { test: v => v.length > 0, message: "Email is required" },
-      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" },
+      { test: (v) => v.length > 0, message: "Email is required" },
+      {
+        test: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+        message: "Invalid email format",
+      },
     ],
     username: [
-      { test: v => v.length > 0, message: "Username is required" },
-      { test: v => /^[a-zA-Z0-9_]+$/.test(v), message: "Username can only contain letters, numbers, and underscores" },
+      { test: (v) => v.length > 0, message: "Username is required" },
+      {
+        test: (v) => /^[a-zA-Z0-9_]+$/.test(v),
+        message: "Username can only contain letters, numbers, and underscores",
+      },
     ],
     it_password: [
-      { test: v => v.length > 0, message: "IT password is required" },
-      { test: v => v.length >= 6, message: "IT password must be at least 6 characters long" },
+      { test: (v) => v.length > 0, message: "IT password is required" },
+      {
+        test: (v) => v.length >= 6,
+        message: "IT password must be at least 6 characters long",
+      },
     ],
     mobile_number: [
-      { test: v => v.length > 0, message: "Mobile number is required" },
-      { test: v => /^\d{10}$/.test(v), message: "Mobile number must be exactly 10 digits" },
+      { test: (v) => v.length > 0, message: "Mobile number is required" },
+      {
+        test: (v) => /^\d{10}$/.test(v),
+        message: "Mobile number must be exactly 10 digits",
+      },
     ],
     user_password: [
-      { test: v => v.length > 0, message: "User password is required" },
-      { test: v => v.length >= 6, message: "User password must be at least 6 characters long" },
+      { test: (v) => v.length > 0, message: "User password is required" },
+      {
+        test: (v) => v.length >= 6,
+        message: "User password must be at least 6 characters long",
+      },
     ],
     is_admin: [
-      { test: v => typeof v === "boolean", message: "Is Admin must be true or false" },
+      {
+        test: (v) => typeof v === "boolean",
+        message: "Is Admin must be true or false",
+      },
     ],
     is_active: [
-      { test: v => typeof v === "boolean", message: "Is Active must be true or false" },
+      {
+        test: (v) => typeof v === "boolean",
+        message: "Is Active must be true or false",
+      },
     ],
   };
 
@@ -155,7 +198,7 @@ function Owner({ ownerData }) {
   const handleCheckboxChange = (e) => {
     setFormData((prevData) => ({
       ...prevData,
-      isadmin: e.target.checked,  // Update isadmin based on checkbox state
+      isadmin: e.target.checked, // Update isadmin based on checkbox state
       // is_active: e.target.checked, // Update is_active based on checkbox state
     }));
   };
@@ -174,8 +217,7 @@ function Owner({ ownerData }) {
         `${API_URL}/api/create-owner/${id}`,
         formData
       );
-      setOwnerShare(response?.data?.remaining_shares)
-
+      setOwnerShare(response?.data?.remaining_shares);
     } catch (error) {
       console.error("Error creating owner:", error);
       toast.error("An error occurred. Please try again.", {
@@ -184,12 +226,12 @@ function Owner({ ownerData }) {
       });
     }
   };
+  
   useEffect(() => {
-
     if (id) {
       createOwnerShare();
     }
-  }, [id,]); // Re-run if `id` or `formData` changes
+  }, [id]); 
 
   const handleSubmit = async (e) => {
     // console.log("enter");
@@ -221,14 +263,13 @@ function Owner({ ownerData }) {
       );
       console.log(response.data); // Handle success response
 
-
       if (response.status === 200 || response.status === 201) {
         toast.success(`${response.data.message}`, {
           position: "top-right",
           autoClose: 2000,
         });
-        createOwnerShare()
-        dispatch(fetchClientDetails(id));
+        createOwnerShare();
+        dispatch(fetchClientDetails({ id, tabName: "Owner" }));
         handleCreateClose();
         // setErrorMessage("");
         setFormData({
@@ -245,18 +286,12 @@ function Owner({ ownerData }) {
           // isadmin: "",
           // is_active: "",
         });
-
       } else {
         toast.error(`${response.data.error_message || response.data.message}`, {
           position: "top-right",
           autoClose: 2000,
         });
       }
-
-
-
-
-
     } catch (error) {
       console.error("Error submitting data:", error);
 
@@ -285,8 +320,8 @@ function Owner({ ownerData }) {
   };
 
   const calculateTableBodyHeight = () => {
-    const rowHeight = 80; // Approximate height for one row
-    const maxHeight = 525; // Maximum table body height
+    const rowHeight = 80; 
+    const maxHeight = 525; 
     const calculatedHeight = ownerData.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
@@ -435,7 +470,11 @@ function Owner({ ownerData }) {
           const rowData = ownerData[dataIndex];
           return (
             <div>
-              <OwnerCard rowId={rowData.id} createOwnerShare={createOwnerShare} ownerShare={ownerShare} />
+              <OwnerCard
+                rowId={rowData.id}
+                createOwnerShare={createOwnerShare}
+                ownerShare={ownerShare}
+              />
             </div>
           );
         },
@@ -592,7 +631,10 @@ function Owner({ ownerData }) {
                         color="blue-gray"
                         className="font-semibold mb-2 flex gap-2 "
                       >
-                        Share    <div className="text-green-400 text-sm">{ownerShare}% left</div>
+                        Share{" "}
+                        <div className="text-green-400 text-sm">
+                          {ownerShare}% left
+                        </div>
                       </Typography>
                     </label>
 
@@ -893,7 +935,6 @@ function Owner({ ownerData }) {
                       />
                     </div>
                   </div>
-
                 </div>
               </div>
               <DialogFooter>
@@ -927,7 +968,7 @@ function Owner({ ownerData }) {
             Owner Details
           </div>
           <div>
-            {((role === "superuser" || role === "clientuser")) && (
+            {(role === "superuser" || role === "clientuser") && (
               <Button
                 variant="filled"
                 size="md"

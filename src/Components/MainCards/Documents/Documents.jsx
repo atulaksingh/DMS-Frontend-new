@@ -12,17 +12,20 @@ import TdsReturn from "./TdsReturn/TdsReturn";
 import TdsPayment from "./Tdspayment/TdsPayment";
 import TdsSection from "./Tdssection/TdsSection";
 import Others from "./Others/Others";
-function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsPaymentData, tdsSectionData, othersData }) {
+function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsPaymentData, tdsSectionData, othersData, handleDocTabClick, currentTab }) {
   const [value, setValue] = React.useState("1");
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
+  // const handleChange = (event, newValue) => {
+  //   setValue(newValue);
+  // };
+    const handleChange = (event, newValue) => {
+    handleDocTabClick(newValue);
   };
   return (
     <>
       {/* <div>Documents</div> */}
 
       <Box sx={{ width: "100%", typography: "body1" }}>
-        <TabContext value={value}>
+        <TabContext value={currentTab}>
           <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
             <TabList
               onChange={handleChange}
@@ -36,6 +39,8 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
               <Tab
                 label="PF"
                 value="1"
+                //  onClick={() => handleDocTabClick("PF")}
+
                 sx={{
                   "&.Mui-selected": {
                     color: "primary", // Color of the selected tab text
@@ -50,6 +55,7 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
               <Tab
                 label="Tax Audit"
                 value="2"
+                //  onClick={() => handleDocTabClick("TaxAudit")}
                 sx={{
                   "&.Mui-selected": {
                     color: "primary",
@@ -65,6 +71,7 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
                 label="AIR"
                 value="3"
                 fontWeight="bold"
+                //  onClick={() => handleDocTabClick("AIR", "airData")}
                 sx={{
                   "&.Mui-selected": {
                     color: "primary",
@@ -80,6 +87,7 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
                 label="SFT"
                 value="4"
                 fontWeight="bold"
+                //  onClick={() => handleDocTabClick("SFT", "sftData")}
                 sx={{
                   "&.Mui-selected": {
                     color: "primary",
@@ -95,6 +103,7 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
                 label="TDS Payments"
                 value="5"
                 fontWeight="bold"
+                  // onClick={() => handleDocTabClick("TDSPayment", "tdsPaymentData")}
                 sx={{
                   "&.Mui-selected": {
                     color: "primary",
@@ -110,6 +119,7 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
                 label="TDS Return"
                 value="6"
                 fontWeight="bold"
+                  // onClick={() => handleDocTabClick("TDSReturn", "tdsReturnData")}
                 sx={{
                   "&.Mui-selected": {
                     color: "primary",
@@ -140,6 +150,7 @@ function Documents({ PfData, taxAuditData, airData, sftData, tdsReturnData, tdsP
                 label="Others"
                 value="8"
                 fontWeight="bold"
+                  // onClick={() => handleDocTabClick("Others", "othersData")}
                 sx={{
                   "&.Mui-selected": {
                     color: "primary",

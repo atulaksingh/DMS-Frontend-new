@@ -38,7 +38,7 @@ function TaxAudit({ taxAuditData }) {
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
-    const calculatedHeight = taxAuditData.length * rowHeight;
+    const calculatedHeight = taxAuditData?.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
       : `${calculatedHeight}px`;
@@ -232,7 +232,7 @@ function TaxAudit({ taxAuditData }) {
             <TaxAuditCreation />
           </div>
         </div>
-        {Array.isArray(taxAuditData) && taxAuditData.length > 0 ?(
+        {Array.isArray(taxAuditData) && taxAuditData?.length > 0 ?(
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable data={taxAuditData} columns={columns} options={options} />

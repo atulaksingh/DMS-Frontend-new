@@ -202,7 +202,7 @@ function Hsn({ hsnData , fetchClients }) {
   });
 
   const renderNoData = () => (
-    <div className="w-full border rounded-lg shadow-md p-10 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
+    <div className="w-full border rounded-lg shadow-md p-5 flex flex-col items-center justify-center text-red-900 text-lg bg-white">
       No HSN data available !!
     </div>
   );

@@ -36,7 +36,7 @@ function Sft({ sftData }) {
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
-    const calculatedHeight = sftData.length * rowHeight;
+    const calculatedHeight = sftData?.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
       : `${calculatedHeight}px`;
@@ -228,7 +228,7 @@ function Sft({ sftData }) {
         <SftCreation />
           </div>
         </div>
-        {Array.isArray(sftData) && sftData.length > 0 ?(
+        {Array.isArray(sftData) && sftData?.length > 0 ?(
         <CacheProvider value={muiCache}>
           <ThemeProvider theme={theme}>
             <MUIDataTable

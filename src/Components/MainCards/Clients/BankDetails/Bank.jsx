@@ -31,7 +31,7 @@ const styleCreateMOdal = {
 };
 function Bank({ bankData }) {
 
-  console.log("ye data hai", bankData);
+  // console.log("ye data hai", bankData);
 
 
   const calculateTableBodyHeight = () => {

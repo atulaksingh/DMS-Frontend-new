@@ -849,7 +849,7 @@ export default function BankCard({ rowId }) {
             },
           }}
         >
-          <MenuItem onClick={handleViewOpen}>
+          <MenuItem onClick={handleViewOpen}>View
           
           </MenuItem>
           {(role === "superuser" || role === "clientuser") && (

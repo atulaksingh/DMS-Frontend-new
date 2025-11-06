@@ -38,7 +38,7 @@ function TdsReturn({ tdsReturnData }) {
   const calculateTableBodyHeight = () => {
     const rowHeight = 80; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
-    const calculatedHeight = tdsReturnData.length * rowHeight;
+    const calculatedHeight = tdsReturnData?.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
       : `${calculatedHeight}px`;
@@ -243,7 +243,7 @@ function TdsReturn({ tdsReturnData }) {
             <TdsReturnCreation allTdsSectionData={allTdsSectionData} fetchAllTdsSectionDetails={fetchAllTdsSectionDetails} />
           </div>
         </div>
-        {Array.isArray(tdsReturnData) && tdsReturnData.length > 0 ? (
+        {Array.isArray(tdsReturnData) && tdsReturnData?.length > 0 ? (
           <CacheProvider value={muiCache}>
             <ThemeProvider theme={theme}>
               <MUIDataTable

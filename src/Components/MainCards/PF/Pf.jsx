@@ -38,7 +38,7 @@ function Pf({ PfData }) {
   const calculateTableBodyHeight = () => {
     const rowHeight = 170; // Approximate height for one row
     const maxHeight = 525; // Maximum table body height
-    const calculatedHeight = PfData.length * rowHeight;
+    const calculatedHeight = PfData?.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
       : `${calculatedHeight}px`;
@@ -945,7 +945,7 @@ function Pf({ PfData }) {
             <PfCreation fetchPfTotals={fetchPfTotals} />
           </div>
         </div>
-        {Array.isArray(PfData) && PfData.length > 0 ? (
+        {Array.isArray(PfData) && PfData?.length > 0 ? (
           <CacheProvider value={muiCache}>
             <ThemeProvider theme={theme}>
               <div style={{ overflowX: "auto" }}>

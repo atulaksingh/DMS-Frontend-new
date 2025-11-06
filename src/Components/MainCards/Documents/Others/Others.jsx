@@ -230,7 +230,7 @@ function Others({ othersData }) {
                         <OthersCreation />
                     </div>
                 </div>
-                {Array.isArray(othersData) && othersData.length > 0 ? (
+                {Array.isArray(othersData) && othersData?.length > 0 ? (
                     <CacheProvider value={muiCache}>
                         <ThemeProvider theme={theme}>
                             <MUIDataTable
