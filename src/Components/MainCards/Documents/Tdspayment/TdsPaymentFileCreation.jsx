@@ -114,7 +114,8 @@ function TdsPaymentFileCreation() {
                 // console.log(response.data);
 
                 // Dispatch the client details fetch action
-                dispatch(fetchClientDetails(id));
+                // dispatch(fetchClientDetails(id));
+                dispatch(fetchClientDetails({ id, tabName: "tdsPaymentData" }));
 
                 // Optionally close the modal and reset form
                 handleCreateClose();

@@ -77,27 +77,57 @@ export default function ClientUserCard({ rowId }) {
   });
   const [attachment, setAttachment] = useState(null); // State for file input
 
-  const [clientuserErrors, setClientUserErrors] = useState({})
+  const [clientuserErrors, setClientUserErrors] = useState({});
 
   const clientuserRules = {
     first_name: [
-      { test: v => v && v.trim().length > 0, message: "First name is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "First name can only contain alphabets and spaces" },
-      { test: v => v.trim().length >= 2, message: "First name must be at least 2 characters long" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "First name is required",
+      },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "First name can only contain alphabets and spaces",
+      },
+      {
+        test: (v) => v.trim().length >= 2,
+        message: "First name must be at least 2 characters long",
+      },
     ],
     last_name: [
-      { test: v => v && v.trim().length > 0, message: "Last name is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Last name can only contain alphabets and spaces" },
-      { test: v => v.trim().length >= 2, message: "Last name must be at least 2 characters long" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "Last name is required",
+      },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Last name can only contain alphabets and spaces",
+      },
+      {
+        test: (v) => v.trim().length >= 2,
+        message: "Last name must be at least 2 characters long",
+      },
     ],
     email: [
-      { test: v => v && v.trim().length > 0, message: "Email is required" },
-      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" },
+      { test: (v) => v && v.trim().length > 0, message: "Email is required" },
+      {
+        test: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+        message: "Invalid email format",
+      },
     ],
     password: [
-      { test: v => v && v.trim().length > 0, message: "Password is required" },
-      { test: v => v.length >= 6, message: "Password must be at least 6 characters long" },
-      { test: v => /[A-Za-z]/.test(v) && /\d/.test(v), message: "Password must contain at least one letter and one number" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "Password is required",
+      },
+      {
+        test: (v) => v.length >= 6,
+        message: "Password must be at least 6 characters long",
+      },
+      {
+        test: (v) => /[A-Za-z]/.test(v) && /\d/.test(v),
+        message: "Password must contain at least one letter and one number",
+      },
     ],
   };
 
@@ -110,7 +140,6 @@ export default function ClientUserCard({ rowId }) {
     return "";
   };
 
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -118,7 +147,7 @@ export default function ClientUserCard({ rowId }) {
       [name]: value,
     }));
     const errorMsg = validateClientUserField(name, value);
-    setClientUserErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setClientUserErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
@@ -159,8 +188,8 @@ export default function ClientUserCard({ rowId }) {
         console.log("new", formData.password);
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
-
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "ClientUser" }));
         // Optionally close the modal and reset form
         handleCreateClose();
         setFormData({
@@ -194,15 +223,30 @@ export default function ClientUserCard({ rowId }) {
 
   const passwordRules = {
     previous_password: [
-      { test: v => v && v.trim().length > 0, message: "Previous password is required" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "Previous password is required",
+      },
     ],
     new_password: [
-      { test: v => v && v.trim().length > 0, message: "New password is required" },
-      { test: v => v.length >= 6, message: "New password must be at least 6 characters long" },
-      { test: v => /[A-Za-z]/.test(v) && /\d/.test(v), message: "New password must contain at least one letter and one number" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "New password is required",
+      },
+      {
+        test: (v) => v.length >= 6,
+        message: "New password must be at least 6 characters long",
+      },
+      {
+        test: (v) => /[A-Za-z]/.test(v) && /\d/.test(v),
+        message: "New password must contain at least one letter and one number",
+      },
     ],
     confirm_password: [
-      { test: v => v && v.trim().length > 0, message: "Confirm password is required" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "Confirm password is required",
+      },
       // ✅ cross-field check should be handled separately in handleSubmit
     ],
   };
@@ -222,7 +266,7 @@ export default function ClientUserCard({ rowId }) {
       [name]: value,
     }));
     const errorMsg = validatePasswordField(name, value);
-    setPasswordErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setPasswordErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
   const handleReset = async (e) => {
     e.preventDefault(); // Prevent default form submission
@@ -262,8 +306,8 @@ export default function ClientUserCard({ rowId }) {
         console.log("new", resetData.password);
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
-
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "ClientUser" }));
         // Optionally close the modal and reset form
         handleResetClose();
         setResetData({
@@ -277,10 +321,14 @@ export default function ClientUserCard({ rowId }) {
       }
     } catch (error) {
       console.error("Error submitting data:", error);
-      toast.error(error.response?.data?.error_message || "Failed to update ClientUser details. Please try again.", {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error(
+        error.response?.data?.error_message ||
+          "Failed to update ClientUser details. Please try again.",
+        {
+          position: "top-right",
+          autoClose: 2000,
+        }
+      );
     }
   };
   const open = Boolean(anchorEl);
@@ -309,7 +357,8 @@ export default function ClientUserCard({ rowId }) {
           autoClose: 2000,
         });
         // Refresh client details
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "ClientUser" }));
       } else {
         // Failure notification
         toast.error("Failed to delete ClientUser. Please try again.", {
@@ -452,8 +501,11 @@ export default function ClientUserCard({ rowId }) {
                               {clientUser.is_active}
                             </div> */}
                             <div
-                              className={`text-[15px] my-auto font-semibold ${clientUser.is_active ? "text-green-600" : "text-red-600"
-                                }`}
+                              className={`text-[15px] my-auto font-semibold ${
+                                clientUser.is_active
+                                  ? "text-green-600"
+                                  : "text-red-600"
+                              }`}
                             >
                               {clientUser.is_active ? "Active" : "Inactive"}
                             </div>
@@ -486,11 +538,6 @@ export default function ClientUserCard({ rowId }) {
                             </div>
                           </div>
                         </div>
-
-
-
-
-
                       </div>
                     </form>
                   </div>
@@ -771,7 +818,6 @@ export default function ClientUserCard({ rowId }) {
         </Modal>
       </div>
 
-
       {/* //////////////////////////////Reset /modal/////////////// */}
 
       <div>
@@ -920,9 +966,7 @@ export default function ClientUserCard({ rowId }) {
                     <div className="text-blue-500 text-sm underline hover:text-blue-700">
                       <Link to="/forgetpassword">Forgot Password?</Link>
                     </div>
-
                   </div>
-
                 </div>
               </div>
               <DialogFooter>
@@ -948,7 +992,6 @@ export default function ClientUserCard({ rowId }) {
           </Box>
         </Modal>
       </div>
-
 
       {/* /////////////////////////////delete modal//////////////////// */}
 

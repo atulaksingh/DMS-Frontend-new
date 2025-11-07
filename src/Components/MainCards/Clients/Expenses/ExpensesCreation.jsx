@@ -1008,7 +1008,8 @@ function ExpensesCreation({
         });
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Expenses" }));
         await fetchAllLocBranchDetails(id);
         handleCreateClose();
 

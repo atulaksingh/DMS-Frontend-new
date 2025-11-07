@@ -133,7 +133,8 @@ export default function ExpensesCard({
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Expenses" }));
       } else {
         toast.error("Failed to delete Expenses Invoice. Please try again.", {
           position: "top-right",
@@ -976,7 +977,8 @@ export default function ExpensesCard({
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Expenses" }));
         await fetchAllLocBranchDetails(id);
         handleCreateClose();
         await fetchAllLocBranchDetails();

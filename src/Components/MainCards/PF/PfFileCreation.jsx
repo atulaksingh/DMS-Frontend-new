@@ -105,7 +105,8 @@ function PfFileCreation({ fetchPfTotals }) {
         // console.log(response.data);
 
         // Dispatch the client details fetch action
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "PfData" }));
         await fetchPfTotals(id);
 
         // Optionally close the modal and reset form
@@ -127,7 +128,8 @@ function PfFileCreation({ fetchPfTotals }) {
           }
         );
 
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "PfData" }));
         await fetchPfTotals(id);
         handleCreateClose();
         setAttachment(null);

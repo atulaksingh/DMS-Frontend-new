@@ -133,7 +133,8 @@ export default function SalesCard({
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Sales" }));
       } else {
         toast.error("Failed to delete Sales Invoice. Please try again.", {
           position: "top-right",
@@ -993,7 +994,8 @@ export default function SalesCard({
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+dispatch(fetchClientDetails({ id, tabName: "Sales" }));
         await fetchAllLocBranchDetails();
 
         handleCreateClose();

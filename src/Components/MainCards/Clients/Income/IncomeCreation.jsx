@@ -1010,7 +1010,8 @@ function IncomeCreation({
         });
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Income" }));
         await fetchAllLocBranchDetails(id);
         // Optionally close the modal and reset form
         handleCreateClose();

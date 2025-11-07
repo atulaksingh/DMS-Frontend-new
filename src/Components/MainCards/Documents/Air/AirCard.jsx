@@ -237,7 +237,8 @@ export default function AirCard({ rowId }) {
           autoClose: 2000,
         });
 
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "airData" }));
         handleCreateClose();
         setFormData({ financial_year: "", month: "", files: [] });
 
@@ -303,7 +304,8 @@ export default function AirCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "airData" }));
       } else {
         toast.error("Failed to delete air. Please try again.", {
           position: "top-right",

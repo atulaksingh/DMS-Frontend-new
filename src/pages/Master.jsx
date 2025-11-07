@@ -29,9 +29,9 @@ function Master() {
         `${API_URL}/api/list-client`
       );
       // console.log("response",response.data)
-      setHsnData(response.data.hsn); // Assuming the data is returned in the response body
-      setProductData(response.data.product); // Assuming the data is returned in the response body
-      setProductDescriptionData(response.data.product_description); // Assuming the data is returned in the response body
+      setHsnData(response.data.hsn); 
+      setProductData(response.data.product); 
+      setProductDescriptionData(response.data.product_description);
       setLoading(false);
     } catch (error) {
       console.error("Error fetching clients:", error);
@@ -85,12 +85,12 @@ function Master() {
                     value="1"
                     sx={{
                       "&.Mui-selected": {
-                        color: "primary", // Color of the selected tab text
+                        color: "primary", 
                         fontWeight: "bold",
                         border: 2,
                       },
                       "&:hover": {
-                        color: "primary", // Color when hovering over the tab
+                        color: "primary", 
                       },
                     }}
                   />

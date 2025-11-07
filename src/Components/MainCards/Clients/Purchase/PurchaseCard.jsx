@@ -191,7 +191,8 @@ export default function PurchaseCard({
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Purchase" }));
       } else {
         toast.error("Failed to delete PurchaseInvoice. Please try again.", {
           position: "top-right",
@@ -1034,7 +1035,8 @@ export default function PurchaseCard({
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Purchase" }));
         await fetchAllLocBranchDetails();
         handleCreateClose();
         resetFields();

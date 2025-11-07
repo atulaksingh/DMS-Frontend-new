@@ -197,7 +197,8 @@ function AcknowledgementCreation() {
                 });
 
                 // Dispatch action to fetch client details
-                dispatch(fetchClientDetails(id));
+                // dispatch(fetchClientDetails(id));
+                dispatch(fetchClientDetails({ id, tabName: "Acks" }));
 
                 // Optionally close the modal and reset form
                 handleCreateClose();

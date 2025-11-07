@@ -196,8 +196,8 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
         });
         createOwnerShare()
         // Dispatch fetchClientDetails to update the client data in Redux
-        dispatch(fetchClientDetails(id));
-
+        // dispatch(fetchClientDetails(id));
+ dispatch(fetchClientDetails({ id, tabName: "Owner" }));
         // Close the form (e.g., modal) after a successful update
         handleCreateClose();
 
@@ -248,16 +248,18 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
       const response = await axiosInstance.delete(
         `${API_URL}/api/delete-owner/${id}/${deleteId}`
       );
-      // console.log("res-----owner---->", response);
+      console.log("res-----owner---->", response);
       // setOwnerShare(response.remaining_shares)
       createOwnerShare()
-      dispatch(fetchClientDetails(id));
+      // dispatch(fetchClientDetails(id));
       setOpenDeleteModal(false)
       if (response.status === 200) {
         toast.success(`${response.data.message}`, {
           position: "top-right",
           autoClose: 2000,
         });
+       dispatch(fetchClientDetails({ id, tabName: "Owner" }));
+
       } else {
         toast.error(`Failed to delete owner. Please try again.`, {
           position: "top-right",

@@ -283,7 +283,8 @@ function TdsReturnCreation({
         });
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "tdsReturnData" }));
 
         // Optionally close the modal and reset form
         handleCreateClose();

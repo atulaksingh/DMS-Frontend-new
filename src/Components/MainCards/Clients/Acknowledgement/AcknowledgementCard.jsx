@@ -245,7 +245,8 @@ export default function AcknowledgementCard({ rowId }) {
                 });
 
                 // Dispatch action to fetch client details
-                dispatch(fetchClientDetails(id));
+                // dispatch(fetchClientDetails(id));
+                dispatch(fetchClientDetails({ id, tabName: "Acks" }));
 
                 // Optionally close the modal and reset form
                 handleCreateClose();
@@ -313,7 +314,8 @@ export default function AcknowledgementCard({ rowId }) {
                 `http://127.0.0.1:8000/api/delete-acknowledgement/${id}/${deleteId}`
             );
             // console.log("res-----bank---->", response);
-            dispatch(fetchClientDetails(id));
+            // dispatch(fetchClientDetails(id));
+            dispatch(fetchClientDetails({ id, tabName: "Acks" }));
             setOpenDeleteModal(false);
             if (response.status === 200 || response.status === 201) {
                 toast.success(`${response.data.message}`, {

@@ -182,7 +182,8 @@ export default function CVCard({ rowId }) {
         });
 
         // Optionally close the modal and reset form
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CV" }));
         handleCreateClose();
         setFormData({
           name: "",
@@ -243,7 +244,8 @@ export default function CVCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CV" }));
       } else {
         toast.error(`${response.data.message}`, {
           position: "top-right",

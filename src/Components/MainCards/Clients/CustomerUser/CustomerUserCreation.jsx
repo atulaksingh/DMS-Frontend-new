@@ -136,7 +136,8 @@ function CustomerUserCreation() {
       if (response.status === 200) {
         handleCreateClose();
         toast.success(response?.data?.message || "User-client form created successfully.");
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CustomerUser" }));
         setFormData({ first_name: "", last_name: "", email: "", password: "" });
       } else {
         throw new Error("Failed to create user-client form.");

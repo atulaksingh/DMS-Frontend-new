@@ -193,7 +193,8 @@ function TaxAuditCreation() {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "taxAuditData" }));
         // Optionally close the modal and reset form
         handleCreateClose();
 

@@ -88,7 +88,8 @@ export default function ZipFileCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "ZipFile" }));
       } else {
         toast.error("Failed to delete sft. Please try again.", {
           position: "top-right",

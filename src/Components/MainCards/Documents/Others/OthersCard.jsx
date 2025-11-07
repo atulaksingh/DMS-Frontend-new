@@ -222,7 +222,8 @@ export default function OthersCard({ rowId }) {
                     autoClose: 2000,
                 });
 
-                dispatch(fetchClientDetails(id));
+                // dispatch(fetchClientDetails(id));
+                dispatch(fetchClientDetails({ id, tabName: "othersData" }));
                 handleCreateClose();
                 setFormData({ financial_year: "", month: "", text: "", files: [] });
 
@@ -295,7 +296,8 @@ export default function OthersCard({ rowId }) {
                     position: "top-right",
                     autoClose: 2000,
                 });
-                dispatch(fetchClientDetails(id));
+                // dispatch(fetchClientDetails(id));
+                dispatch(fetchClientDetails({ id, tabName: "othersData" }));
             } else {
                 toast.error("Failed to delete air. Please try again.", {
                     position: "top-right",

@@ -180,7 +180,8 @@ function CVCreation() {
         });
 
         // Dispatch action to fetch client details
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CV" }));
 
         // Optionally close the modal and reset form
         handleCreateClose();

@@ -74,7 +74,8 @@ function PurchaseFileCreation() {
         position: "top-right",
         autoClose: 2000,
       });
-      dispatch(fetchClientDetails(id));
+      // dispatch(fetchClientDetails(id));
+      dispatch(fetchClientDetails({ id, tabName: "Purchase" }));
       handleCreateClose();
       setFormData((prevData) => ({
         ...prevData,

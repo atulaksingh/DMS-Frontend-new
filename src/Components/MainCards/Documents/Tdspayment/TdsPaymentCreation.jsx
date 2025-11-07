@@ -258,7 +258,8 @@ function TdsPaymentCreation({
         });
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "tdsPaymentData" }));
 
         // Optionally close the modal and reset form
         handleCreateClose();

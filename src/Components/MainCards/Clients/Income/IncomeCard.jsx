@@ -130,7 +130,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Income" }));
       } else {
         toast.error("Failed to delete Income Invoice. Please try again.", {
           position: "top-right",
@@ -958,7 +959,8 @@ export default function IncomeCard({ rowId, allLocationBranchProductData, fetchA
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Income" }));
         handleCreateClose();
         await fetchAllLocBranchDetails(id)
       } else {

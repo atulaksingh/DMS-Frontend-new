@@ -190,7 +190,8 @@ function SftCreation() {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "sftData" }));
         // Optionally close the modal and reset form
         handleCreateClose();
 

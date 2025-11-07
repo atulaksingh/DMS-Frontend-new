@@ -106,7 +106,8 @@ export default function CustomerUserCard({ rowId }) {
         console.log("new", formData.password);
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CustomerUser" }));
 
         // Optionally close the modal and reset form
         handleCreateClose();
@@ -209,8 +210,8 @@ export default function CustomerUserCard({ rowId }) {
         console.log("new", resetData.password);
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
-
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CustomerUser" }));
         // Optionally close the modal and reset form
         handleResetClose();
         setResetData({
@@ -256,7 +257,8 @@ export default function CustomerUserCard({ rowId }) {
           autoClose: 2000,
         });
         // Refresh client details
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CustomerUser" }));
       } else {
         // Failure notification
         toast.error("Failed to delete ClientUser. Please try again.", {

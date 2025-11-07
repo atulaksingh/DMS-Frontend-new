@@ -225,7 +225,8 @@ export default function SftCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "sftData" }));
         handleCreateClose();
         setFormData({
           financial_year: "",
@@ -284,7 +285,8 @@ export default function SftCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "sftData" }));
       } else {
         toast.error("Failed to delete sft. Please try again.", {
           position: "top-right",

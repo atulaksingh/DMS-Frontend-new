@@ -285,7 +285,9 @@ const PfCreation = ({ fetchPfTotals }) => {
 
 
         // Dispatch and reset form only on success
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "PfData" }));
+
         await fetchPfTotals((id));
         handleCreateClose();
         setFormData({

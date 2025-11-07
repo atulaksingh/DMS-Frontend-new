@@ -995,7 +995,8 @@ function PurchaseCreation({
         });
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Purchase" }));
         await fetchAllLocBranchDetails();
         handleCreateClose();
         setSelectedInvoiceDate(null);

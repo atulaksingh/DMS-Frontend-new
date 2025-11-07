@@ -264,7 +264,8 @@ export default function TdsReturnCard({
         });
 
         // Dispatch fetchClientDetails action
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "tdsReturnData" }));
 
         // Optionally close the modal and reset form
         handleCreateClose();
@@ -323,7 +324,8 @@ export default function TdsReturnCard({
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "tdsReturnData" }));
       } else {
         toast.error("Failed to delete Tds Return. Please try again.", {
           position: "top-right",

@@ -1,5 +1,11 @@
 import * as React from "react";
-import { Input, Option, Select, Typography, Textarea } from "@material-tailwind/react";
+import {
+  Input,
+  Option,
+  Select,
+  Typography,
+  Textarea,
+} from "@material-tailwind/react";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -45,8 +51,8 @@ const styleCreateMOdal = {
   boxShadow: 24,
   // p: 4,
   paddingTop: "17px", // For vertical (top and bott
-  // 
-  // 
+  //
+  //
   // om) padding
   paddingInline: "40px",
   borderRadius: "10px",
@@ -79,17 +85,29 @@ export default function CompanyDocumentCard({ rowId }) {
     ],
     login: [
       { test: (v) => v.length > 0, message: "Username is required" },
-      { test: (v) => /^[a-zA-Z0-9_]+$/.test(v), message: "Only letters, numbers, and underscores allowed" },
+      {
+        test: (v) => /^[a-zA-Z0-9_]+$/.test(v),
+        message: "Only letters, numbers, and underscores allowed",
+      },
     ],
     password: [
       { test: (v) => v.length > 0, message: "Password is required" },
-      { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
+      {
+        test: (v) => v.length >= 6,
+        message: "Password must be at least 6 characters long",
+      },
     ],
     remark: [
-      { test: (v) => v.length <= 500, message: "Remarks cannot exceed 500 characters" },
+      {
+        test: (v) => v.length <= 500,
+        message: "Remarks cannot exceed 500 characters",
+      },
     ],
     files: [
-      { test: (v) => v && v.length > 0, message: "At least one file is required" },
+      {
+        test: (v) => v && v.length > 0,
+        message: "At least one file is required",
+      },
       // {
       //   test: (v) => v.every(f => f.type === "application/pdf" || f.type.startsWith("image/") || f.type === "application/vnd.ms-excel" || f.type ===
       //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || f.type === "text/plain"), message: "Only PDF or image files are allowed"
@@ -114,7 +132,7 @@ export default function CompanyDocumentCard({ rowId }) {
     }));
 
     const errorMsg = validateFileField(name, value);
-    setErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleFileChange = (e) => {
@@ -122,14 +140,13 @@ export default function CompanyDocumentCard({ rowId }) {
 
     setFormData((prev) => ({
       ...prev,
-      files: selectedFiles,  // store as array
+      files: selectedFiles, // store as array
     }));
 
     // validate with correct array
     const errorMsg = validateFileField("files", selectedFiles);
     setErrors((prev) => ({ ...prev, files: errorMsg }));
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
@@ -181,7 +198,8 @@ export default function CompanyDocumentCard({ rowId }) {
       );
 
       if (response.status === 200 || response.status === 201) {
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CompanyDocuments" }));
         toast.success(`${response.data.message}`, {
           position: "top-right",
           autoClose: 2000,
@@ -201,7 +219,8 @@ export default function CompanyDocumentCard({ rowId }) {
       // Check for Axios-specific error response
       if (error.response) {
         toast.error(
-          error.response.data.message || "Failed to update BranchDoc details. Please try again.",
+          error.response.data.message ||
+            "Failed to update BranchDoc details. Please try again.",
           {
             position: "top-right",
             autoClose: 2000,
@@ -243,7 +262,8 @@ export default function CompanyDocumentCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CompanyDocuments" }));
       } else {
         toast.error("Failed to delete Company Document. Please try again.", {
           position: "top-right",
@@ -313,13 +333,12 @@ export default function CompanyDocumentCard({ rowId }) {
     if (filename.length <= maxLength) {
       return filename;
     }
-    const extension = filename.split('.').pop();
+    const extension = filename.split(".").pop();
     const baseName = filename.slice(0, maxLength - extension.length - 3);
     return `${baseName}...${extension}`;
   };
   return (
     <>
-
       <div>
         <div>
           <Modal
@@ -938,7 +957,9 @@ export default function CompanyDocumentCard({ rowId }) {
                                     // <span>
                                     //   {file.name || "No file link available"}
                                     // </span>
-                                    <span>{file.name || "No file link available"}</span>
+                                    <span>
+                                      {file.name || "No file link available"}
+                                    </span>
                                   )}
                                 </p>
                               ))}

@@ -101,7 +101,8 @@ export default function PfCard({ rowId, fetchPfTotals }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "PfData" }));
         await fetchPfTotals(id);
       } else {
         toast.error("Failed to delete pf. Please try again.", {
@@ -379,7 +380,8 @@ export default function PfCard({ rowId, fetchPfTotals }) {
         position: "top-right",
         autoClose: 2000,
       });
-      dispatch(fetchClientDetails(id));
+      // dispatch(fetchClientDetails(id));
+      dispatch(fetchClientDetails({ id, tabName: "PfData" }));
       await fetchPfTotals(id);
       handleCreateClose();
       setFormData({

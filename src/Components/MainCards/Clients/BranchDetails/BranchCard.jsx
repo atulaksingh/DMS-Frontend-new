@@ -114,37 +114,62 @@ export default function BranchCard({ rowId }) {
 
   const branchRules = {
     branch_name: [
-      { test: v => v.length > 0, message: "Branch name is required" },
-      { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch name can only contain letters, numbers, commas, apostrophes, and spaces" },
+      { test: (v) => v.length > 0, message: "Branch name is required" },
+      {
+        test: (v) => /^[A-Za-z0-9\s,']+$/.test(v),
+        message:
+          "Branch name can only contain letters, numbers, commas, apostrophes, and spaces",
+      },
     ],
     contact: [
       // { test: v => v.length > 0, message: "Contact number is required" },
-      { test: v => /^\d{10}$/.test(v), message: "Contact number must be exactly 10 digits" },
+      {
+        test: (v) => /^\d{10}$/.test(v),
+        message: "Contact number must be exactly 10 digits",
+      },
     ],
     gst_no: [
-      { test: v => v.length > 0, message: "GST number is required" },
+      { test: (v) => v.length > 0, message: "GST number is required" },
       // { test: v => /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(v), message: "GST number must be valid (e.g., 22AAAAA0000A1Z5)" },
-      { test: v => v.length === 15, message: "GST number must be exactly 15 characters long" },
+      {
+        test: (v) => v.length === 15,
+        message: "GST number must be exactly 15 characters long",
+      },
     ],
     country: [
-      { test: v => v.length > 0, message: "Country is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Country can only contain alphabets and spaces" },
+      { test: (v) => v.length > 0, message: "Country is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Country can only contain alphabets and spaces",
+      },
     ],
     state: [
-      { test: v => v.length > 0, message: "State is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "State can only contain alphabets and spaces" },
+      { test: (v) => v.length > 0, message: "State is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "State can only contain alphabets and spaces",
+      },
     ],
     city: [
-      { test: v => v.length > 0, message: "City is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "City can only contain alphabets and spaces" },
+      { test: (v) => v.length > 0, message: "City is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "City can only contain alphabets and spaces",
+      },
     ],
     address: [
-      { test: v => v.length > 0, message: "Address is required" },
-      { test: v => v.length >= 5, message: "Address must be at least 5 characters long" },
+      { test: (v) => v.length > 0, message: "Address is required" },
+      {
+        test: (v) => v.length >= 5,
+        message: "Address must be at least 5 characters long",
+      },
     ],
     pincode: [
       // { test: v => v.length > 0, message: "Pincode is required" },
-      { test: v => /^\d{6}$/.test(v), message: "Pincode must be exactly 6 digits" },
+      {
+        test: (v) => /^\d{6}$/.test(v),
+        message: "Pincode must be exactly 6 digits",
+      },
     ],
   };
 
@@ -165,7 +190,7 @@ export default function BranchCard({ rowId }) {
     }));
 
     const errorMsg = validateBranchField(name, value);
-    setBranchErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setBranchErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
   // Handle file input change
   const handleFileChange = (e) => {
@@ -215,8 +240,8 @@ export default function BranchCard({ rowId }) {
         });
 
         // Dispatch action to fetch client details
-        dispatch(fetchClientDetails(id));
-
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Branch" }));
         // Optionally close the modal and reset form
         handleCreateClose();
         setFormData({
@@ -270,7 +295,8 @@ export default function BranchCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Branch" }));
       } else {
         toast.error("Failed to delete Branch. Please try again.", {
           position: "top-right",
@@ -312,13 +338,13 @@ export default function BranchCard({ rowId }) {
         const country = countries.find((c) => c.name === branchData.country);
         const state = country
           ? State.getStatesOfCountry(country.isoCode).find(
-            (s) => s.name === branchData.state
-          )
+              (s) => s.name === branchData.state
+            )
           : null;
         const city = state
           ? City.getCitiesOfState(country.isoCode, state.isoCode).find(
-            (ci) => ci.name === branchData.city
-          )
+              (ci) => ci.name === branchData.city
+            )
           : null;
 
         // Set the form data with the received branch data
@@ -345,7 +371,8 @@ export default function BranchCard({ rowId }) {
         );
 
         // Dispatch action to fetch client details
-        dispatch(fetchClientDetails(id));
+     
+        dispatch(fetchClientDetails({ id, tabName: "Branch" }));
       } else {
         throw new Error("Failed to load Branch data.");
       }
@@ -357,7 +384,6 @@ export default function BranchCard({ rowId }) {
       });
     }
   };
-
 
   const handleCreateClose = () => setOpenCreateModal(false);
   const [bankData, setBankData] = useState(null);
@@ -537,16 +563,25 @@ export default function BranchCard({ rowId }) {
                               freeSolo={false}
                               disableClearable
                               getOptionLabel={(option) =>
-                                typeof option === "string" ? option : `${option.flag} ${option.name}`
+                                typeof option === "string"
+                                  ? option
+                                  : `${option.flag} ${option.name}`
                               }
-                              isOptionEqualToValue={(option, value) => option.name === value.name}
+                              isOptionEqualToValue={(option, value) =>
+                                option.name === value.name
+                              }
                               value={selectedCountry} // your selected country object
                               inputValue={formData.location || ""}
                               onInputChange={(event, newInputValue) => {
-                                setFormData({ ...formData, location: newInputValue });
+                                setFormData({
+                                  ...formData,
+                                  location: newInputValue,
+                                });
 
                                 const matchedCountry = countries.find(
-                                  (country) => country.name.toLowerCase() === newInputValue.toLowerCase()
+                                  (country) =>
+                                    country.name.toLowerCase() ===
+                                    newInputValue.toLowerCase()
                                 );
 
                                 if (matchedCountry) {
@@ -557,7 +592,10 @@ export default function BranchCard({ rowId }) {
                               onChange={(event, newValue) => {
                                 if (newValue) {
                                   setSelectedCountry(newValue);
-                                  setFormData({ ...formData, location: newValue.name });
+                                  setFormData({
+                                    ...formData,
+                                    location: newValue.name,
+                                  });
                                   handleCountryChange(newValue);
                                 }
                               }}
@@ -657,16 +695,25 @@ export default function BranchCard({ rowId }) {
                               options={states}
                               disableClearable
                               getOptionLabel={(option) =>
-                                typeof option === "string" ? option : option.name
+                                typeof option === "string"
+                                  ? option
+                                  : option.name
                               }
-                              isOptionEqualToValue={(option, value) => option.name === value.name}
+                              isOptionEqualToValue={(option, value) =>
+                                option.name === value.name
+                              }
                               value={selectedState} // selected state object
                               inputValue={formData.state || ""}
                               onInputChange={(event, newInputValue) => {
-                                setFormData({ ...formData, state: newInputValue });
+                                setFormData({
+                                  ...formData,
+                                  state: newInputValue,
+                                });
 
                                 const matchedState = states.find(
-                                  (state) => state.name.toLowerCase() === newInputValue.toLowerCase()
+                                  (state) =>
+                                    state.name.toLowerCase() ===
+                                    newInputValue.toLowerCase()
                                 );
 
                                 if (matchedState) {
@@ -677,7 +724,10 @@ export default function BranchCard({ rowId }) {
                               onChange={(event, newValue) => {
                                 if (newValue) {
                                   setSelectedState(newValue);
-                                  setFormData({ ...formData, state: newValue.name });
+                                  setFormData({
+                                    ...formData,
+                                    state: newValue.name,
+                                  });
                                   handleStateChange(newValue);
                                 }
                               }}
@@ -773,9 +823,13 @@ export default function BranchCard({ rowId }) {
                               options={cities}
                               disableClearable
                               getOptionLabel={(option) =>
-                                typeof option === "string" ? option : option.name
+                                typeof option === "string"
+                                  ? option
+                                  : option.name
                               }
-                              isOptionEqualToValue={(option, value) => option.name === value.name}
+                              isOptionEqualToValue={(option, value) =>
+                                option.name === value.name
+                              }
                               value={selectedCity} // selected city object
                               inputValue={formData.city || ""}
                               onInputChange={(event, newInputValue) => {
@@ -785,7 +839,9 @@ export default function BranchCard({ rowId }) {
                                 }));
 
                                 const matchedCity = cities.find(
-                                  (city) => city.name.toLowerCase() === newInputValue.toLowerCase()
+                                  (city) =>
+                                    city.name.toLowerCase() ===
+                                    newInputValue.toLowerCase()
                                 );
 
                                 if (matchedCity) {
@@ -833,7 +889,6 @@ export default function BranchCard({ rowId }) {
                       </div>
                     </div>
                   </div>
-
 
                   <div className="col-span-2">
                     <label htmlFor="pincode">

@@ -9,7 +9,7 @@ import { Input, Typography } from "@material-tailwind/react";
 import Modal from "@mui/material/Modal";
 import { DialogFooter, Button } from "@material-tailwind/react";
 import { Link, useParams } from "react-router-dom";
-import { useEffect } from "react"; 
+import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { FaFileAlt } from "react-icons/fa";
@@ -72,26 +72,41 @@ export default function BankCard({ rowId }) {
   const bankRules = {
     account_no: [
       // { test: v => v.length > 0, message: "Account number is required" },
-      { test: v => /^\d{9,18}$/.test(v), message: "Account number must be 9 to 18 digits" },
+      {
+        test: (v) => /^\d{9,18}$/.test(v),
+        message: "Account number must be 9 to 18 digits",
+      },
     ],
     bank_name: [
-      { test: v => v.length > 0, message: "Bank name is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Bank name can only contain alphabets and spaces" },
+      { test: (v) => v.length > 0, message: "Bank name is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Bank name can only contain alphabets and spaces",
+      },
     ],
     ifsc: [
-      { test: v => v.length > 0, message: "IFSC code is required" },
+      { test: (v) => v.length > 0, message: "IFSC code is required" },
       // { test: (v) => /^[A-Z]{4}0[A-Z0-9]{6}$/.test(v), message: "IFSC must be in format: 4 letters, 0, followed by 6 characters (e.g., SBIN0001234)" },
     ],
     account_type: [
-      { test: v => v.length > 0, message: "Account type is required" },
-      { test: v => ["savings", "current", "salary"].includes(v.toLowerCase()), message: "Account type must be Savings, Current, or Salary" },
+      { test: (v) => v.length > 0, message: "Account type is required" },
+      {
+        test: (v) => ["savings", "current", "salary"].includes(v.toLowerCase()),
+        message: "Account type must be Savings, Current, or Salary",
+      },
     ],
     branch: [
-      { test: v => v.length > 0, message: "Branch name is required" },
-      { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch can only contain letters, numbers and spaces" },
+      { test: (v) => v.length > 0, message: "Branch name is required" },
+      {
+        test: (v) => /^[A-Za-z0-9\s,']+$/.test(v),
+        message: "Branch can only contain letters, numbers and spaces",
+      },
     ],
     files: [
-      { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
+      {
+        test: (v) => Array.isArray(v) && v.length > 0,
+        message: "At least one file is required",
+      },
       // {
       //   test: (v) =>
       //     Array.isArray(v) &&
@@ -106,7 +121,6 @@ export default function BankCard({ rowId }) {
       //   message: "Only PDF, Image, Excel, or TXT files are allowed",
       // },
     ],
-
   };
 
   const validateBankField = (name, value) => {
@@ -127,7 +141,6 @@ export default function BankCard({ rowId }) {
 
     const errorMsg = validateBankField(name, value);
     setBankErrors((prev) => ({ ...prev, [name]: errorMsg }));
-
   };
 
   const handleFileChange = (e) => {
@@ -157,7 +170,7 @@ export default function BankCard({ rowId }) {
     if (hasError) return; // ❌ Stop submit if validation failed
 
     try {
-      // Create a FormData object  to send the form fields to the server 
+      // Create a FormData object  to send the form fields to the server
       const formDataToSend = new FormData();
 
       // Append text fields to FormData
@@ -174,7 +187,6 @@ export default function BankCard({ rowId }) {
         });
       }
 
-
       // Make a POST request to your API
       console.log("Bank Updated Data", formData);
       const response = await axiosInstance.post(
@@ -187,7 +199,7 @@ export default function BankCard({ rowId }) {
         }
       );
 
-      // fffgfffvfddfdgddddfvb we wew wewwe  wqqqqwe 
+      // fffgfffvfddfdgddddfvb we wew wewwe  wqqqqwe
       // console.log("response",response)
       // Check if the response indicates success
       if (response.status === 200 || response.status === 201) {
@@ -197,8 +209,8 @@ export default function BankCard({ rowId }) {
         });
 
         // Dispatch action to fetch client details
-        dispatch(fetchClientDetails(id));
 
+        dispatch(fetchClientDetails({ id, tabName: "Bank" }));
         // Optionally close the modal and reset form
         handleCreateClose();
         setFormData({
@@ -211,7 +223,8 @@ export default function BankCard({ rowId }) {
       } else {
         // Show error toast if response indicates failure
         toast.error(
-          response.data.message || "Failed to update bank details. Please try again.",
+          response.data.message ||
+            "Failed to update bank details. Please try again.",
           {
             position: "top-right",
             autoClose: 2000,
@@ -224,7 +237,8 @@ export default function BankCard({ rowId }) {
 
       // Display error message in a toast
       toast.error(
-        error.response?.data?.message || "An unexpected error occurred. Please try again.",
+        error.response?.data?.message ||
+          "An unexpected error occurred. Please try again.",
         {
           position: "top-right",
           autoClose: 2000,
@@ -252,7 +266,8 @@ export default function BankCard({ rowId }) {
         `${API_URL}/api/delete-bank/${id}/${deleteId}`
       );
       // console.log("res-----bank---->", response);
-      dispatch(fetchClientDetails(id));
+
+      dispatch(fetchClientDetails({ id, tabName: "Bank" }));
       setOpenDeleteModal(false);
       if (response.status === 200 || response.status === 201) {
         toast.success(`${response.data.message}`, {
@@ -301,7 +316,6 @@ export default function BankCard({ rowId }) {
     try {
       const response = await axiosInstance.get(
         `${API_URL}/api/edit-bank/${id}/${rowId}`
-
       );
 
       // console.log("dd", response.data);
@@ -323,7 +337,7 @@ export default function BankCard({ rowId }) {
     if (filename.length <= maxLength) {
       return filename;
     }
-    const extension = filename.split('.').pop();
+    const extension = filename.split(".").pop();
     const baseName = filename.slice(0, maxLength - extension.length - 3);
     return `${baseName}...${extension}`;
   };
@@ -428,7 +442,6 @@ export default function BankCard({ rowId }) {
                               {bankData.ifsc}
                             </div>
                           </div>
-
                         </div>
 
                         <div className="p-2">
@@ -444,8 +457,11 @@ export default function BankCard({ rowId }) {
                             {bankData.files && bankData.files.length > 0 && (
                               <div>
                                 {bankData.files.map((file, index) => {
-                                  const fullFilename = file.files.split("/").pop();
-                                  const shortFilename = shortenFilename(fullFilename);
+                                  const fullFilename = file.files
+                                    .split("/")
+                                    .pop();
+                                  const shortFilename =
+                                    shortenFilename(fullFilename);
 
                                   return (
                                     <div
@@ -470,7 +486,8 @@ export default function BankCard({ rowId }) {
                                 })}
                               </div>
                             )}
-                          </div>;
+                          </div>
+                          ;
                         </div>
                       </div>
                     </form>
@@ -606,8 +623,6 @@ export default function BankCard({ rowId }) {
                       />
                     </div>
                   </div>
-
-
 
                   <div className="col-span-2">
                     <label htmlFor="branch">
@@ -849,9 +864,7 @@ export default function BankCard({ rowId }) {
             },
           }}
         >
-          <MenuItem onClick={handleViewOpen}>View
-          
-          </MenuItem>
+          <MenuItem onClick={handleViewOpen}>View</MenuItem>
           {(role === "superuser" || role === "clientuser") && (
             <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
           )}

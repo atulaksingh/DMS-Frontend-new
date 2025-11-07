@@ -179,7 +179,8 @@ function DocumentCreation() {
       // Check if the response is successful
       if (response.status === 200 || response.status === 201) {
         // fetchBranchDetails();
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "CompanyDocuments" }));
 
 
         setFormData({

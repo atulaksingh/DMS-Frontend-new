@@ -38,7 +38,6 @@ function BranchCreation() {
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
 
-
   const [selectedCountry, setSelectedCountry] = useState(null);
   const [selectedState, setSelectedState] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
@@ -97,36 +96,51 @@ function BranchCreation() {
 
   const branchRules = {
     branch_name: [
-      { test: v => v.length > 0, message: "Branch name is required" },
+      { test: (v) => v.length > 0, message: "Branch name is required" },
       // { test: v => /^[A-Za-z0-9\s,']+$/.test(v), message: "Branch name can only contain letters, numbers, commas, apostrophes, and spaces" },
     ],
     contact: [
-      { test: v => v.length > 0, message: "Contact number is required" },
-      { test: v => /^\d{10}$/.test(v), message: "Contact number must be exactly 10 digits" },
+      { test: (v) => v.length > 0, message: "Contact number is required" },
+      {
+        test: (v) => /^\d{10}$/.test(v),
+        message: "Contact number must be exactly 10 digits",
+      },
     ],
     gst_no: [
-      { test: v => v.length > 0, message: "GST number is required" },
+      { test: (v) => v.length > 0, message: "GST number is required" },
       // { test: v => /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(v), message: "GST number must be valid (e.g., 22AAAAA0000A1Z5)" },
       // { test: v => v.length === 15, message: "GST number must be exactly 15 characters long" },
     ],
     country: [
-      { test: v => v.length > 0, message: "Country is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Country can only contain alphabets and spaces" },
+      { test: (v) => v.length > 0, message: "Country is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Country can only contain alphabets and spaces",
+      },
     ],
     state: [
-      { test: v => v.length > 0, message: "State is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "State can only contain alphabets and spaces" },
+      { test: (v) => v.length > 0, message: "State is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "State can only contain alphabets and spaces",
+      },
     ],
     city: [
-      { test: v => v.length > 0, message: "City is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "City can only contain alphabets and spaces" },
+      { test: (v) => v.length > 0, message: "City is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "City can only contain alphabets and spaces",
+      },
     ],
     address: [
-      { test: v => v.length > 0, message: "Address is required" },
-      { test: v => v.length >= 5, message: "Address must be at least 5 characters long" },
+      { test: (v) => v.length > 0, message: "Address is required" },
+      {
+        test: (v) => v.length >= 5,
+        message: "Address must be at least 5 characters long",
+      },
     ],
     pincode: [
-      { test: v => v.length > 0, message: "Pincode is required" },
+      { test: (v) => v.length > 0, message: "Pincode is required" },
       // { test: v => /^\d{6}$/.test(v), message: "Pincode must be exactly 6 digits" },
     ],
   };
@@ -148,7 +162,7 @@ function BranchCreation() {
     }));
 
     const errorMsg = validateBranchField(name, value);
-    setBranchErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setBranchErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleSubmit = async (e) => {
@@ -202,8 +216,8 @@ function BranchCreation() {
         });
 
         // Dispatch action to fetch client details
-        dispatch(fetchClientDetails(id));
-
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "Branch" }));
         // Optionally close the modal and reset form
         handleCreateClose();
         setFormData({
@@ -229,7 +243,7 @@ function BranchCreation() {
       if (error.response) {
         toast.error(
           error.response.data.message ||
-          "Failed to create branch details. Please try again.",
+            "Failed to create branch details. Please try again.",
           {
             position: "top-right",
             autoClose: 2000,
@@ -419,17 +433,26 @@ function BranchCreation() {
                               freeSolo={false}
                               disableClearable
                               getOptionLabel={(option) =>
-                                typeof option === "string" ? option : `${option.flag} ${option.name}`
+                                typeof option === "string"
+                                  ? option
+                                  : `${option.flag} ${option.name}`
                               }
-                              isOptionEqualToValue={(option, value) => option.name === value.name}
+                              isOptionEqualToValue={(option, value) =>
+                                option.name === value.name
+                              }
                               value={selectedCountry} // your selected country object
                               inputValue={formData.location || ""}
                               required
                               onInputChange={(event, newInputValue) => {
-                                setFormData({ ...formData, location: newInputValue });
+                                setFormData({
+                                  ...formData,
+                                  location: newInputValue,
+                                });
 
                                 const matchedCountry = countries.find(
-                                  (country) => country.name.toLowerCase() === newInputValue.toLowerCase()
+                                  (country) =>
+                                    country.name.toLowerCase() ===
+                                    newInputValue.toLowerCase()
                                 );
 
                                 if (matchedCountry) {
@@ -440,7 +463,10 @@ function BranchCreation() {
                               onChange={(event, newValue) => {
                                 if (newValue) {
                                   setSelectedCountry(newValue);
-                                  setFormData({ ...formData, location: newValue.name });
+                                  setFormData({
+                                    ...formData,
+                                    location: newValue.name,
+                                  });
                                   handleCountryChange(newValue);
                                 }
                               }}
@@ -477,7 +503,6 @@ function BranchCreation() {
                                 />
                               )}
                             />
-
                           </Stack>
                         </div>
                       </div>
@@ -540,17 +565,26 @@ function BranchCreation() {
                               options={states}
                               disableClearable
                               getOptionLabel={(option) =>
-                                typeof option === "string" ? option : option.name
+                                typeof option === "string"
+                                  ? option
+                                  : option.name
                               }
-                              isOptionEqualToValue={(option, value) => option.name === value.name}
+                              isOptionEqualToValue={(option, value) =>
+                                option.name === value.name
+                              }
                               value={selectedState} // selected state object
                               inputValue={formData.state || ""}
                               required
                               onInputChange={(event, newInputValue) => {
-                                setFormData({ ...formData, state: newInputValue });
+                                setFormData({
+                                  ...formData,
+                                  state: newInputValue,
+                                });
 
                                 const matchedState = states.find(
-                                  (state) => state.name.toLowerCase() === newInputValue.toLowerCase()
+                                  (state) =>
+                                    state.name.toLowerCase() ===
+                                    newInputValue.toLowerCase()
                                 );
 
                                 if (matchedState) {
@@ -561,7 +595,10 @@ function BranchCreation() {
                               onChange={(event, newValue) => {
                                 if (newValue) {
                                   setSelectedState(newValue);
-                                  setFormData({ ...formData, state: newValue.name });
+                                  setFormData({
+                                    ...formData,
+                                    state: newValue.name,
+                                  });
                                   handleStateChange(newValue);
                                 }
                               }}
@@ -594,7 +631,6 @@ function BranchCreation() {
                                 />
                               )}
                             />
-
                           </Stack>
                         </div>
                       </div>
@@ -661,9 +697,13 @@ function BranchCreation() {
                               options={cities}
                               disableClearable
                               getOptionLabel={(option) =>
-                                typeof option === "string" ? option : option.name
+                                typeof option === "string"
+                                  ? option
+                                  : option.name
                               }
-                              isOptionEqualToValue={(option, value) => option.name === value.name}
+                              isOptionEqualToValue={(option, value) =>
+                                option.name === value.name
+                              }
                               value={selectedCity} // selected city object
                               inputValue={formData.city || ""}
                               required
@@ -674,7 +714,9 @@ function BranchCreation() {
                                 }));
 
                                 const matchedCity = cities.find(
-                                  (city) => city.name.toLowerCase() === newInputValue.toLowerCase()
+                                  (city) =>
+                                    city.name.toLowerCase() ===
+                                    newInputValue.toLowerCase()
                                 );
 
                                 if (matchedCity) {
@@ -722,7 +764,6 @@ function BranchCreation() {
                       </div>
                     </div>
                   </div>
-
 
                   <div className="col-span-2">
                     <label htmlFor="pincode">

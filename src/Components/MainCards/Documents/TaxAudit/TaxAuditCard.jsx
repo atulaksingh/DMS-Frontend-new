@@ -226,7 +226,8 @@ export default function TaxAuditCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "taxAuditData" }));
         handleCreateClose();
         setFormData({
           financial_year: "",
@@ -285,7 +286,8 @@ export default function TaxAuditCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        dispatch(fetchClientDetails(id));
+        // dispatch(fetchClientDetails(id));
+        dispatch(fetchClientDetails({ id, tabName: "taxAuditData" }));
       } else {
         toast.error("Failed to delete TaxAudit. Please try again.", {
           position: "top-right",
