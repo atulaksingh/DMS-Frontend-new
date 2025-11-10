@@ -25,7 +25,7 @@ const initialState = {
   zipFileData: null,
   ackData: null,
   acksData: null,
-  status: "idle", 
+  status: "idle",
   error: null,
 };
 console.log("Initial State:", initialState);
@@ -38,7 +38,7 @@ export const fetchClientDetails = createAsyncThunk(
     const response = await axiosInstance.get(
       `/api/detail-client/${id}/${tabName}`
     );
-  // console.log(`Fetched data for tab ${tabName}:`, response.data);
+    // console.log(`Fetched data for tab ${tabName}:`, response.data);
     return { tabName, data: response.data };
   }
 );
@@ -55,7 +55,11 @@ export const clientSlice = createSlice({
       .addCase(fetchClientDetails.fulfilled, (state, action) => {
         state.status = "succeeded";
         const { tabName, data } = action.payload;
-console.log("✅ API Response for:", action.meta.arg.tabName, action.payload);
+        console.log(
+          "✅ API Response for:",
+          action.meta.arg.tabName,
+          action.payload
+        );
 
         const extractedData =
           typeof data === "object" && Object.keys(data).length === 1

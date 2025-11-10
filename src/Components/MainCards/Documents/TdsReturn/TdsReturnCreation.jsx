@@ -282,12 +282,11 @@ function TdsReturnCreation({
           autoClose: 2000,
         });
 
-        // Dispatch fetchClientDetails action
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "tdsReturnData" }));
+      await dispatch(fetchClientDetails({ id, tabName: "TDSReturn" }));
 
-        // Optionally close the modal and reset form
+      setTimeout(() => {
         handleCreateClose();
+      }, 300);
         setFormData({
           challan_date: "",
           challan_no: "",

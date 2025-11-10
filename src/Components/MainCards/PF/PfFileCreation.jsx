@@ -106,41 +106,49 @@ function PfFileCreation({ fetchPfTotals }) {
 
         // Dispatch the client details fetch action
         // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "PfData" }));
-        await fetchPfTotals(id);
 
-        // Optionally close the modal and reset form
-        handleCreateClose();
-        setAttachment(null); // Clear the file input
-      }
-      else if (response.status === 207) {
+        await dispatch(fetchClientDetails({ id, tabName: "PF" }));
+
+        setTimeout(() => {
+          fetchPfTotals(id);
+          handleCreateClose();
+          setAttachment(null); // Clear the file input
+        }, 300);
+      } else if (response.status === 207) {
         const createdList = response.data.success_message.join(", ");
         const skippedList = response.data.error_message.join(", ");
 
-        toast.info(
-          ` Created: ${createdList}\n  Skipped: ${skippedList}\n`,
-          {
-            position: "top-right",
-            autoClose: 5000,
-            style: {
-              whiteSpace: "pre-line",
-            }, // allows line breaks
-          }
-        );
+        toast.info(` Created: ${createdList}\n  Skipped: ${skippedList}\n`, {
+          position: "top-right",
+          autoClose: 5000,
+          style: {
+            whiteSpace: "pre-line",
+          }, // allows line breaks
+        });
 
         // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "PfData" }));
-        await fetchPfTotals(id);
-        handleCreateClose();
-        setAttachment(null);
+        // dispatch(fetchClientDetails({ id, tabName: "PfData" }));
+        // await fetchPfTotals(id);
+        // handleCreateClose();
+        // setAttachment(null);
+        await dispatch(fetchClientDetails({ id, tabName: "PF" }));
+
+        setTimeout(() => {
+          fetchPfTotals(id);
+          handleCreateClose();
+          setAttachment(null); // Clear the file input
+        }, 300);
       }
     } catch (error) {
       // Show error toast
       // toast.error("Failed to create PF File details. Please try again.", {
-      toast.error(`${error.response.data.error_message || error.response.data.message}`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error(
+        `${error.response.data.error_message || error.response.data.message}`,
+        {
+          position: "top-right",
+          autoClose: 2000,
+        }
+      );
       console.error("Error submitting data:", error);
     }
   };
@@ -241,7 +249,6 @@ function PfFileCreation({ fetchPfTotals }) {
   //   }
   // };
 
-
   return (
     <>
       {/* <ToastContainer /> */}
@@ -273,7 +280,6 @@ function PfFileCreation({ fetchPfTotals }) {
                   </button>
                 </div>
                 <div className="grid grid-cols-4 gap-4">
-
                   <div className="col-span-2">
                     <label htmlFor="attachment">
                       <Typography

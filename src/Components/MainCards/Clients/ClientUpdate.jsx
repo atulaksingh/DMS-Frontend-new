@@ -117,21 +117,33 @@ function ClientUpdate() {
     ],
     login: [
       { test: (v) => v.length > 0, message: "Username is required" },
-      { test: (v) => /^[a-zA-Z0-9_]+$/.test(v), message: "Only letters, numbers, and underscores allowed" },
+      {
+        test: (v) => /^[a-zA-Z0-9_]+$/.test(v),
+        message: "Only letters, numbers, and underscores allowed",
+      },
     ],
     password: [
       { test: (v) => v.length > 0, message: "Password is required" },
-      { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
+      {
+        test: (v) => v.length >= 6,
+        message: "Password must be at least 6 characters long",
+      },
     ],
     remark: [
-      { test: (v) => v.length <= 500, message: "Remarks cannot exceed 500 characters" },
+      {
+        test: (v) => v.length <= 500,
+        message: "Remarks cannot exceed 500 characters",
+      },
     ],
     files: [
-      { test: (v) => v && v.length > 0, message: "At least one file is required" },
       {
-        test: (v) => v.every(f => f.type === "application/pdf" || f.type.startsWith("image/") || f.type === "application/vnd.ms-excel" || f.type ===
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || f.type === "text/plain"), message: "Only PDF or image files are allowed"
+        test: (v) => v && v.length > 0,
+        message: "At least one file is required",
       },
+      // {
+      //   test: (v) => v.every(f => f.type === "application/pdf" || f.type.startsWith("image/") || f.type === "application/vnd.ms-excel" || f.type ===
+      //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || f.type === "text/plain"), message: "Only PDF or image files are allowed"
+      // },
     ],
   };
 
@@ -205,7 +217,8 @@ function ClientUpdate() {
     }
 
     const newFiles = {
-      id: currentFileIndex !== null ? filesList[currentFileIndex].id : undefined, // ✅ Keep ID for update
+      id:
+        currentFileIndex !== null ? filesList[currentFileIndex].id : undefined, // ✅ Keep ID for update
       document_type: fileName,
       login,
       password,
@@ -235,7 +248,6 @@ function ClientUpdate() {
     setRemark("");
     handleClose();
   };
-
 
   const [deleteIndex, setDeleteIndex] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -269,12 +281,10 @@ function ClientUpdate() {
     }
   };
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
-
 
   const handleOpen = (index = null) => {
     if (index !== null && filesList[index]) {
@@ -304,17 +314,30 @@ function ClientUpdate() {
   const rules = {
     client_name: [
       { test: (v) => v.length > 0, message: "Client name is required" },
-      { test: (v) => /^[A-Za-z\s]+$/.test(v), message: "Client name can only contain alphabets and spaces" },
-      { test: (v) => v.length >= 2, message: "Client name must be at least 2 characters long" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Client name can only contain alphabets and spaces",
+      },
+      {
+        test: (v) => v.length >= 2,
+        message: "Client name must be at least 2 characters long",
+      },
     ],
     entity_type: [
-      { test: v => v && v.trim() !== "", message: "Entity type is required" },
+      { test: (v) => v && v.trim() !== "", message: "Entity type is required" },
     ],
     date_of_incorporation: [
-      { test: v => v && v.trim() !== "", message: "Date of incorporation is required" },
-      { test: v => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "Date of incorporation must be in dd/mm/yyyy or dd-mm-yyyy format" },
       {
-        test: v => {
+        test: (v) => v && v.trim() !== "",
+        message: "Date of incorporation is required",
+      },
+      {
+        test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v),
+        message:
+          "Date of incorporation must be in dd/mm/yyyy or dd-mm-yyyy format",
+      },
+      {
+        test: (v) => {
           if (!v) return false;
           const parts = v.split(/[-/]/).map(Number);
           if (parts.length !== 3) return false;
@@ -326,36 +349,64 @@ function ClientUpdate() {
           return inputDate <= today && !isNaN(inputDate.getTime());
         },
         message: "Date of incorporation cannot be in the future",
-      }
+      },
     ],
     contact_person: [
-      { test: v => v.length > 0, message: "Contact person is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Contact person can only contain alphabets and spaces" },
-      { test: v => v.length >= 2, message: "Contact person must be at least 2 characters long" },
+      { test: (v) => v.length > 0, message: "Contact person is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Contact person can only contain alphabets and spaces",
+      },
+      {
+        test: (v) => v.length >= 2,
+        message: "Contact person must be at least 2 characters long",
+      },
     ],
     designation: [
-      { test: v => v.length > 0, message: "Designation is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Designation can only contain alphabets" },
-      { test: v => v.length >= 2, message: "Designation must be at least 2 characters long" },
+      { test: (v) => v.length > 0, message: "Designation is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Designation can only contain alphabets",
+      },
+      {
+        test: (v) => v.length >= 2,
+        message: "Designation must be at least 2 characters long",
+      },
     ],
     contact_no_1: [
       // { test: (v) => v.length > 0
       // , message: "Primary contacts number is required" },
-      { test: (v) => /^\d{10}$/.test(v), message: "Primary contact number must be exactly 10 digits" },
+      {
+        test: (v) => /^\d{10}$/.test(v),
+        message: "Primary contact number must be exactly 10 digits",
+      },
     ],
     contact_no_2: [
-      { test: v => !v || /^\d{10}$/.test(v), message: "Alternate contact number must be exactly 10 digits if provided" },
+      {
+        test: (v) => !v || /^\d{10}$/.test(v),
+        message:
+          "Alternate contact number must be exactly 10 digits if provided",
+      },
     ],
     email: [
       { test: (v) => v.length > 0, message: "Email is required" },
-      { test: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Email format is invalid" },
+      {
+        test: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+        message: "Email format is invalid",
+      },
     ],
     business_detail: [
-      { test: v => !v || v.length <= 200, message: "Business detail cannot exceed 200 characters" },
+      {
+        test: (v) => !v || v.length <= 200,
+        message: "Business detail cannot exceed 200 characters",
+      },
     ],
     status: [
-      { test: v => v.length > 0, message: "Status is required" },
-      { test: v => ["active", "inactive"].includes(v.toLowerCase()), message: "Status must be either Active or Inactive" },
+      { test: (v) => v.length > 0, message: "Status is required" },
+      {
+        test: (v) => ["active", "inactive"].includes(v.toLowerCase()),
+        message: "Status must be either Active or Inactive",
+      },
     ],
   };
 
@@ -367,7 +418,6 @@ function ClientUpdate() {
     }
     return "";
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -395,12 +445,14 @@ function ClientUpdate() {
       // Append fileinfos with their files
       filesList.forEach((fileinfo, index) => {
         // Append each field of the fileinfo object separately
-        data.append(`fileinfos[${index}].id`, fileinfo.id || '');
-        data.append(`fileinfos[${index}].document_type`, fileinfo.document_type || '');
-        data.append(`fileinfos[${index}].login`, fileinfo.login || '');
-        data.append(`fileinfos[${index}].password`, fileinfo.password || '');
-        data.append(`fileinfos[${index}].remark`, fileinfo.remark || '');
-
+        data.append(`fileinfos[${index}].id`, fileinfo.id || "");
+        data.append(
+          `fileinfos[${index}].document_type`,
+          fileinfo.document_type || ""
+        );
+        data.append(`fileinfos[${index}].login`, fileinfo.login || "");
+        data.append(`fileinfos[${index}].password`, fileinfo.password || "");
+        data.append(`fileinfos[${index}].remark`, fileinfo.remark || "");
 
         // Append the files for this fileinfo
         // fileinfo.files.forEach((file) => {
@@ -413,13 +465,12 @@ function ClientUpdate() {
         });
 
         for (let pair of data.entries()) {
-          console.log(pair[0] + ', ' + pair[1]);
+          console.log(pair[0] + ", " + pair[1]);
         }
-
       });
 
       for (let pair of data.entries()) {
-        console.log(pair[0] + ', ' + pair[1]);
+        console.log(pair[0] + ", " + pair[1]);
       }
 
       // console.log("Data to send:", data);
@@ -441,7 +492,6 @@ function ClientUpdate() {
       //   autoClose: 2000,
       // });
 
-
       if (response.status === 200 || response.status === 201) {
         const toastId = toast.success(`${response.data.message}`, {
           position: "top-right",
@@ -453,17 +503,12 @@ function ClientUpdate() {
         setTimeout(() => {
           navigate(-1); // Go back to the previous page
         }, 1000);
-
       } else {
         toast.error(`Failed to Update Client. ${response.statusText}`, {
           position: "top-right",
           autoClose: 2000,
         });
       }
-
-
-
-
     } catch (error) {
       console.error("Error updating client:", error);
       toast.error("Failed to update client. Please try again.", {
@@ -479,7 +524,12 @@ function ClientUpdate() {
   };
   return (
     <>
-      <Dialog open={open} size="sm" handler={handleOpen} className="max-h-screen overflow-scroll">
+      <Dialog
+        open={open}
+        size="sm"
+        handler={handleOpen}
+        className="max-h-screen overflow-scroll"
+      >
         <div className="flex items-center justify-between">
           <DialogHeader className="flex flex-col items-start">
             <Typography className="mb-1 text-[#366FA1]" variant="h4">
@@ -599,7 +649,6 @@ function ClientUpdate() {
                   )}
                 </button>
               </div>
-
             </div>
             <div>
               <label htmlFor="remarks">
@@ -664,14 +713,16 @@ function ClientUpdate() {
                   {/* {selectedFiles.map((file) => file.name).join(", ")} */}
                   {selectedFiles.length > 0 && (
                     <Typography className="text-sm mt-2 text-blue-gray">
-                      {selectedFiles.map((file) =>
-                        typeof file === "string"
-                          ? file.split("/").pop() // show just filename from URL
-                          : file.name || (file.files?.split("/").pop() ?? "Unnamed")
-                      ).join(", ")}
+                      {selectedFiles
+                        .map((file) =>
+                          typeof file === "string"
+                            ? file.split("/").pop() // show just filename from URL
+                            : file.name ||
+                              (file.files?.split("/").pop() ?? "Unnamed")
+                        )
+                        .join(", ")}
                     </Typography>
                   )}
-
                 </Typography>
               )}
             </div>
@@ -807,8 +858,18 @@ function ClientUpdate() {
                   ref={date_of_incorporation}
                   selected={
                     formData[0]?.date_of_incorporation
-                      ? isValid(parse(formData[0].date_of_incorporation, "dd-MM-yyyy", new Date()))
-                        ? parse(formData[0].date_of_incorporation, "dd-MM-yyyy", new Date())
+                      ? isValid(
+                          parse(
+                            formData[0].date_of_incorporation,
+                            "dd-MM-yyyy",
+                            new Date()
+                          )
+                        )
+                        ? parse(
+                            formData[0].date_of_incorporation,
+                            "dd-MM-yyyy",
+                            new Date()
+                          )
                         : null
                       : null
                   }
@@ -1066,12 +1127,12 @@ function ClientUpdate() {
                       className="hidden"
                       accept="image/*,application/pdf"
                       onClick={handleOpen}
-                    // required
+                      // required
                     />
                   </div>
                 ) : null}
               </div>
-              <div className="mt-4">
+              {/* <div className="mt-4">
                 {filesList.length > 0 && (
                   <div className="flex align-middle">
                     <ul className="list-disc mr-5 w-full">
@@ -1086,11 +1147,7 @@ function ClientUpdate() {
                               {file.files.length})
                             </span>
                             <div className="flex items-center space-x-2">
-                              {/* <DeleteIcon
-                                color="white"
-                                className="cursor-pointer"
-                                onClick={() => handleFileDelete(index)}
-                              /> */}
+                    
                               <DeleteIcon
                                 color="white"
                                 className="cursor-pointer"
@@ -1107,6 +1164,50 @@ function ClientUpdate() {
                     </ul>
                     {filesList.length > 0 && (
                       <div className="flex items-end mb-4">
+                        <ControlPointIcon
+                          className="cursor-pointer text-[#366FA1]"
+                          onClick={() => handleOpen(null)}
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div> */}
+              <div className="mt-4">
+                {filesList.length > 0 && (
+                  <div className="flex align-middle">
+                    {/* ✅ Scrollable list container */}
+                    <div className="overflow-y-auto max-h-[300px] w-full pr-2">
+                      <ul className="list-disc mr-5">
+                        {filesList.map((file, index) => (
+                          <div key={index} onClick={() => handleOpen(index)}>
+                            <li
+                              key={index}
+                              className="flex items-center justify-between mb-2 bg-[#366FA1] p-2 rounded-md text-white cursor-pointer"
+                            >
+                              <span>
+                                {file.document_type} {file.id} (
+                                {file.files.length})
+                              </span>
+                              <div className="flex items-center space-x-2">
+                                <DeleteIcon
+                                  color="white"
+                                  className="cursor-pointer"
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // ✅ Prevent parent click (modal open)
+                                    handleFileDelete(index); // ✅ Only run delete
+                                  }}
+                                />
+                              </div>
+                            </li>
+                          </div>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Add new file button (remains fixed) */}
+                    {filesList.length > 0 && (
+                      <div className="flex items-end mb-4 ml-2">
                         <ControlPointIcon
                           className="cursor-pointer text-[#366FA1]"
                           onClick={() => handleOpen(null)}

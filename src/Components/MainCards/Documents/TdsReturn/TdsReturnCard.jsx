@@ -59,7 +59,7 @@ const ITEM_HEIGHT = 48;
 export default function TdsReturnCard({
   rowId,
   allTdsSectionData,
-  fetchAllTdsSectionDetails
+  fetchAllTdsSectionDetails,
 }) {
   const { id } = useParams();
   const dispatch = useDispatch();
@@ -88,7 +88,10 @@ export default function TdsReturnCard({
   const tdsReturnRules = {
     challan_date: [
       { test: (v) => v.length > 0, message: "Challan date is required" },
-      { test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "Challan date must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v),
+        message: "Challan date must be in dd/mm/yyyy or dd-mm-yyyy format",
+      },
       {
         test: (v) => {
           if (!v) return false;
@@ -105,7 +108,10 @@ export default function TdsReturnCard({
 
     challan_no: [
       { test: (v) => v.length > 0, message: "Challan number is required" },
-      { test: (v) => /^[A-Za-z0-9]+$/.test(v), message: "Challan number can only contain letters and numbers" },
+      {
+        test: (v) => /^[A-Za-z0-9]+$/.test(v),
+        message: "Challan number can only contain letters and numbers",
+      },
     ],
 
     challan_type: [
@@ -119,11 +125,18 @@ export default function TdsReturnCard({
 
     amount: [
       { test: (v) => v.length > 0, message: "Amount is required" },
-      { test: (v) => !isNaN(v) && Number(v) > 0, message: "Amount must be a valid positive number" },
+      {
+        test: (v) => !isNaN(v) && Number(v) > 0,
+        message: "Amount must be a valid positive number",
+      },
     ],
 
     last_filed_return_ack_date: [
-      { test: (v) => v === "" || /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "Last filed return acknowledgment date must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: (v) => v === "" || /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v),
+        message:
+          "Last filed return acknowledgment date must be in dd/mm/yyyy or dd-mm-yyyy format",
+      },
       {
         test: (v) => {
           if (!v) return true; // optional
@@ -134,16 +147,23 @@ export default function TdsReturnCard({
           const today = new Date();
           return inputDate <= today && !isNaN(inputDate.getTime());
         },
-        message: "Last filed return acknowledgment date cannot be in the future",
+        message:
+          "Last filed return acknowledgment date cannot be in the future",
       },
     ],
 
     last_filed_return_ack_no: [
-      { test: (v) => v === "" || /^[A-Za-z0-9]+$/.test(v), message: "Acknowledgment number can only contain letters and numbers" },
+      {
+        test: (v) => v === "" || /^[A-Za-z0-9]+$/.test(v),
+        message: "Acknowledgment number can only contain letters and numbers",
+      },
     ],
 
     files: [
-      { test: (v) => Array.isArray(v) && v.length > 0, message: "At least one file is required" },
+      {
+        test: (v) => Array.isArray(v) && v.length > 0,
+        message: "At least one file is required",
+      },
       // {
       //   test: (v) =>
       //     Array.isArray(v) &&
@@ -185,14 +205,14 @@ export default function TdsReturnCard({
       [name]: value,
     }));
     const errorMsg = validateTdsReturn(name, value);
-    setTdsReturnErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setTdsReturnErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(e.target.files); // FileList → Array
 
     setFormData((prev) => ({
       ...prev,
-      files: selectedFiles,  // store as array
+      files: selectedFiles, // store as array
     }));
 
     // validate with correct array
@@ -213,7 +233,6 @@ export default function TdsReturnCard({
     }
 
     if (hasError) return; // ❌ Stop submit if validation failed
-
 
     try {
       // Create a FormData object
@@ -262,13 +281,11 @@ export default function TdsReturnCard({
           position: "top-right",
           autoClose: 2000,
         });
+        await dispatch(fetchClientDetails({ id, tabName: "TDSReturn" }));
 
-        // Dispatch fetchClientDetails action
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "tdsReturnData" }));
-
-        // Optionally close the modal and reset form
-        handleCreateClose();
+        setTimeout(() => {
+          handleCreateClose();
+        }, 300);
         setFormData({
           challan_date: "",
           challan_no: "",
@@ -318,14 +335,18 @@ export default function TdsReturnCard({
         `${API_URL}/api/delete-tds/${id}/${deleteId}`
       );
       // console.log("res-----Tds Return---->", response);
-      setOpenDeleteModal(false);
+
       if (response.status === 200 || response.status === 201) {
         toast.success("Tds Return deleted successfully!", {
           position: "top-right",
           autoClose: 2000,
         });
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "tdsReturnData" }));
+
+        await dispatch(fetchClientDetails({ id, tabName: "TDSReturn" }));
+
+        setTimeout(() => {
+          setOpenDeleteModal(false);
+        }, 300);
       } else {
         toast.error("Failed to delete Tds Return. Please try again.", {
           position: "top-right",
@@ -414,11 +435,10 @@ export default function TdsReturnCard({
     if (filename.length <= maxLength) {
       return filename;
     }
-    const extension = filename.split('.').pop();
+    const extension = filename.split(".").pop();
     const baseName = filename.slice(0, maxLength - extension.length - 3);
     return `${baseName}...${extension}`;
   };
-
 
   const [selectedChallenDate, setSelectedChallenDate] = useState(null); //....
   const [selectedAckDate, setSelectedAckDate] = useState(null); //....
@@ -675,7 +695,7 @@ export default function TdsReturnCard({
                         sx={{ width: 300 }}
                         freeSolo
                         id="tds-section-autocomplete"
-                        // disablePortal  
+                        // disablePortal
                         disableClearable
                         required
                         options={tdsSectionData}
@@ -688,7 +708,10 @@ export default function TdsReturnCard({
                         // value={tdsSecData.name || ""} // Bind value to formData.gst_no
                         value={formData.tds_section || ""}
                         PopperComponent={(props) => (
-                          <div {...props} style={{ position: "relative", zIndex: 1 }} />
+                          <div
+                            {...props}
+                            style={{ position: "relative", zIndex: 1 }}
+                          />
                         )}
                         PaperComponent={(props) => (
                           <div
@@ -918,7 +941,6 @@ export default function TdsReturnCard({
                         Last filed return Ack Date
                       </Typography>
                     </label>
-
 
                     {/* <div className="relative w-full">
                       <DatePicker

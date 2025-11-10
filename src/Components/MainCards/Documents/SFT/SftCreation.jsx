@@ -185,15 +185,19 @@ function SftCreation() {
         }
       );
 
+
       if (response.status === 200 || response.status === 201) {
         toast.success(`${response.data.message}`, {
           position: "top-right",
           autoClose: 2000,
         });
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "sftData" }));
-        // Optionally close the modal and reset form
+
+      await dispatch(fetchClientDetails({ id, tabName: "SFT" }));
+
+ 
+      setTimeout(() => {
         handleCreateClose();
+      }, 300);
 
         // Clear the form data after successful response
         setFormData({

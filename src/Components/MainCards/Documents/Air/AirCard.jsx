@@ -83,12 +83,15 @@ export default function AirCard({ rowId }) {
     files: [],
   });
 
-  const [airErrors, setAirErrors] = useState({})
+  const [airErrors, setAirErrors] = useState({});
 
   const airRules = {
     financial_year: [
       { test: (v) => v.length > 0, message: "Financial year is required" },
-      { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+      {
+        test: (v) => /^\d{4}-\d{4}$/.test(v),
+        message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)",
+      },
       {
         test: (v) => {
           if (!/^\d{4}-\d{4}$/.test(v)) return false;
@@ -160,7 +163,7 @@ export default function AirCard({ rowId }) {
 
     setFormData((prev) => ({
       ...prev,
-      files: selectedFiles,  // store as array
+      files: selectedFiles, // store as array
     }));
 
     const errorMsg = validateAir("files", selectedFiles);
@@ -177,7 +180,6 @@ export default function AirCard({ rowId }) {
       setSelectedMonth(parsedDate);
     }
   }, [formData.month]);
-
 
   const [isEditingMonth, setIsEditingMonth] = useState(false); // Track if month input is being edited
 
@@ -210,7 +212,6 @@ export default function AirCard({ rowId }) {
 
     if (hasError) return; // ❌ Stop submit if validation failed
 
-
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("financial_year", formData.financial_year);
@@ -237,15 +238,21 @@ export default function AirCard({ rowId }) {
           autoClose: 2000,
         });
 
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "airData" }));
-        handleCreateClose();
+        await dispatch(fetchClientDetails({ id, tabName: "AIR" }));
+
+        // Wait for Redux + UI to sync
+        setTimeout(() => {
+          handleCreateClose();
+        }, 300);
+
         setFormData({ financial_year: "", month: "", files: [] });
 
         // Set selected year from response safely
         if (responseData.financial_year) {
           setSelectedYear(
-            yearOptions.find((option) => option.value === responseData.financial_year)
+            yearOptions.find(
+              (option) => option.value === responseData.financial_year
+            )
           );
         }
 
@@ -256,20 +263,31 @@ export default function AirCard({ rowId }) {
           setSelectedMonth(parsedDate);
         }
       } else {
-        toast.error(`Failed to update air. ${response.data?.error_message || "Unknown error"}`, {
-          position: "top-right",
-          autoClose: 2000,
-        });
+        toast.error(
+          `Failed to update air. ${
+            response.data?.error_message || "Unknown error"
+          }`,
+          {
+            position: "top-right",
+            autoClose: 2000,
+          }
+        );
       }
     } catch (error) {
       console.error("Error submitting data:", error);
 
       // Safe error handling
-      const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
-      toast.error(`Failed to create air details. Please try again. ${response.data?.error_message || "Unknown error"}`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      const errorMessage =
+        error.response?.data?.message || "An unexpected error occurred.";
+      toast.error(
+        `Failed to create air details. Please try again. ${
+          response.data?.error_message || "Unknown error"
+        }`,
+        {
+          position: "top-right",
+          autoClose: 2000,
+        }
+      );
     }
   };
 
@@ -304,8 +322,8 @@ export default function AirCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "airData" }));
+
+        await dispatch(fetchClientDetails({ id, tabName: "AIR" }));
       } else {
         toast.error("Failed to delete air. Please try again.", {
           position: "top-right",
@@ -373,7 +391,7 @@ export default function AirCard({ rowId }) {
     if (filename.length <= maxLength) {
       return filename;
     }
-    const extension = filename.split('.').pop();
+    const extension = filename.split(".").pop();
     const baseName = filename.slice(0, maxLength - extension.length - 3);
     return `${baseName}...${extension}`;
   };
@@ -526,7 +544,9 @@ export default function AirCard({ rowId }) {
                   <Select
                     options={yearOptions}
                     required
-                    value={yearOptions.find((option) => option.value === formData.financial_year)}
+                    value={yearOptions.find(
+                      (option) => option.value === formData.financial_year
+                    )}
                     onChange={(selectedOption) => {
                       setSelectedYear(selectedOption.value);
                       // setFormData("financial_year", selectedOption.value);
@@ -554,8 +574,8 @@ export default function AirCard({ rowId }) {
                       dateFormat="MMMM yyyy"
                       showMonthYearPicker
                       className="border p-2"
-                    // onBlur={() => setIsEditingMonth(false)} // Close picker when focus is lost
-                    // inputProps={{ readOnly: true }} // Prevent manual typing
+                      // onBlur={() => setIsEditingMonth(false)} // Close picker when focus is lost
+                      // inputProps={{ readOnly: true }} // Prevent manual typing
                     />
                   ) : (
                     <input

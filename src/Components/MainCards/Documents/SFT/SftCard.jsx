@@ -83,12 +83,15 @@ export default function SftCard({ rowId }) {
 
   const yearOptions = generateYearRanges(2017, 33);
 
-  const [sftErrors, setSftErrors] = useState({})
+  const [sftErrors, setSftErrors] = useState({});
 
   const sftRules = {
     financial_year: [
       { test: (v) => v.length > 0, message: "Financial year is required" },
-      { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+      {
+        test: (v) => /^\d{4}-\d{4}$/.test(v),
+        message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)",
+      },
       {
         test: (v) => {
           if (!/^\d{4}-\d{4}$/.test(v)) return false;
@@ -182,7 +185,6 @@ export default function SftCard({ rowId }) {
     }
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -225,9 +227,13 @@ export default function SftCard({ rowId }) {
           position: "top-right",
           autoClose: 2000,
         });
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "sftData" }));
-        handleCreateClose();
+
+        await dispatch(fetchClientDetails({ id, tabName: "SFT" }));
+
+        setTimeout(() => {
+          handleCreateClose();
+        }, 300);
+
         setFormData({
           financial_year: "",
           month: "",
@@ -235,7 +241,9 @@ export default function SftCard({ rowId }) {
         });
         if (responseData.financial_year) {
           setSelectedYear(
-            yearOptions.find((option) => option.value === responseData.financial_year)
+            yearOptions.find(
+              (option) => option.value === responseData.financial_year
+            )
           );
         }
 
@@ -248,10 +256,15 @@ export default function SftCard({ rowId }) {
       }
     } catch (error) {
       console.error("Error submitting data:", error);
-      toast.error(`Failed to create sft details. Please try again. ${response.data?.error_message || "Unknown error"}`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error(
+        `Failed to create sft details. Please try again. ${
+          response.data?.error_message || "Unknown error"
+        }`,
+        {
+          position: "top-right",
+          autoClose: 2000,
+        }
+      );
     }
   };
 
@@ -279,14 +292,17 @@ export default function SftCard({ rowId }) {
         `${API_URL}/api/delete-sft/${id}/${deleteId}`
       );
       // console.log("res-----sft---->", response);
-      setOpenDeleteModal(false);
+
       if (response.status === 200) {
         toast.success(`${response.data.messgae}`, {
           position: "top-right",
           autoClose: 2000,
         });
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "sftData" }));
+        await dispatch(fetchClientDetails({ id, tabName: "SFT" }));
+
+        setTimeout(() => {
+          setOpenDeleteModal(false);
+        }, 300);
       } else {
         toast.error("Failed to delete sft. Please try again.", {
           position: "top-right",
@@ -348,7 +364,7 @@ export default function SftCard({ rowId }) {
     if (filename.length <= maxLength) {
       return filename;
     }
-    const extension = filename.split('.').pop();
+    const extension = filename.split(".").pop();
     const baseName = filename.slice(0, maxLength - extension.length - 3);
     return `${baseName}...${extension}`;
   };
@@ -501,7 +517,11 @@ export default function SftCard({ rowId }) {
                   <Select
                     options={yearOptions}
                     required
-                    value={yearOptions.find((option) => option.value === formData.financial_year) || null}
+                    value={
+                      yearOptions.find(
+                        (option) => option.value === formData.financial_year
+                      ) || null
+                    }
                     onChange={(selectedOption) => {
                       setFormData((prev) => ({
                         ...prev,
@@ -528,8 +548,8 @@ export default function SftCard({ rowId }) {
                       dateFormat="MMMM yyyy"
                       showMonthYearPicker
                       className="border p-2"
-                    // onBlur={() => setIsEditingMonth(false)} // Close picker when focus is lost
-                    // inputProps={{ readOnly: true }} // Prevent manual typing
+                      // onBlur={() => setIsEditingMonth(false)} // Close picker when focus is lost
+                      // inputProps={{ readOnly: true }} // Prevent manual typing
                     />
                   ) : (
                     <input
@@ -597,7 +617,6 @@ export default function SftCard({ rowId }) {
                     )}
                   </div>
                 </div>
-
               </div>
               <DialogFooter>
                 <Button

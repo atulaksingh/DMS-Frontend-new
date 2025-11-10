@@ -102,8 +102,12 @@ export default function PfCard({ rowId, fetchPfTotals }) {
           autoClose: 2000,
         });
         // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "PfData" }));
-        await fetchPfTotals(id);
+        await dispatch(fetchClientDetails({ id, tabName: "PF" }));
+
+      // Wait for UI refresh, then update totals
+      setTimeout(() => {
+        fetchPfTotals(id);
+      }, 300);
       } else {
         toast.error("Failed to delete pf. Please try again.", {
           position: "top-right",
@@ -381,9 +385,23 @@ export default function PfCard({ rowId, fetchPfTotals }) {
         autoClose: 2000,
       });
       // dispatch(fetchClientDetails(id));
-      dispatch(fetchClientDetails({ id, tabName: "PfData" }));
-      await fetchPfTotals(id);
-      handleCreateClose();
+  
+
+        await dispatch(fetchClientDetails({ id, tabName: "PF" }));
+      
+        setTimeout(() => {
+          fetchPfTotals(id);
+          handleCreateClose();
+        }, 300);
+      
+
+
+
+
+
+
+
+
       setFormData({
         employee_name: "",
         employee_code: "",

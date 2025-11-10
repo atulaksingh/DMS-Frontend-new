@@ -32,10 +32,7 @@ const styleCreateMOdal = {
   p: 4,
   borderRadius: "10px",
 };
-function TdsPaymentCreation({
-  allTdsSectionData,
-  fetchAllTdsSectionDetails
-}) {
+function TdsPaymentCreation({ allTdsSectionData, fetchAllTdsSectionDetails }) {
   const { id } = useParams();
   const dispatch = useDispatch();
   const role = getUserRole();
@@ -81,18 +78,27 @@ function TdsPaymentCreation({
     tds_challan_no: "",
   });
 
-  const [tdsPaymentError, setTdsPaymentError] = useState({})
+  const [tdsPaymentError, setTdsPaymentError] = useState({});
 
   const taxFormRules = {
     client_name: [
       { test: (v) => v.length > 0, message: "Client name is required" },
-      { test: (v) => /^[A-Za-z\s]+$/.test(v), message: "Client name can only contain alphabets and spaces" },
-      { test: (v) => v.length >= 2, message: "Client name must be at least 2 characters long" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Client name can only contain alphabets and spaces",
+      },
+      {
+        test: (v) => v.length >= 2,
+        message: "Client name must be at least 2 characters long",
+      },
     ],
 
     date: [
       { test: (v) => v.length > 0, message: "Date is required" },
-      { test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "Date must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: (v) => /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v),
+        message: "Date must be in dd/mm/yyyy or dd-mm-yyyy format",
+      },
       {
         test: (v) => {
           if (!v) return false;
@@ -109,45 +115,76 @@ function TdsPaymentCreation({
 
     PAN: [
       { test: (v) => v.length > 0, message: "PAN number is required" },
-      { test: (v) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v), message: "PAN must be in format ABCDE1234F" },
+      {
+        test: (v) => /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(v),
+        message: "PAN must be in format ABCDE1234F",
+      },
     ],
 
     amount: [
       { test: (v) => v.length > 0, message: "Amount is required" },
-      { test: (v) => !isNaN(v) && Number(v) > 0, message: "Amount must be a valid positive number" },
+      {
+        test: (v) => !isNaN(v) && Number(v) > 0,
+        message: "Amount must be a valid positive number",
+      },
     ],
 
     cgst: [
-      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0), message: "CGST must be a valid number" },
+      {
+        test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0),
+        message: "CGST must be a valid number",
+      },
     ],
 
     sgst: [
-      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0), message: "SGST must be a valid number" },
+      {
+        test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0),
+        message: "SGST must be a valid number",
+      },
     ],
 
     igst: [
-      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0), message: "IGST must be a valid number" },
+      {
+        test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0),
+        message: "IGST must be a valid number",
+      },
     ],
 
     total_amt: [
       { test: (v) => v.length > 0, message: "Total amount is required" },
-      { test: (v) => !isNaN(v) && Number(v) >= 0, message: "Total amount must be a valid number" },
+      {
+        test: (v) => !isNaN(v) && Number(v) >= 0,
+        message: "Total amount must be a valid number",
+      },
     ],
 
     tds_rate: [
-      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0 && Number(v) <= 100), message: "TDS rate must be between 0 and 100" },
+      {
+        test: (v) =>
+          v === "" || (!isNaN(v) && Number(v) >= 0 && Number(v) <= 100),
+        message: "TDS rate must be between 0 and 100",
+      },
     ],
     tds_amount: [
-      { test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0), message: "TDS amount must be a valid number" },
+      {
+        test: (v) => v === "" || (!isNaN(v) && Number(v) >= 0),
+        message: "TDS amount must be a valid number",
+      },
     ],
 
     net_amount: [
       { test: (v) => v.length > 0, message: "Net amount is required" },
-      { test: (v) => !isNaN(v) && Number(v) >= 0, message: "Net amount must be a valid number" },
+      {
+        test: (v) => !isNaN(v) && Number(v) >= 0,
+        message: "Net amount must be a valid number",
+      },
     ],
 
     tds_payment_date: [
-      { test: (v) => v === "" || /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v), message: "TDS payment date must be in dd/mm/yyyy or dd-mm-yyyy format" },
+      {
+        test: (v) => v === "" || /^\d{2}[-/]\d{2}[-/]\d{4}$/.test(v),
+        message: "TDS payment date must be in dd/mm/yyyy or dd-mm-yyyy format",
+      },
       {
         test: (v) => {
           if (!v) return true; // optional
@@ -163,7 +200,10 @@ function TdsPaymentCreation({
     ],
 
     tds_challan_no: [
-      { test: (v) => v === "" || /^[A-Za-z0-9]+$/.test(v), message: "TDS challan no can only contain letters and numbers" },
+      {
+        test: (v) => v === "" || /^[A-Za-z0-9]+$/.test(v),
+        message: "TDS challan no can only contain letters and numbers",
+      },
     ],
   };
 
@@ -250,19 +290,21 @@ function TdsPaymentCreation({
         formDataToSend
       );
 
-      if (response.status === 200 || response.status === 201) { // Check if response is successful
-        console.log(response.data); // Handle success response
+      if (response.status === 200 || response.status === 201) {
+        console.log(response.data);
         toast.success(`${response.data.message}`, {
           position: "top-right",
           autoClose: 2000,
         });
 
-        // Dispatch fetchClientDetails action
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "tdsPaymentData" }));
 
-        // Optionally close the modal and reset form
-        handleCreateClose();
+        await dispatch(fetchClientDetails({ id, tabName: "TDSPayment" }));
+
+     
+        setTimeout(() => {
+          handleCreateClose();
+        }, 300);
+
         setFormData({
           client_name: "",
           date: "",
@@ -281,10 +323,15 @@ function TdsPaymentCreation({
         });
         setSelectedDate(null);
       } else {
-        throw new Error(toast.error("Failed to create Tds Payment details. Please try again.", {
-          position: "top-right",
-          autoClose: 2000,
-        }));
+        throw new Error(
+          toast.error(
+            "Failed to create Tds Payment details. Please try again.",
+            {
+              position: "top-right",
+              autoClose: 2000,
+            }
+          )
+        );
       }
     } catch (error) {
       console.error("Error submitting data:", error);
@@ -405,7 +452,7 @@ function TdsPaymentCreation({
                         ref={dateRef}
                         selected={selectedDate}
                         onChange={handleDateChange}
-                        name = "date"
+                        name="date"
                         dateFormat="dd/MM/yyyy"
                         className="flex-1 py-2 pl-3 pr-2 text-gray-900 outline-none rounded-md"
                         placeholderText="dd/mm/yyyy"
@@ -711,20 +758,21 @@ function TdsPaymentCreation({
                       sx={{ width: 300 }}
                       freeSolo
                       id="tds-section-autocomplete"
-                      // disablePortal  
+                      // disablePortal
                       disableClearable
                       required
                       options={tdsSectionData}
                       getOptionLabel={(option) =>
-                        typeof option === "string"
-                          ? option
-                          : option.name || ""
+                        typeof option === "string" ? option : option.name || ""
                       }
                       onChange={handleTdsSectionOnChange}
                       // value={tdsSecData.name || ""} // Bind value to formData.gst_no
                       value={formData.tds_section || ""}
                       PopperComponent={(props) => (
-                        <div {...props} style={{ position: "relative", zIndex: 1 }} />
+                        <div
+                          {...props}
+                          style={{ position: "relative", zIndex: 1 }}
+                        />
                       )}
                       PaperComponent={(props) => (
                         <div
@@ -778,7 +826,6 @@ function TdsPaymentCreation({
                     {/* </Stack> */}
                   </div>
                 </div>
-
 
                 {/* TDS Amount */}
                 <div className="col-span-2">

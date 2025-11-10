@@ -61,12 +61,15 @@ function AirCreation() {
 
   const yearOptions = generateYearRanges(2017, 33);
 
-  const [airErrors, setAirErrors] = useState({})
+  const [airErrors, setAirErrors] = useState({});
 
   const airRules = {
     financial_year: [
       { test: (v) => v.length > 0, message: "Financial year is required" },
-      { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+      {
+        test: (v) => /^\d{4}-\d{4}$/.test(v),
+        message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)",
+      },
       {
         test: (v) => {
           if (!/^\d{4}-\d{4}$/.test(v)) return false;
@@ -102,13 +105,12 @@ function AirCreation() {
               f &&
               typeof f === "object" &&
               "type" in f &&
-              (
-                f.type === "application/pdf" ||
+              (f.type === "application/pdf" ||
                 f.type.startsWith("image/") ||
                 f.type === "application/vnd.ms-excel" ||
-                f.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
-                f.type === "text/plain"
-              )
+                f.type ===
+                  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+                f.type === "text/plain")
           ),
         message: "Only PDF, Image, Excel, or TXT files are allowed",
       },
@@ -131,7 +133,7 @@ function AirCreation() {
       [name]: value,
     }));
     const errorMsg = validateAir(name, value);
-    setAirErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setAirErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleFileChange = (e) => {
@@ -139,7 +141,7 @@ function AirCreation() {
 
     setFormData((prev) => ({
       ...prev,
-      files: selectedFiles,  // store as array
+      files: selectedFiles, // store as array
     }));
 
     const errorMsg = validateAir("files", selectedFiles);
@@ -196,10 +198,13 @@ function AirCreation() {
           position: "top-right",
           autoClose: 2000,
         });
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "airData" }));
-        // Optionally close the modal and reset form
-        handleCreateClose();
+
+        await dispatch(fetchClientDetails({ id, tabName: "AIR" }));
+
+        // Wait for Redux + UI to sync
+        setTimeout(() => {
+          handleCreateClose();
+        }, 300);
 
         // Clear the form data after successful response
         setFormData({
@@ -219,10 +224,15 @@ function AirCreation() {
       }
     } catch (error) {
       console.error("Error submitting data:", error);
-      toast.error(`Failed to create air details. Please try again.  ${response.data?.error_message || "Unknown error"}`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error(
+        `Failed to create air details. Please try again.  ${
+          response.data?.error_message || "Unknown error"
+        }`,
+        {
+          position: "top-right",
+          autoClose: 2000,
+        }
+      );
     }
   };
 
@@ -256,7 +266,9 @@ function AirCreation() {
                   options={yearOptions}
                   required
                   name="login_year"
-                  value={yearOptions.find((option) => option.value === selectedYear)}
+                  value={yearOptions.find(
+                    (option) => option.value === selectedYear
+                  )}
                   onChange={(selectedOption) => {
                     setSelectedYear(selectedOption.value);
                     handleInputChange("financial_year", selectedOption.value);

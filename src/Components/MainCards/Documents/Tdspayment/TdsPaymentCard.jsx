@@ -250,12 +250,13 @@ export default function TdsPaymentCard({
           autoClose: 2000,
         });
 
-        // Dispatch fetchClientDetails action
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "tdsPaymentData" }));
+     await dispatch(fetchClientDetails({ id, tabName: "TDSPayment" }));
 
-        // Optionally close the modal and reset form
-        handleCreateClose();
+     
+        setTimeout(() => {
+          handleCreateClose();
+        }, 300);
+
         setFormData({
           client_name: "",
           date: "",
@@ -303,14 +304,19 @@ export default function TdsPaymentCard({
         `${API_URL}/api/delete-tdspayment/${id}/${deleteId}`
       );
       // console.log("res-----Tds Return---->", response);
-      setOpenDeleteModal(false);
+   
       if (response.status === 200 || response.status === 201) {
         toast.success(`${response.data.message}`, {
           position: "top-right",
           autoClose: 2000,
         });
-        // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "tdsPaymentData" }));
+         //  Wait for Redux data refresh
+      await dispatch(fetchClientDetails({ id, tabName: "TDSPayment" }));
+
+      //  Close modal after data refresh
+      setTimeout(() => {
+        setOpenDeleteModal(false);
+      }, 300);
       } else {
         toast.error("Failed to delete Tds Return. Please try again.", {
           position: "top-right",

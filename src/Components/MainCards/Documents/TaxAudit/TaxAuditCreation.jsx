@@ -1,5 +1,10 @@
 import React, { useState, useCallback } from "react";
-import { Button, DialogFooter, Typography, Input } from "@material-tailwind/react";
+import {
+  Button,
+  DialogFooter,
+  Typography,
+  Input,
+} from "@material-tailwind/react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import axios from "axios";
@@ -54,12 +59,15 @@ function TaxAuditCreation() {
 
   const yearOptions = generateYearRanges(2017, 33);
 
-  const [taxAuditErrors, setTaxAuditErrors] = useState({})
+  const [taxAuditErrors, setTaxAuditErrors] = useState({});
 
   const taxAuditRules = {
     financial_year: [
       { test: (v) => v.length > 0, message: "Financial year is required" },
-      { test: (v) => /^\d{4}-\d{4}$/.test(v), message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)" },
+      {
+        test: (v) => /^\d{4}-\d{4}$/.test(v),
+        message: "Financial year must be in format YYYY-YYYY (e.g., 2023-2024)",
+      },
       {
         test: (v) => {
           if (!/^\d{4}-\d{4}$/.test(v)) return false;
@@ -117,7 +125,6 @@ function TaxAuditCreation() {
     return "";
   };
 
-
   // Unified input change handler
   const handleInputChange = (name, value) => {
     setFormData((prev) => ({
@@ -126,8 +133,7 @@ function TaxAuditCreation() {
     }));
 
     const errorMsg = validateTaxAudit(name, value);
-    setTaxAuditErrors(prev => ({ ...prev, [name]: errorMsg }));
-
+    setTaxAuditErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleFileChange = (e) => {
@@ -135,12 +141,11 @@ function TaxAuditCreation() {
 
     setFormData((prev) => ({
       ...prev,
-      files: selectedFiles,  // store as array
+      files: selectedFiles, // store as array
     }));
 
     const errorMsg = validateTaxAudit("files", selectedFiles);
     setTaxAuditErrors((prev) => ({ ...prev, files: errorMsg }));
-
   };
 
   // Handle form submission
@@ -194,11 +199,12 @@ function TaxAuditCreation() {
           autoClose: 2000,
         });
         // dispatch(fetchClientDetails(id));
-        dispatch(fetchClientDetails({ id, tabName: "taxAuditData" }));
-        // Optionally close the modal and reset form
-        handleCreateClose();
+        dispatch(fetchClientDetails({ id, tabName: "TaxAudit" })).then(() => {
+          setTimeout(() => {
+            handleCreateClose();
+          }, 300);
+        });
 
-        // Clear the form data after successful response
         setFormData({
           financial_year: "",
           month: "",
@@ -238,14 +244,19 @@ function TaxAuditCreation() {
           <form className="my-5 w-full" onSubmit={handleSubmit}>
             <div className="grid grid-cols-4 gap-4">
               <div className="col-span-2">
-                <Typography variant="small" className="block font-semibold mb-1">
+                <Typography
+                  variant="small"
+                  className="block font-semibold mb-1"
+                >
                   Log In Year
                 </Typography>
                 <Select
                   options={yearOptions}
                   required
                   name="login_year"
-                  value={yearOptions.find((option) => option.value === selectedYear)}
+                  value={yearOptions.find(
+                    (option) => option.value === selectedYear
+                  )}
                   onChange={(selectedOption) => {
                     setSelectedYear(selectedOption.value);
                     handleInputChange("financial_year", selectedOption.value);
@@ -303,7 +314,11 @@ function TaxAuditCreation() {
               >
                 Cancel
               </Button>
-              <Button type="submit" className="bg-primary" name="taxaudit_submit">
+              <Button
+                type="submit"
+                className="bg-primary"
+                name="taxaudit_submit"
+              >
                 Confirm
               </Button>
             </DialogFooter>
