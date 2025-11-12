@@ -72,6 +72,7 @@ function Bank({ bankData }) {
         }),
       },
     },
+    
     {
       name: "account_no",
       label: "Account No",
@@ -84,6 +85,7 @@ function Bank({ bankData }) {
         }),
       },
     },
+
     {
       name: "account_type",
       label: "Account Type",
@@ -96,6 +98,7 @@ function Bank({ bankData }) {
         }),
       },
     },
+
     {
       name: "ifsc",
       label: "IFSC Code",
@@ -108,6 +111,7 @@ function Bank({ bankData }) {
         }),
       },
     },
+
     {
       name: "branch",
       label: "Branch",
