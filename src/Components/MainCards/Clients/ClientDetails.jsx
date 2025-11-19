@@ -17,6 +17,7 @@ import ZipFile from "./ZipFile/ZipFile";
 import AckDetails from "../Ack/AckDetails";
 import { fetchClientDetails } from "../../Redux/clientSlice";
 import Documents from "../Documents/Documents";
+import { resetClientData } from "../../Redux/clientSlice";
 
 const navItems = [
   { name: "Client Details", apiName: "Client" },
@@ -59,6 +60,29 @@ function ClientDetails() {
   const dispatch = useDispatch();
   const [docTab, setDocTab] = useState("1");
   const savedTab = localStorage.getItem("selectedTab") || navItems[0].name;
+//   useEffect(() => {
+  
+//   dispatch(resetClientData());
+// }, [id]);
+useEffect(() => {
+  // reset old client data
+  dispatch(resetClientData());
+
+  const item = navItems.find(i => i.name === savedTab);
+
+  if (item) {
+    // auto load tab data
+    dispatch(fetchClientDetails({ id, tabName: item.apiName }));
+
+    // documents → auto PF
+    if (item.name === "Documents") {
+      dispatch(fetchClientDetails({ id, tabName: "PF" }));
+    }
+  }
+
+}, [id]);
+
+
   const savedUserTypeTab =
     localStorage.getItem("selectedUserTypeTab") || "Client User";
   const [selectedTab, setSelectedTab] = useState(savedTab);
@@ -104,7 +128,7 @@ function ClientDetails() {
     // Load PF data immediately
     setSelectedTab(tabName);
     localStorage.setItem("selectedTab", tabName);
-    dispatch(fetchClientDetails({ id, tabName: "PF" }));
+    // dispatch(fetchClientDetails({ id, tabName: "PF" }));
 
     // Lazy fetch for all tabs
     switch (apiName) {

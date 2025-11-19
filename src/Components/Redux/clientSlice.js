@@ -46,7 +46,34 @@ export const fetchClientDetails = createAsyncThunk(
 export const clientSlice = createSlice({
   name: "client",
   initialState,
-  reducers: {},
+  reducers: {
+    // 🔥 ADD THIS RESET FUNCTION
+    resetClientData: (state) => {
+      state.clientData = null;
+      state.ownerData = null;
+      state.bankData = null;
+      state.branchData = null;
+      state.clientUserData = null;
+      state.customerUserData = null;
+      state.companyDocData = null;
+      state.CVData = null;
+      state.PfData = null;
+      state.taxAuditData = null;
+      state.airData = null;
+      state.sftData = null;
+      state.tdsReturnData = null;
+      state.tdsPaymentData = null;
+      state.tdsSectionData = null;
+      state.othersData = null;
+      state.salesInvoiceData = null;
+      state.purchaseInvoiceData = null;
+      state.incomeInvoiceData = null;
+      state.expensesInvoiceData = null;
+      state.zipFileData = null;
+      state.ackData = null;
+      state.acksData = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchClientDetails.pending, (state) => {
@@ -56,7 +83,7 @@ export const clientSlice = createSlice({
         state.status = "succeeded";
         const { tabName, data } = action.payload;
         console.log(
-          "✅ API Response for:",
+          " API Response for:",
           action.meta.arg.tabName,
           action.payload
         );
@@ -147,7 +174,7 @@ export const clientSlice = createSlice({
       });
   },
 });
-
+export const { resetClientData } = clientSlice.actions;
 export default clientSlice.reducer;
 
 // import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";

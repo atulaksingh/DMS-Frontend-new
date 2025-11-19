@@ -914,7 +914,7 @@ function Pf({ PfData }) {
   };
 
   // Create an extended array with the blank row added at the end.
-  const extendedPfData = [...PfData, blankRow];
+  // const extendedPfData = [...PfData, blankRow];
 
 
 
