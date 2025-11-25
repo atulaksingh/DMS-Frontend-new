@@ -209,7 +209,7 @@ function Sft({ sftData }) {
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
 
       <div>
         <div className="flex justify-between align-middle items-center mb-5">
@@ -217,14 +217,7 @@ function Sft({ sftData }) {
             SFT Details
           </div>
           <div>
-            {/* <Button
-              variant="filled"
-              size="md"
-              className="bg-primary hover:bg-[#2d5e85]"
-              onClick={handleCreateOpen}
-            >
-              Create
-            </Button> */}
+
         <SftCreation />
           </div>
         </div>

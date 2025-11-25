@@ -554,7 +554,7 @@ function Owner({ ownerData }) {
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       {/* //////////////////////////Create Data Modal open//////// */}
       {/* {console.log("hhhhhhhh",ownerShare)} */}
       <div>

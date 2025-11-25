@@ -115,7 +115,7 @@ function Forgetpassword() {
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
 
       {/* <div className="bg-image">
 

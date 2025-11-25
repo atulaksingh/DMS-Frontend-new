@@ -2,6 +2,8 @@
 
 
 import React, { Suspense, lazy, memo } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import CircularProgress from "@mui/material/CircularProgress";
 
@@ -65,6 +67,8 @@ const Loader = () => (
 //  App
 const App = () => {
   return (
+    <>
+         <ToastContainer position="top-right" autoClose={2000} newestOnTop />
     <Router>
       <Suspense fallback={<Loader />}>
         <Routes>
@@ -103,6 +107,7 @@ const App = () => {
         </Routes>
       </Suspense>
     </Router>
+    </>
   );
 };
 

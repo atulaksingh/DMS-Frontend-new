@@ -184,32 +184,30 @@ function SftCreation() {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
+console.log("SFT Creation Response:", response.data);
 
+    if (response.data) {
+  toast.success(response.data.message || "SFT Created Successfully", {
+    position: "top-right",
+    autoClose: 2000,
+  });
 
-      if (response.status === 200 || response.status === 201) {
-        toast.success(`${response.data.message}`, {
-          position: "top-right",
-          autoClose: 2000,
-        });
+  await dispatch(fetchClientDetails({ id, tabName: "SFT" }));
 
-      await dispatch(fetchClientDetails({ id, tabName: "SFT" }));
+  setTimeout(() => {
+    handleCreateClose();
+  }, 300);
 
- 
-      setTimeout(() => {
-        handleCreateClose();
-      }, 300);
+  setFormData({
+    financial_year: "",
+    month: "",
+    files: [],
+  });
 
-        // Clear the form data after successful response
-        setFormData({
-          financial_year: "",
-          month: "",
-          files: [],
-        });
+  setSelectedYear(null);
+  setSelectedMonth(null);
+}
 
-        // Clear the selected dates
-        setSelectedYear(null);
-        setSelectedMonth(null);
-      }
     } catch (error) {
       console.error("Error submitting data:", error);
       toast.error("Failed to create Sft details. Please try again.", {
