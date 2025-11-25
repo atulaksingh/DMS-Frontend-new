@@ -6,7 +6,7 @@ import HomePage from './HomePage'
 function ClientDetails() {
   return (
     <>
-    <div className=" px-20 py-6 rounded-md ">
+    <div className=" px-5 lg:px-20 py-6 rounded-md ">
 
     <HomePage />
     </div>

@@ -75,10 +75,10 @@ function PfFileCreation({ fetchPfTotals }) {
     e.preventDefault(); // Prevent default form submission
 
     try {
-      // Create a FormData object
+    
       const formDataToSend = new FormData();
 
-      // Append file field to FormData
+
       if (attachment) {
         formDataToSend.append("file", attachment);
       }

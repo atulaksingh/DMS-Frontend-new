@@ -25,28 +25,33 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 750,
+  width: "95%",
+  maxWidth: 750,
   bgcolor: "background.paper",
   //   border: "1px solid #000",
   boxShadow: 24,
   paddingTop: "17px", // For vertical (top and bottom) padding
   paddingInline: "40px",
   borderRadius: "10px",
+  maxHeight: "90vh",
+  overflowY: "auto",
 };
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
+  width: "95%",               // Responsive width
+  maxWidth: 800,              // Limit width on large screens
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
-  // p: 4,
-  paddingTop: "17px", // For vertical (top and bottom) padding
-  paddingInline: "40px",
+  paddingTop: "17px",
+  paddingInline: "20px",
   borderRadius: "10px",
+  maxHeight: "90vh",          // Enable scroll on small devices
+  overflowY: "auto",
 };
+
 const ITEM_HEIGHT = 48;
 
 export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
@@ -59,7 +64,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
   const [openViewModal, setOpenViewModal] = React.useState(false);
   const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
-  // const [ownerShare, setOwnerShare] = useState("")             
+  // const [ownerShare, setOwnerShare] = useState("")
   const [deleteId, setDeleteId] = useState(null);
   const [formData, setFormData] = useState({
     first_name: "",
@@ -77,56 +82,100 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
 
   const [ownerErrors, setOwnerErrors] = useState({});
 
-
   const ownerRules = {
     first_name: [
-      { test: v => v.length > 0, message: "First name is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "First name can only contain alphabets and spaces" },
-      { test: v => v.length >= 2, message: "First name must be at least 2 characters long" },
+      { test: (v) => v.length > 0, message: "First name is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "First name can only contain alphabets and spaces",
+      },
+      {
+        test: (v) => v.length >= 2,
+        message: "First name must be at least 2 characters long",
+      },
     ],
     last_name: [
-      { test: v => v.length > 0, message: "Last name is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Last name can only contain alphabets and spaces" },
-      { test: v => v.length >= 2, message: "Last name must be at least 2 characters long" },
+      { test: (v) => v.length > 0, message: "Last name is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Last name can only contain alphabets and spaces",
+      },
+      {
+        test: (v) => v.length >= 2,
+        message: "Last name must be at least 2 characters long",
+      },
     ],
     share: [
       // { test: v => v.length > 0, message: "Share is required" },
-      { test: v => /^\d+(\.\d+)?$/.test(v), message: "Share must be a valid number" },
-      { test: v => parseFloat(v) > 0 && parseFloat(v) <= 100, message: "Share must be between 0 and 100" },
+      {
+        test: (v) => /^\d+(\.\d+)?$/.test(v),
+        message: "Share must be a valid number",
+      },
+      {
+        test: (v) => parseFloat(v) > 0 && parseFloat(v) <= 100,
+        message: "Share must be between 0 and 100",
+      },
     ],
     pan: [
-      { test: v => v.length > 0, message: "PAN number is required" },
-      { test: v => /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v), message: "Invalid PAN format (e.g., ABCDE1234F)" },
+      { test: (v) => v.length > 0, message: "PAN number is required" },
+      {
+        test: (v) => /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(v),
+        message: "Invalid PAN format (e.g., ABCDE1234F)",
+      },
     ],
     aadhar: [
-      { test: v => v.length > 0, message: "Aadhar number is required" },
-      { test: v => /^\d{12}$/.test(v), message: "Aadhar number must be 12 digits" },
+      { test: (v) => v.length > 0, message: "Aadhar number is required" },
+      {
+        test: (v) => /^\d{12}$/.test(v),
+        message: "Aadhar number must be 12 digits",
+      },
     ],
     email: [
-      { test: v => v.length > 0, message: "Email is required" },
-      { test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), message: "Invalid email format" },
+      { test: (v) => v.length > 0, message: "Email is required" },
+      {
+        test: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v),
+        message: "Invalid email format",
+      },
     ],
     username: [
-      { test: v => v.length > 0, message: "Username is required" },
-      { test: v => /^[a-zA-Z0-9_]+$/.test(v), message: "Username can only contain letters, numbers, and underscores" },
+      { test: (v) => v.length > 0, message: "Username is required" },
+      {
+        test: (v) => /^[a-zA-Z0-9_]+$/.test(v),
+        message: "Username can only contain letters, numbers, and underscores",
+      },
     ],
     it_password: [
-      { test: v => v.length > 0, message: "IT password is required" },
-      { test: v => v.length >= 6, message: "IT password must be at least 6 characters long" },
+      { test: (v) => v.length > 0, message: "IT password is required" },
+      {
+        test: (v) => v.length >= 6,
+        message: "IT password must be at least 6 characters long",
+      },
     ],
     mobile_number: [
-      { test: v => v.length > 0, message: "Mobile number is required" },
-      { test: v => /^\d{10}$/.test(v), message: "Mobile number must be exactly 10 digits" },
+      { test: (v) => v.length > 0, message: "Mobile number is required" },
+      {
+        test: (v) => /^\d{10}$/.test(v),
+        message: "Mobile number must be exactly 10 digits",
+      },
     ],
     user_password: [
-      { test: v => v.length > 0, message: "User password is required" },
-      { test: v => v.length >= 6, message: "User password must be at least 6 characters long" },
+      { test: (v) => v.length > 0, message: "User password is required" },
+      {
+        test: (v) => v.length >= 6,
+        message: "User password must be at least 6 characters long",
+      },
     ],
     is_admin: [
-      { test: v => typeof v === "boolean", message: "Is Admin must be true or false" },
+      {
+        test: (v) => typeof v === "boolean",
+        message: "Is Admin must be true or false",
+      },
     ],
     is_active: [
-      { test: v => typeof v === "boolean", message: "Is Active must be true or false" },
+      {
+        test: (v) => typeof v === "boolean",
+        message: "Is Active must be true or false",
+      },
     ],
   };
 
@@ -153,7 +202,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
   const handleCheckboxChange = (e) => {
     setFormData((prevData) => ({
       ...prevData,
-      isadmin: e.target.checked,  // Update isadmin based on checkbox state
+      isadmin: e.target.checked, // Update isadmin based on checkbox state
       // is_active: e.target.checked, // Update is_active based on checkbox state
     }));
   };
@@ -165,7 +214,6 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
   //     is_active: e.target.checked, // Update is_active based on checkbox state
   //   }));
   // };
-
 
   // console.log("formmmowner", formData);
   const handleSubmit = async (e) => {
@@ -194,10 +242,10 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
           position: "top-right",
           autoClose: 2000,
         });
-        createOwnerShare()
+        createOwnerShare();
         // Dispatch fetchClientDetails to update the client data in Redux
         // dispatch(fetchClientDetails(id));
- dispatch(fetchClientDetails({ id, tabName: "Owner" }));
+        dispatch(fetchClientDetails({ id, tabName: "Owner" }));
         // Close the form (e.g., modal) after a successful update
         handleCreateClose();
 
@@ -214,18 +262,23 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
           // isadmin: "",
           username: "",
         });
-      }
-      else {
-        toast.error(`Failed to delete owner. Please try again.${response.data.messgae}`, {
-          position: "top-right",
-          autoClose: 2000,
-        });
+      } else {
+        toast.error(
+          `Failed to delete owner. Please try again.${response.data.messgae}`,
+          {
+            position: "top-right",
+            autoClose: 2000,
+          }
+        );
       }
     } catch (error) {
-      toast.error(`${error.response.data.error_message || error.response.data.message}`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error(
+        `${error.response.data.error_message || error.response.data.message}`,
+        {
+          position: "top-right",
+          autoClose: 2000,
+        }
+      );
     }
   };
 
@@ -250,16 +303,15 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
       );
       console.log("res-----owner---->", response);
       // setOwnerShare(response.remaining_shares)
-      createOwnerShare()
+      createOwnerShare();
       // dispatch(fetchClientDetails(id));
-      setOpenDeleteModal(false)
+      setOpenDeleteModal(false);
       if (response.status === 200) {
         toast.success(`${response.data.message}`, {
           position: "top-right",
           autoClose: 2000,
         });
-       dispatch(fetchClientDetails({ id, tabName: "Owner" }));
-
+        dispatch(fetchClientDetails({ id, tabName: "Owner" }));
       } else {
         toast.error(`Failed to delete owner. Please try again.`, {
           position: "top-right",
@@ -268,10 +320,13 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
       }
     } catch (error) {
       console.error("Error deleting owner data:", error);
-      toast.error(`Failed to delete owner. ${error.response.data.error_message}`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
+      toast.error(
+        `Failed to delete owner. ${error.response.data.error_message}`,
+        {
+          position: "top-right",
+          autoClose: 2000,
+        }
+      );
     }
   };
 
@@ -293,7 +348,6 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
     };
 
     fetchClientDetails();
-
   };
 
   const handleDeleteClose = () => setOpenDeleteModal(false);
@@ -366,7 +420,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
             {ownertData && (
               <>
                 <div>
-                  <form className=" my-5 w-full ">
+                  {/* <form className=" my-5 w-full ">
                     <div className="block px-4">
                       <div className="flex gap-6  p-2">
                         <div className="w-full flex gap-3">
@@ -467,22 +521,85 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                             {ownertData.username}
                           </div>
                         </div>
-                        {/* <div className="w-full flex gap-3">
-                          <Typography
-                            variant="h6"
-                            color="blue-gray"
-                            className="mb-1"
-                            size="sm"
-                          >
-                            Is Admin :
-                          </Typography>
-                          <div className="text-gray-700 text-[15px] my-auto">
-                            {ownertData.is_active}
-                          </div>
-                        </div> */}
+     
                       </div>
                     </div>
-                  </form>
+                  </form> */}
+                  <div className="my-5 w-full">
+                    <div className="md:px-4 space-y-3">
+                      {/* Row 1 */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+                        <div className="w-full flex gap-3">
+                          <Typography variant="h6" color="blue-gray">
+                            Name :
+                          </Typography>
+                          <div className="text-gray-700 text-[15px] my-auto">
+                            {ownertData.first_name} {ownertData.last_name}
+                          </div>
+                        </div>
+                        <div className="w-full flex gap-3">
+                          <Typography variant="h6" color="blue-gray">
+                            Share :
+                          </Typography>
+                          <div className="text-gray-700 text-[15px] my-auto">
+                            {ownertData.share}%
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Row 2 */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+                        <div className="w-full flex gap-3">
+                          <Typography variant="h6" color="blue-gray">
+                            Pan Number :
+                          </Typography>
+                          <div className="text-gray-700 text-[15px] my-auto">
+                            {ownertData.pan}
+                          </div>
+                        </div>
+                        <div className="w-full flex gap-3">
+                          <Typography variant="h6" color="blue-gray">
+                            Aadhar Number :
+                          </Typography>
+                          <div className="text-gray-700 text-[15px] my-auto">
+                            {ownertData.aadhar}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Row 3 */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+                        <div className="w-full flex gap-3">
+                          <Typography variant="h6" color="blue-gray">
+                            Number :
+                          </Typography>
+                          <div className="text-gray-700 text-[15px] my-auto">
+                            {ownertData.mobile}
+                          </div>
+                        </div>
+                        <div className="w-full flex gap-3">
+                          <Typography variant="h6" color="blue-gray">
+                            Email Id :
+                          </Typography>
+                          <div className="text-gray-700 text-[15px] my-auto">
+                            {ownertData.email}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Row 4 */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+                        <div className="w-full flex gap-3">
+                          <Typography variant="h6" color="blue-gray">
+                            Username :
+                          </Typography>
+                          <div className="text-gray-700 text-[15px] my-auto">
+                            {ownertData.username}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button
@@ -527,8 +644,8 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
             </Typography>
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="">
                     <label htmlFor="first_name">
                       <Typography
                         variant="small"
@@ -557,7 +674,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="last_name">
                       <Typography
                         variant="small"
@@ -586,14 +703,17 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="share">
                       <Typography
                         variant="small"
                         color="blue-gray"
                         className="font-semibold mb-2 flex gap-2 "
                       >
-                        Share    <div className="text-green-400 text-sm">{ownerShare}% left</div>
+                        Share{" "}
+                        <div className="text-green-400 text-sm">
+                          {ownerShare}% left
+                        </div>
                       </Typography>
                     </label>
 
@@ -615,7 +735,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="pan">
                       <Typography
                         variant="small"
@@ -644,7 +764,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="aadhar">
                       <Typography
                         variant="small"
@@ -673,7 +793,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="email">
                       <Typography
                         variant="small"
@@ -702,7 +822,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="email">
                       <Typography
                         variant="small"
@@ -731,7 +851,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="it_password">
                       <Typography
                         variant="small"
@@ -741,7 +861,6 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                         IT Password
                       </Typography>
                     </label>
-
 
                     <div className="relative">
                       <Input
@@ -773,7 +892,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       </button>
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="aadhar">
                       <Typography
                         variant="small"
@@ -802,7 +921,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="aadhar">
                       <Typography
                         variant="small"
@@ -824,7 +943,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="aadhar">
                       <Typography
                         variant="small"
@@ -973,7 +1092,7 @@ export default function OwnerCard({ rowId, createOwnerShare, ownerShare }) {
           }}
         >
           <MenuItem onClick={handleViewOpen}>View</MenuItem>
-          {((role === "superuser" || role === "clientuser")) && (
+          {(role === "superuser" || role === "clientuser") && (
             <MenuItem onClick={handleCreateOpen}>Update</MenuItem>
           )}
           {/* <MenuItem onClick={handleDeleteOpen}>Delete</MenuItem> */}

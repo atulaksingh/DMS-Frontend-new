@@ -47,7 +47,7 @@ export const clientSlice = createSlice({
   name: "client",
   initialState,
   reducers: {
-    // 🔥 ADD THIS RESET FUNCTION
+    
     resetClientData: (state) => {
       state.clientData = null;
       state.ownerData = null;

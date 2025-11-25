@@ -1,4 +1,4 @@
-import * as React from "react"; 
+import * as React from "react";
 import IconButton from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
@@ -20,7 +20,7 @@ import { fetchClientDetails } from "../../Redux/clientSlice";
 import { useDispatch } from "react-redux";
 import { FaRegCalendarAlt } from "react-icons/fa";
 import { useRef } from "react";
-import { parse } from "date-fns"
+import { parse } from "date-fns";
 import { format } from "date-fns";
 import DatePicker from "react-datepicker";
 // import "react-toastify/dist/ReactToastify.css";
@@ -35,7 +35,7 @@ const style = {
   bgcolor: "background.paper",
   //   border: "1px solid #000",
   boxShadow: 24,
-  paddingTop: "17px", // For vertical (top and bottom) padding
+  paddingTop: "17px", 
   paddingInline: "40px",
   borderRadius: "10px",
 };
@@ -54,8 +54,6 @@ const styleCreateMOdal = {
 const ITEM_HEIGHT = 48;
 
 export default function PfCard({ rowId, fetchPfTotals }) {
-  //   console.log("dddd",rowId)
-
   const { id } = useParams();
   const dispatch = useDispatch();
   const role = getUserRole();
@@ -104,10 +102,10 @@ export default function PfCard({ rowId, fetchPfTotals }) {
         // dispatch(fetchClientDetails(id));
         await dispatch(fetchClientDetails({ id, tabName: "PF" }));
 
-      // Wait for UI refresh, then update totals
-      setTimeout(() => {
-        fetchPfTotals(id);
-      }, 300);
+        // Wait for UI refresh, then update totals
+        setTimeout(() => {
+          fetchPfTotals(id);
+        }, 300);
       } else {
         toast.error("Failed to delete pf. Please try again.", {
           position: "top-right",
@@ -124,7 +122,6 @@ export default function PfCard({ rowId, fetchPfTotals }) {
   };
 
   const handleViewOpen = () => {
-
     setOpenViewModal(true);
     setAnchorEl(null);
 
@@ -140,7 +137,7 @@ export default function PfCard({ rowId, fetchPfTotals }) {
         setLoading(false);
       }
     };
-    fetchBankDetails()
+    fetchBankDetails();
   };
 
   const handleDeleteClose = () => setOpenDeleteModal(false);
@@ -161,7 +158,6 @@ export default function PfCard({ rowId, fetchPfTotals }) {
 
       setFormData(updatedData);
       // setFormData(response.data);
-
     } catch (error) {
       console.error("Error fetching bank data:", error);
       toast.error("Failed to load bank data. Please try again.", {
@@ -259,77 +255,229 @@ export default function PfCard({ rowId, fetchPfTotals }) {
 
   const employeeRules = {
     employee_name: [
-      { test: v => v && v.trim().length > 0, message: "Employee name is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Employee name can only contain alphabets and spaces" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "Employee name is required",
+      },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Employee name can only contain alphabets and spaces",
+      },
     ],
     employee_code: [
-      { test: v => v && v.trim().length > 0, message: "Employee code is required" },
-      { test: v => /^[A-Za-z0-9_-]+$/.test(v), message: "Employee code can only contain letters, numbers, underscores, and hyphens" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "Employee code is required",
+      },
+      {
+        test: (v) => /^[A-Za-z0-9_-]+$/.test(v),
+        message:
+          "Employee code can only contain letters, numbers, underscores, and hyphens",
+      },
     ],
     uan: [
-      { test: v => v && v.trim().length > 0, message: "UAN is required" },
-      { test: v => /^\d{12}$/.test(String(v)), message: "UAN must be exactly 12 digits" },
+      { test: (v) => v && v.trim().length > 0, message: "UAN is required" },
+      {
+        test: (v) => /^\d{12}$/.test(String(v)),
+        message: "UAN must be exactly 12 digits",
+      },
     ],
     pf_number: [
-      { test: v => v && v.trim().length > 0, message: "PF number is required" },
-      { test: v => /^[A-Za-z0-9/]+$/.test(v), message: "PF number can only contain letters, numbers, and /" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "PF number is required",
+      },
+      {
+        test: (v) => /^[A-Za-z0-9/]+$/.test(v),
+        message: "PF number can only contain letters, numbers, and /",
+      },
     ],
     // pf_deducted: [
     //   { test: v => v === "True" || v === "False", message: "PF deducted must be Yes or No" },
     // ],
     date_of_joining: [
-      { test: v => v && v.trim().length > 0, message: "Date of joining is required" },
-      { test: v => !isNaN(Date.parse(v)), message: "Date of joining must be a valid date" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "Date of joining is required",
+      },
+      {
+        test: (v) => !isNaN(Date.parse(v)),
+        message: "Date of joining must be a valid date",
+      },
     ],
     status: [
-      { test: v => v && v.trim().length > 0, message: "Status is required" },
-      { test: v => ["active", "inactive", "terminated"].includes(v.toLowerCase()), message: "Status must be Active, Inactive, or Terminated" },
+      { test: (v) => v && v.trim().length > 0, message: "Status is required" },
+      {
+        test: (v) =>
+          ["active", "inactive", "terminated"].includes(v.toLowerCase()),
+        message: "Status must be Active, Inactive, or Terminated",
+      },
     ],
     gender: [
-      { test: v => v && v.trim().length > 0, message: "Gender is required" },
-      { test: v => ["male", "female", "other"].includes(v.toLowerCase()), message: "Gender must be Male, Female, or Other" },
+      { test: (v) => v && v.trim().length > 0, message: "Gender is required" },
+      {
+        test: (v) => ["male", "female", "other"].includes(v.toLowerCase()),
+        message: "Gender must be Male, Female, or Other",
+      },
     ],
     // Salary + Deductions (all must be numbers, >= 0)
-    gross_ctc: [{ test: v => !isNaN(v) && v >= 0, message: "Gross CTC must be a valid number" }],
-    basic_pay: [{ test: v => !isNaN(v) && v >= 0, message: "Basic Pay must be a valid number" }],
-    hra: [{ test: v => !isNaN(v) && v >= 0, message: "HRA must be a valid number" }],
-    statutory_bonus: [{ test: v => !isNaN(v) && v >= 0, message: "Statutory Bonus must be a valid number" }],
-    special_allowance: [{ test: v => !isNaN(v) && v >= 0, message: "Special Allowance must be a valid number" }],
-    pf: [{ test: v => !isNaN(v) && v >= 0, message: "PF must be a valid number" }],
-    gratuity: [{ test: v => !isNaN(v) && v >= 0, message: "Gratuity must be a valid number" }],
-    total_gross_salary: [{ test: v => !isNaN(v) && v >= 0, message: "Total Gross Salary must be a valid number" }],
+    gross_ctc: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Gross CTC must be a valid number",
+      },
+    ],
+    basic_pay: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Basic Pay must be a valid number",
+      },
+    ],
+    hra: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "HRA must be a valid number",
+      },
+    ],
+    statutory_bonus: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Statutory Bonus must be a valid number",
+      },
+    ],
+    special_allowance: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Special Allowance must be a valid number",
+      },
+    ],
+    pf: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "PF must be a valid number",
+      },
+    ],
+    gratuity: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Gratuity must be a valid number",
+      },
+    ],
+    total_gross_salary: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Total Gross Salary must be a valid number",
+      },
+    ],
 
     number_of_days_in_month: [
-      { test: v => !isNaN(v) && v > 0 && v <= 31, message: "Days in month must be between 1 and 31" },
+      {
+        test: (v) => !isNaN(v) && v > 0 && v <= 31,
+        message: "Days in month must be between 1 and 31",
+      },
     ],
     present_days: [
-      { test: v => !isNaN(v) && v >= 0 && v <= 31, message: "Present days must be between 0 and 31" },
+      {
+        test: (v) => !isNaN(v) && v >= 0 && v <= 31,
+        message: "Present days must be between 0 and 31",
+      },
     ],
     lwp: [
-      { test: v => !isNaN(v) && v >= 0, message: "LWP must be a valid number" },
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "LWP must be a valid number",
+      },
     ],
     leave_adjustment: [
-      { test: v => !isNaN(v) && v >= 0, message: "Leave adjustment must be a valid number" },
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Leave adjustment must be a valid number",
+      },
     ],
 
     // Monthly breakdown
-    basic_pay_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "Basic Pay Monthly must be valid" }],
-    hra_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "HRA Monthly must be valid" }],
-    statutory_bonus_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "Statutory Bonus Monthly must be valid" }],
-    special_allowance_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "Special Allowance Monthly must be valid" }],
-    total_gross_salary_monthly: [{ test: v => !isNaN(v) && v >= 0, message: "Total Gross Salary Monthly must be valid" }],
+    basic_pay_monthly: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Basic Pay Monthly must be valid",
+      },
+    ],
+    hra_monthly: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "HRA Monthly must be valid",
+      },
+    ],
+    statutory_bonus_monthly: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Statutory Bonus Monthly must be valid",
+      },
+    ],
+    special_allowance_monthly: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Special Allowance Monthly must be valid",
+      },
+    ],
+    total_gross_salary_monthly: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Total Gross Salary Monthly must be valid",
+      },
+    ],
 
     // Deductions
-    provident_fund: [{ test: v => !isNaN(v) && v >= 0, message: "Provident Fund must be a valid number" }],
-    professional_tax: [{ test: v => !isNaN(v) && v >= 0, message: "Professional Tax must be a valid number" }],
-    advance: [{ test: v => !isNaN(v) && v >= 0, message: "Advance must be a valid number" }],
-    esic_employee: [{ test: v => !isNaN(v) && v >= 0, message: "ESIC Employee must be a valid number" }],
-    tds: [{ test: v => !isNaN(v) && v >= 0, message: "TDS must be a valid number" }],
-    total_deduction: [{ test: v => !isNaN(v) && v >= 0, message: "Total Deduction must be a valid number" }],
+    provident_fund: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Provident Fund must be a valid number",
+      },
+    ],
+    professional_tax: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Professional Tax must be a valid number",
+      },
+    ],
+    advance: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Advance must be a valid number",
+      },
+    ],
+    esic_employee: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "ESIC Employee must be a valid number",
+      },
+    ],
+    tds: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "TDS must be a valid number",
+      },
+    ],
+    total_deduction: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Total Deduction must be a valid number",
+      },
+    ],
 
     // Net
-    net_pay: [{ test: v => !isNaN(v) && v >= 0, message: "Net Pay must be a valid number" }],
-    advance_esic_employer_cont: [{ test: v => !isNaN(v) && v >= 0, message: "Advance ESIC Employer Contribution must be a valid number" }],
+    net_pay: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Net Pay must be a valid number",
+      },
+    ],
+    advance_esic_employer_cont: [
+      {
+        test: (v) => !isNaN(v) && v >= 0,
+        message: "Advance ESIC Employer Contribution must be a valid number",
+      },
+    ],
   };
 
   const validateEmployeeField = (name, value) => {
@@ -341,7 +489,6 @@ export default function PfCard({ rowId, fetchPfTotals }) {
     return "";
   };
 
-
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({
@@ -349,7 +496,7 @@ export default function PfCard({ rowId, fetchPfTotals }) {
       [name]: value, // Update the formData dynamically
     }));
     const errorMsg = validateEmployeeField(name, value);
-    setPfErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setPfErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
 
   const handleSubmit = async (e) => {
@@ -385,22 +532,13 @@ export default function PfCard({ rowId, fetchPfTotals }) {
         autoClose: 2000,
       });
       // dispatch(fetchClientDetails(id));
-  
 
-        await dispatch(fetchClientDetails({ id, tabName: "PF" }));
-      
-        setTimeout(() => {
-          fetchPfTotals(id);
-          handleCreateClose();
-        }, 300);
-      
+      await dispatch(fetchClientDetails({ id, tabName: "PF" }));
 
-
-
-
-
-
-
+      setTimeout(() => {
+        fetchPfTotals(id);
+        handleCreateClose();
+      }, 300);
 
       setFormData({
         employee_name: "",
@@ -664,17 +802,17 @@ export default function PfCard({ rowId, fetchPfTotals }) {
               <XMarkIcon className="h-4 w-4 stroke-2" />
             </IconButton>
             <form className=" my-5 w-full" onSubmit={handleSubmit}>
-
               <div className="container mx-auto mt-10">
                 <div className="w-full">
                   <div className="flex justify-between mb-4">
                     {steps.map((step, index) => (
                       <div
                         key={index}
-                        className={`flex-1 border-b-4 pb-2 text-center ${index <= currentStep
-                          ? "border-primary"
-                          : "border-gray-200"
-                          }`}
+                        className={`flex-1 border-b-4 pb-2 text-center ${
+                          index <= currentStep
+                            ? "border-primary"
+                            : "border-gray-200"
+                        }`}
                       >
                         {step}
                       </div>
@@ -816,7 +954,6 @@ export default function PfCard({ rowId, fetchPfTotals }) {
                               label="Select status"
                               name="pf_deducted"
                               size="lg"
-
                               animate={{
                                 mount: { y: 0 },
                                 unmount: { y: 25 },
@@ -914,7 +1051,6 @@ export default function PfCard({ rowId, fetchPfTotals }) {
                               label="Select status"
                               name="status"
                               size="lg"
-
                               animate={{
                                 mount: { y: 0 },
                                 unmount: { y: 25 },
@@ -1061,8 +1197,8 @@ export default function PfCard({ rowId, fetchPfTotals }) {
                               dateFormat="MMMM yyyy"
                               showMonthYearPicker
                               className="border p-2"
-                            // onBlur={() => setIsEditingMonth(false)} // Close picker when focus is lost
-                            // inputProps={{ readOnly: true }} // Prevent manual typing
+                              // onBlur={() => setIsEditingMonth(false)} // Close picker when focus is lost
+                              // inputProps={{ readOnly: true }} // Prevent manual typing
                             />
                           ) : (
                             <input
@@ -1342,9 +1478,6 @@ export default function PfCard({ rowId, fetchPfTotals }) {
                               value={formData.present_days}
                               onChange={handleInputChange}
                               required
-
-
-
                               className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                               labelProps={{
                                 className: "hidden",

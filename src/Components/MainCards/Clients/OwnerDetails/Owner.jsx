@@ -226,12 +226,12 @@ function Owner({ ownerData }) {
       });
     }
   };
-  
+
   useEffect(() => {
     if (id) {
       createOwnerShare();
     }
-  }, [id]); 
+  }, [id]);
 
   const handleSubmit = async (e) => {
     // console.log("enter");
@@ -268,9 +268,17 @@ function Owner({ ownerData }) {
           position: "top-right",
           autoClose: 2000,
         });
-        createOwnerShare();
-        dispatch(fetchClientDetails({ id, tabName: "Owner" }));
-        handleCreateClose();
+        // then close modal after a delay
+        setTimeout(() => {
+          handleCreateClose();
+        }, 600);
+
+        // refresh redux after delay
+        setTimeout(() => {
+          dispatch(fetchClientDetails({ id, tabName: "Owner" }));
+        }, 700);
+
+        // handleCreateClose();
         // setErrorMessage("");
         setFormData({
           first_name: "",
@@ -320,8 +328,8 @@ function Owner({ ownerData }) {
   };
 
   const calculateTableBodyHeight = () => {
-    const rowHeight = 80; 
-    const maxHeight = 525; 
+    const rowHeight = 80;
+    const maxHeight = 525;
     const calculatedHeight = ownerData.length * rowHeight;
     return calculatedHeight > maxHeight
       ? `${maxHeight}px`
@@ -556,7 +564,22 @@ function Owner({ ownerData }) {
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
-          <Box sx={styleCreateMOdal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "95%",
+              maxWidth: 750,
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 3,
+              borderRadius: "10px",
+              maxHeight: "90vh",
+              overflowY: "auto",
+            }}
+          >
             <Typography
               id="modal-modal-title"
               variant="h5"
@@ -567,8 +590,8 @@ function Owner({ ownerData }) {
             </Typography>
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+                  <div className="">
                     <label htmlFor="first_name">
                       <Typography
                         variant="small"
@@ -588,15 +611,16 @@ function Owner({ ownerData }) {
                         value={formData.first_name}
                         onChange={handleInputChange}
                         required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
-                        containerProps={{ className: "min-w-full" }}
+                        containerProps={{ className: "w-full" }}
+                
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="last_name">
                       <Typography
                         variant="small"
@@ -616,15 +640,16 @@ function Owner({ ownerData }) {
                         value={formData.last_name}
                         onChange={handleInputChange}
                         required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
-                        containerProps={{ className: "min-w-full" }}
+                        containerProps={{ className: "w-full" }}
+                        
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="share">
                       <Typography
                         variant="small"
@@ -647,15 +672,16 @@ function Owner({ ownerData }) {
                         placeholder="Share"
                         value={formData.share}
                         onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
-                        containerProps={{ className: "min-w-full" }}
+                        containerProps={{ className: "w-full" }}
+                      
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="pan">
                       <Typography
                         variant="small"
@@ -675,15 +701,15 @@ function Owner({ ownerData }) {
                         value={formData.pan}
                         onChange={handleInputChange}
                         required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
-                        containerProps={{ className: "min-w-full" }}
+                          containerProps={{ className: "w-full" }}
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="aadhar">
                       <Typography
                         variant="small"
@@ -703,16 +729,16 @@ function Owner({ ownerData }) {
                         value={formData.aadhar}
                         onChange={handleInputChange}
                         required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
-                        containerProps={{ className: "min-w-full" }}
+                         containerProps={{ className: "w-full" }}
                       />
                     </div>
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="email">
                       <Typography
                         variant="small"
@@ -732,15 +758,15 @@ function Owner({ ownerData }) {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        className="!w-full !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
-                        containerProps={{ className: "min-w-full" }}
+                         containerProps={{ className: "w-full" }}
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="email">
                       <Typography
                         variant="small"
@@ -760,15 +786,15 @@ function Owner({ ownerData }) {
                         value={formData.username}
                         onChange={handleInputChange}
                         required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        className="!w-full !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
-                        containerProps={{ className: "min-w-full" }}
+                         containerProps={{ className: "w-full" }}
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="it_password">
                       <Typography
                         variant="small"
@@ -787,11 +813,11 @@ function Owner({ ownerData }) {
                         placeholder="Password"
                         value={formData.it_password}
                         onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        className="!w-full !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
-                        containerProps={{ className: "min-w-full" }}
+                         containerProps={{ className: "w-full" }}
                       /> */}
                       <div className="relative">
                         <Input
@@ -802,11 +828,11 @@ function Owner({ ownerData }) {
                           value={formData.it_password}
                           onChange={handleInputChange}
                           required
-                          className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                          className="!w-full !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                           labelProps={{
                             className: "hidden",
                           }}
-                          containerProps={{ className: "min-w-full" }}
+                           containerProps={{ className: "w-full" }}
                         />
                         {/* Toggle visibility button */}
                         <button
@@ -823,7 +849,7 @@ function Owner({ ownerData }) {
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="aadhar">
                       <Typography
                         variant="small"
@@ -843,15 +869,15 @@ function Owner({ ownerData }) {
                         value={formData.mobile}
                         onChange={handleInputChange}
                         required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                        className="!w-full !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                         labelProps={{
                           className: "hidden",
                         }}
-                        containerProps={{ className: "min-w-full" }}
+                         containerProps={{ className: "w-full" }}
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="it_password">
                       <Typography
                         variant="small"
@@ -872,11 +898,11 @@ function Owner({ ownerData }) {
                           value={formData.user_password}
                           onChange={handleInputChange}
                           required
-                          className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                          className="!w-full !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
                           labelProps={{
                             className: "hidden",
                           }}
-                          containerProps={{ className: "min-w-full" }}
+                           containerProps={{ className: "w-full" }}
                         />
                         {/* Toggle visibility button */}
                         <button
@@ -893,7 +919,7 @@ function Owner({ ownerData }) {
                       </div>
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="aadhar">
                       <Typography
                         variant="small"
@@ -914,7 +940,7 @@ function Owner({ ownerData }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="">
                     <label htmlFor="aadhar">
                       <Typography
                         variant="small"
