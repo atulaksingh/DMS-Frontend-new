@@ -542,7 +542,7 @@ function ClientCreation() {
                     className: "hidden",
                   }}
                   containerProps={{ className: "min-w-[100px]" }}
-                // requiredddddddddddddddddddss
+                
 
                 />
               </div>
@@ -602,8 +602,9 @@ function ClientCreation() {
             Create Client details here
           </div>
 
-          <div className="grid grid-cols-3 gap-x-6">
-            <div className="col-span-2 my-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+
+            <div className="w-full">
               <label htmlFor="client name">
                 <Typography
                   variant="small"
@@ -620,23 +621,23 @@ function ClientCreation() {
                   size="lg"
                   name="client_name"
                   placeholder="Name"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   labelProps={{
                     className: "hidden",
                   }}
-                  containerProps={{ className: "min-w-[100px]" }}
+                  containerProps={{ className: "w-full" }}
                   value={formData.client_name}
                   onChange={handleChange}
                   required
                 />
               </div>
             </div>
-            <div className="my-3">
+            <div className="mb-3">
               <label htmlFor="entity_type">
                 <Typography
                   variant="small"
                   color="blue-gray"
-                  className="block text-gray-600 font-semibold  mb-2"
+                 className="block font-semibold mb-2"
                 >
                   Select Entity Type
                 </Typography>
@@ -651,11 +652,11 @@ function ClientCreation() {
                     mount: { y: 0 },
                     unmount: { y: 25 },
                   }}
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   labelProps={{
                     className: "hidden",
                   }}
-                  containerProps={{ className: "min-w-[100px]" }}
+                  containerProps={{ className: "w-full" }}
                   value={formData.entity_type}
                   required
                   onChange={(selectedValue) =>
@@ -677,7 +678,7 @@ function ClientCreation() {
                 </Select>
               </div>
             </div>
-            <div className="my-3">
+            <div className="mb-3">
               <label htmlFor="date_of_incorporation">
                 <Typography
                   variant="small"
@@ -698,7 +699,7 @@ function ClientCreation() {
                   className="w-full !border !border-[#cecece] w-[335px] bg-white py-2 pl-3 pr-10 text-gray-900 
                                                                                   focus:!border-[#366FA1] focus:!border-t-[#366FA1] rounded-md 
                                                                                   outline-none"
-                  //  className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  //  className="!w-full !border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   placeholderText="dd/mm/yyyy"
                   showYearDropdown
                   required
@@ -729,7 +730,7 @@ function ClientCreation() {
                   yearDropdownItemNumber={25}
                 />
                 <FaRegCalendarAlt
-                  className="ml-24 text-gray-500 cursor-pointer"
+                  className="ml-20  text-gray-500 cursor-pointer"
                   onClick={() => date.current.setFocus()}
                 />
               </div>
@@ -751,11 +752,11 @@ function ClientCreation() {
                   size="lg"
                   name="contact_person"
                   placeholder="Contact Person"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   labelProps={{
                     className: "hidden",
                   }}
-                  containerProps={{ className: "min-w-[100px]" }}
+                  containerProps={{ className: "w-full" }}
                   value={formData.contact_person}
                   onChange={handleChange}
                   required
@@ -779,11 +780,11 @@ function ClientCreation() {
                   size="lg"
                   name="designation"
                   placeholder="Designation"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   labelProps={{
                     className: "hidden",
                   }}
-                  containerProps={{ className: "min-w-[100px]" }}
+                  containerProps={{ className: "w-full" }}
                   value={formData.designation}
                   onChange={handleChange}
                   required
@@ -807,11 +808,11 @@ function ClientCreation() {
                   size="lg"
                   name="email"
                   placeholder="Email Address"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   labelProps={{
                     className: "hidden",
                   }}
-                  containerProps={{ className: "min-w-[100px]" }}
+                  containerProps={{ className: "w-full" }}
                   value={formData.email}
                   onChange={handleChange}
                   required
@@ -836,11 +837,11 @@ function ClientCreation() {
                   name="contact_no_1"
                   icon={<PhoneAndroidIcon className="h-5 w-5 text-gray-500" />}
                   placeholder="Contact No"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   labelProps={{
                     className: "hidden",
                   }}
-                  containerProps={{ className: "min-w-[100px]" }}
+                  containerProps={{ className: "w-full" }}
                   value={formData.contact_no_1}
                   onChange={handleChange}
                   required
@@ -865,17 +866,18 @@ function ClientCreation() {
                   name="contact_no_2"
                   icon={<PhoneAndroidIcon className="h-5 w-5 text-gray-500" />}
                   placeholder="Another Contact No"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   labelProps={{
                     className: "hidden",
                   }}
-                  containerProps={{ className: "min-w-[100px]" }}
+                  containerProps={{ className: "w-full" }}
                   value={formData.contact_no_2}
                   onChange={handleChange}
                 />
               </div>
             </div>
-            <div className=" col-span-3 my-3">
+            <div className="w-full sm:col-span-2 lg:col-span-3">
+
               <label htmlFor="business_detail">
                 <Typography
                   variant="small"
@@ -892,11 +894,11 @@ function ClientCreation() {
                   size="lg"
                   name="business_detail"
                   placeholder="Business Detail"
-                  className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                  className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                   labelProps={{
                     className: "hidden",
                   }}
-                  containerProps={{ className: "min-w-[100px]" }}
+                  containerProps={{ className: "w-full" }}
                   value={formData.business_detail}
                   onChange={handleChange}
                   required
@@ -918,7 +920,7 @@ function ClientCreation() {
             style={{ zIndex: 99999 }} // 👈 ye add karo
           />
 
-          <div className="grid grid-cols-2 gap-x-28">
+          <div className="grid md:grid-cols-2 gap-x-28">
             <div>
               <div className="my-3">
                 <label htmlFor="status">
@@ -940,7 +942,7 @@ function ClientCreation() {
                       mount: { y: 0 },
                       unmount: { y: 25 },
                     }}
-                    className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
+                    className="!w-full !border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
                     labelProps={{
                       className: "hidden",
                     }}

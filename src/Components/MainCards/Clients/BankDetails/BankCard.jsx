@@ -25,28 +25,35 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
+
+  width: "95%",        // Mobile full width
+  maxWidth: "750px",   // Desktop limit
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
-  paddingTop: "17px", // For vertical (top and bottom) padding
-  paddingInline: "40px",
-  borderRadius: "10px",
+  borderRadius: "12px",
+
+  padding: "20px",
+  maxHeight: "90vh",   // Mobile safe height
+  overflowY: "auto",   // Scroll if needed
 };
+
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
-  bgcolor: "background.paper",
-  //   border: "1px solid #000",
+
+  width: "95%",          // Mobile full width
+  maxWidth: "700px",     // Desktop limit
+  bgcolor: "white",
   boxShadow: 24,
-  // p: 4,
-  paddingTop: "17px", // For vertical (top and bottom) padding
-  paddingInline: "40px",
-  borderRadius: "10px",
+  borderRadius: "12px",
+
+  padding: "20px",
+  maxHeight: "90vh",     // Small screen height fix
+  overflowY: "auto",     // Scroll if content long
 };
+
 const ITEM_HEIGHT = 48;
 
 export default function BankCard({ rowId }) {
@@ -345,176 +352,112 @@ export default function BankCard({ rowId }) {
     <>
       {/* <ToastContainer /> */}
       <div>
-        <div>
-          <Modal
-            open={openViewModal}
-            onClose={handleViewClose}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            animate={{
-              mount: { scale: 1, y: 0 },
-              unmount: { scale: 0.9, y: -100 },
-            }}
-          >
-            <Box sx={style}>
-              <Typography
-                id="modal-modal-title"
-                variant="h5"
-                component="h2"
-                className="text-center border-b-2 border-[#366FA1] pb-3"
-              >
-                Details View
-              </Typography>
+    <div>
+  <Modal
+    open={openViewModal}
+    onClose={handleViewClose}
+  >
+    <Box sx={style}>
 
-              {bankData && (
-                <>
-                  <div>
-                    <form className=" my-5 w-full ">
-                      <div className="block px-4">
-                        <div className="flex gap-6  p-2">
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=" "
-                              size="sm"
-                            >
-                              Account Number :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {bankData.account_no}
-                            </div>
-                          </div>
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=""
-                            >
-                              Account Type :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {bankData.account_type}
-                            </div>
-                          </div>
-                        </div>
+      <Typography
+        variant="h5"
+        className="text-center border-b-2 border-[#366FA1] pb-3"
+      >
+        Details View
+      </Typography>
 
-                        <div className="flex gap-6   p-2">
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=""
-                              size="sm"
-                            >
-                              Bank Name :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {bankData.bank_name}
-                            </div>
-                          </div>
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=""
-                              size="sm"
-                            >
-                              Branch Name :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {bankData.branch}
-                            </div>
-                          </div>
-                        </div>
+      {bankData && (
+        <>
+          <form className="my-5 w-full">
+            <div className="px-2">
 
-                        <div className="flex gap-6  p-2">
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className="mb-1"
-                              size="sm"
-                            >
-                              IFSC Code :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {bankData.ifsc}
-                            </div>
-                          </div>
-                        </div>
+              {/* Row 1 */}
+              <div className="flex flex-col sm:flex-row gap-6 p-2">
+                <div className="w-full flex gap-2">
+                  <Typography variant="h6">Account Number :</Typography>
+                  <div className="text-gray-700">
+                    {bankData.account_no}
+                  </div>
+                </div>
 
-                        <div className="p-2">
-                          <Typography
-                            variant="h6"
-                            color="blue-gray"
-                            className="mb-1"
-                            size="sm"
+                <div className="w-full flex gap-2">
+                  <Typography variant="h6">Account Type :</Typography>
+                  <div className="text-gray-700">
+                    {bankData.account_type}
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 2 */}
+              <div className="flex flex-col sm:flex-row gap-6 p-2">
+                <div className="w-full flex gap-2">
+                  <Typography variant="h6">Bank Name :</Typography>
+                  <div className="text-gray-700">
+                    {bankData.bank_name}
+                  </div>
+                </div>
+
+                <div className="w-full flex gap-2">
+                  <Typography variant="h6">Branch :</Typography>
+                  <div className="text-gray-700">
+                    {bankData.branch}
+                  </div>
+                </div>
+              </div>
+
+              {/* Row 3 */}
+              <div className="flex flex-col sm:flex-row gap-6 p-2">
+                <div className="w-full flex gap-2">
+                  <Typography variant="h6">IFSC Code :</Typography>
+                  <div className="text-gray-700">
+                    {bankData.ifsc}
+                  </div>
+                </div>
+              </div>
+
+              {/* Attachments */}
+              <div className="p-2">
+                <Typography variant="h6" className="mb-2">Attachments :</Typography>
+
+                <div className="flex flex-col items-center gap-2">
+                  {bankData.files?.map((file, index) => {
+                    const fullFilename = file.files.split("/").pop();
+                    const shortFilename = shortenFilename(fullFilename);
+
+                    return (
+                      <div
+                        key={index}
+                        className="bg-primary text-white px-4 py-2 rounded-lg shadow-md w-full sm:w-80"
+                      >
+                        <div className="flex items-center justify-between">
+                          <a
+                            href={`https://admin.dms.zacoinfotech.com${file.files}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-medium"
                           >
-                            Attachments :
-                          </Typography>
-                          <div className="flex justify-center">
-                            {bankData.files && bankData.files.length > 0 && (
-                              <div>
-                                {bankData.files.map((file, index) => {
-                                  const fullFilename = file.files
-                                    .split("/")
-                                    .pop();
-                                  const shortFilename =
-                                    shortenFilename(fullFilename);
-
-                                  return (
-                                    <div
-                                      key={index}
-                                      className="bg-primary text-white px-4 py-1 rounded-lg shadow-md w-80 my-1"
-                                    >
-                                      <div className="flex items-center justify-between">
-                                        <div>
-                                          <a
-                                            href={`https://admin.dms.zacoinfotech.com${file.files}`}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="font-medium"
-                                          >
-                                            {shortFilename}
-                                          </a>
-                                        </div>
-                                        <FaFileAlt className="text-xl" />
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                            )}
-                          </div>
-                          ;
+                            {shortFilename}
+                          </a>
+                          <FaFileAlt className="text-xl" />
                         </div>
                       </div>
-                    </form>
-                  </div>
-                  <DialogFooter className="">
-                    <Button
-                      conained="gradient"
-                      color="red"
-                      onClick={handleViewClose}
-                      className="mr-1 "
-                    >
-                      <span>Cancel</span>
-                    </Button>
-                    <Button
-                      conained="gradient"
-                      color="green"
-                      className="bg-primary"
-                      onClick={handleViewClose}
-                    >
-                      <span>Confirm</span>
-                    </Button>
-                  </DialogFooter>
-                </>
-              )}
-            </Box>
-          </Modal>
-        </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+            </div>
+          </form>
+
+          <DialogFooter className="flex justify-end gap-3">
+            <Button color="red" onClick={handleViewClose}>Cancel</Button>
+            <Button className="bg-primary" onClick={handleViewClose}>Confirm</Button>
+          </DialogFooter>
+        </>
+      )}
+    </Box>
+  </Modal>
+</div>
       </div>
 
       {/* //////////////////////////Update Data Modal open//////// */}
@@ -537,8 +480,9 @@ export default function BankCard({ rowId }) {
             </Typography>
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-4">
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+
+                  <div className="col-span-1 sm:col-span-2 lg:col-span-4">
                     <label htmlFor="account_no">
                       <Typography
                         variant="small"
@@ -567,7 +511,7 @@ export default function BankCard({ rowId }) {
                     </div>
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="bank_name">
                       <Typography
                         variant="small"
@@ -595,7 +539,7 @@ export default function BankCard({ rowId }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="account_type">
                       <Typography
                         variant="small"
@@ -624,7 +568,7 @@ export default function BankCard({ rowId }) {
                     </div>
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="branch">
                       <Typography
                         variant="small"
@@ -652,7 +596,7 @@ export default function BankCard({ rowId }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="ifsc">
                       <Typography
                         variant="small"
@@ -680,7 +624,7 @@ export default function BankCard({ rowId }) {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="files">
                       <Typography
                         variant="small"
@@ -702,7 +646,7 @@ export default function BankCard({ rowId }) {
                     </div>
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="attachment">
                       <Typography
                         variant="small"

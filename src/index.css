@@ -25,3 +25,22 @@
 .css-113cboj-MuiTabs-root {
     min-height: "30px"!important;
 }
+
+/* Mobile: override position to center */
+@media (max-width: 768px) {
+  .Toastify__toast-container {
+    width: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: 0 !important;
+    top: 12px !important;
+  }
+}
+/* Toast Always on Top (even above MUI modal) */
+.Toastify__toast-container {
+  z-index: 999999999 !important;
+}
+
+.Toastify__toast {
+  z-index: 999999999 !important;
+}

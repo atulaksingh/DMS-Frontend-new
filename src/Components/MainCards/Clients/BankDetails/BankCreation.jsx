@@ -11,22 +11,30 @@ import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 const API_URL = import.meta.env.VITE_API_BASE_URL;
+
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 750,
-  bgcolor: "background.paper",
-  //   border: "1px solid #000",
+
+  width: "95%",        // All mobile screens
+  maxWidth: "650px",   // Medium / Laptop
+  backgroundColor: "white",
   boxShadow: 24,
-  p: 4,
-  borderRadius: "10px",
+  borderRadius: "12px",
+
+  maxHeight: "90vh",    // Mobile safe area
+  overflowY: "auto",    // Scroll if content is long
+
+  padding: "20px",
 };
+
+
 function BankCreation() {
   const { id } = useParams();
   const role = getUserRole();
-  console.log("Role from token:", getUserRole());
+  // console.log("Role from token:", getUserRole());
 
   // console.log("ddddddddddddd",id)
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
@@ -250,8 +258,8 @@ function BankCreation() {
             </Typography>
             <form className=" my-5 w-full " onSubmit={handleSubmit}>
               <div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+                  <div className="col-span-1 sm:col-span-2 lg:col-span-4">
                     <label htmlFor="account_no">
                       <Typography
                         variant="small"
@@ -280,7 +288,7 @@ function BankCreation() {
                     </div>
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="bank_name">
                       <Typography
                         variant="small"
@@ -308,7 +316,7 @@ function BankCreation() {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="account_type">
                       <Typography
                         variant="small"
@@ -337,7 +345,7 @@ function BankCreation() {
                     </div>
                   </div>
 
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="branch">
                       <Typography
                         variant="small"
@@ -365,7 +373,7 @@ function BankCreation() {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="ifsc">
                       <Typography
                         variant="small"
@@ -393,7 +401,7 @@ function BankCreation() {
                       />
                     </div>
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-1 lg:col-span-2">
                     <label htmlFor="attachment">
                       <Typography
                         variant="small"
