@@ -16,7 +16,7 @@ function ProductDesc() {
     try {
       const response = await axiosInstance.get(`${API_URL}/api/list-client`);
       // console.log("response",response.data)
-      setProductDescriptionData(response?.data?.product_description); // Assuming the data is returned in the response body
+      setProductDescriptionData(response?.data?.product_description); 
       setLoading(false);
     } catch (error) {
       console.error("Error fetching clients:", error);

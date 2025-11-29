@@ -87,14 +87,16 @@ const Loader = () => (
 const App = () => {
   return (
     <>
-      <ToastContainer
-  position="top-right"
+      {/* <ToastContainer
+  containerId="global-toast"
+  position="top-center"
   autoClose={2000}
   newestOnTop
-  style={{ zIndex: 999999999 }}
-/>
+  closeOnClick
+  theme="light"
+/> */}
 
-
+  {/* <ToastContainer position="top-right" autoClose={2000} /> */}
       <Router>
         <Suspense fallback={<Loader />}>
           <Routes>
@@ -160,6 +162,10 @@ const App = () => {
           </Routes>
         </Suspense>
       </Router>
+
+
+
+
     </>
   );
 };

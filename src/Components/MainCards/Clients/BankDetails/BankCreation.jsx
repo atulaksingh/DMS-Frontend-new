@@ -6,7 +6,7 @@ import axios from "axios";
 import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
 import { useState } from "react";
 import { Input, Typography } from "@material-tailwind/react";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";

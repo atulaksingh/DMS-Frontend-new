@@ -2,6 +2,44 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
+
+
+/* .MuiPaper-root {
+  z-index: 10 !important;
+}
+.mui-datatables-root .MuiPaper-root {
+  z-index: 10 !important;
+}
+
+.MuiTable-root, 
+.MuiTableContainer-root, 
+.MuiTableCell-root {
+  z-index: 1 !important;
+}
+.MuiPaper-root {
+  z-index: 10 !important;
+} */
+/*  */
+
+/* .MuiDialog-root .MuiBackdrop-root {
+  background-color: rgba(0, 0, 0, 0.45) !important;
+  z-index: 1500 !important;
+}
+
+
+.Toastify__toast-container {
+  z-index: 999999 !important;
+}
+
+.Toastify__toast {
+  z-index: 999999 !important;
+} */
+
+
+
+
 .dj1 {
     color: red;
 }
@@ -17,12 +55,12 @@ body {
     background-image: url("/src/assets/bg-10.png");
     background-size: cover;
     background-position: center;
-    /* background-repeat: no-repeat; */
+
     margin: 0;
     height: 100%;
 }
 
-/* Chrome, Safari, Edge, Opera */
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     -webkit-appearance: none;

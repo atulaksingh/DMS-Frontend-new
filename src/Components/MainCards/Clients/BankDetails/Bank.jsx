@@ -211,7 +211,7 @@ function Bank({ bankData }) {
 
   return (
     <>
-      {/* <ToastContainer /> */}
+      {/* <ToastContainer />  */}
 
       <div>
         <div className="flex justify-between align-middle items-center mb-5">
@@ -223,11 +223,7 @@ function Bank({ bankData }) {
             <BankCreation />
           </div>
         </div>
-        {/* <CacheProvider value={muiCache}>
-          <ThemeProvider theme={theme}>
-            <MUIDataTable data={bankData} columns={columns} options={options} />
-          </ThemeProvider>
-        </CacheProvider> */}
+    
         {Array.isArray(bankData) && bankData.length > 0 ? (
           <CacheProvider value={muiCache}>
             <ThemeProvider theme={theme}>

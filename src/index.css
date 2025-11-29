@@ -3,6 +3,41 @@
 @tailwind utilities;
 
 
+
+/* 
+.Toastify__toast-container {
+  z-index: 999999999 !important;
+}
+
+.Toastify__toast {
+  z-index: 999999999 !important;
+}
+
+
+
+@media (max-width: 768px) {
+  .Toastify__toast-container {
+    width: 90% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    top: 12px !important;
+  }
+} */
+/* Toast should always be top */
+/* Ensure Toast always stays above MUI modal & backdrop */
+/* Toast MUST stay above MUI modal & backdrop */
+/* .Toastify__toast-container {
+  z-index: 99999999 !important;
+}
+
+.Toastify__toast {
+  z-index: 99999999 !important;
+} */
+
+
+
+
+
 .custom-row-padding .MuiTableCell-root {
     padding: 4px 8px; /* Adjust padding as needed */
   }
@@ -26,21 +61,4 @@
     min-height: "30px"!important;
 }
 
-/* Mobile: override position to center */
-@media (max-width: 768px) {
-  .Toastify__toast-container {
-    width: 100% !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    right: 0 !important;
-    top: 12px !important;
-  }
-}
-/* Toast Always on Top (even above MUI modal) */
-.Toastify__toast-container {
-  z-index: 999999999 !important;
-}
 
-.Toastify__toast {
-  z-index: 999999999 !important;
-}

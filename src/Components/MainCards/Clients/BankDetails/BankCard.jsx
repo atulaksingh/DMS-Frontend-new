@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import axios from "axios";
 import { FaFileAlt } from "react-icons/fa";
-import { ToastContainer, toast } from "react-toastify";
+import {  toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { fetchClientDetails } from "../../../Redux/clientSlice";
 import axiosInstance, { getUserRole } from "/src/utils/axiosInstance";
@@ -35,6 +35,7 @@ const style = {
   padding: "20px",
   maxHeight: "90vh",   // Mobile safe height
   overflowY: "auto",   // Scroll if needed
+
 };
 
 const styleCreateMOdal = {
@@ -52,6 +53,7 @@ const styleCreateMOdal = {
   padding: "20px",
   maxHeight: "90vh",     // Small screen height fix
   overflowY: "auto",     // Scroll if content long
+
 };
 
 const ITEM_HEIGHT = 48;
@@ -174,6 +176,8 @@ export default function BankCard({ rowId }) {
       }
     }
 
+    
+
     if (hasError) return; // ❌ Stop submit if validation failed
 
     try {
@@ -206,20 +210,20 @@ export default function BankCard({ rowId }) {
         }
       );
 
-      // fffgfffvfddfdgddddfvb we wew wewwe  wqqqqwe
-      // console.log("response",response)
-      // Check if the response indicates success
+
       if (response.status === 200 || response.status === 201) {
         toast.success(`${response.data.message}`, {
           position: "top-right",
           autoClose: 2000,
         });
 
-        // Dispatch action to fetch client details
+ 
 
         dispatch(fetchClientDetails({ id, tabName: "Bank" }));
-        // Optionally close the modal and reset form
-        handleCreateClose();
+     
+       setTimeout(() => {
+    handleCreateClose();
+  }, 500);
         setFormData({
           account_no: "",
           bank_name: "",
@@ -350,7 +354,7 @@ export default function BankCard({ rowId }) {
   };
   return (
     <>
-      {/* <ToastContainer /> */}
+    
       <div>
     <div>
   <Modal
@@ -462,12 +466,13 @@ export default function BankCard({ rowId }) {
 
       {/* //////////////////////////Update Data Modal open//////// */}
 
-      <div>
+      <div id="toastify-root">
         <Modal
           open={openCreateModal}
           onClose={handleCreateClose}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
+
         >
           <Box sx={styleCreateMOdal}>
             <Typography

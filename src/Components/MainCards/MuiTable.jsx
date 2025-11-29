@@ -174,7 +174,7 @@ function MuiTable({ tableData, fetchClients }) {
 
   const theme = createTheme({
     components: {
-      // Override MUI DataTable header styles
+    
       MuiTableCell: {
         styleOverrides: {
           head: {
@@ -204,7 +204,7 @@ function MuiTable({ tableData, fetchClients }) {
 
   return (
     <>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       {/* <div style={{ padding: "40px 80px" }}> */}
       <div >
         <div className="flex justify-between align-middle items-center mb-5">
