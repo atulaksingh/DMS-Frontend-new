@@ -60,28 +60,26 @@ function ClientDetails() {
   const dispatch = useDispatch();
   const [docTab, setDocTab] = useState("1");
   const savedTab = localStorage.getItem("selectedTab") || navItems[0].name;
-//   useEffect(() => {
-  
-//   dispatch(resetClientData());
-// }, [id]);
-useEffect(() => {
-  // reset old client data
-  dispatch(resetClientData());
+  //   useEffect(() => {
 
-  const item = navItems.find(i => i.name === savedTab);
+  //   dispatch(resetClientData());
+  // }, [id]);
+  useEffect(() => {
+    // reset old client data
+    dispatch(resetClientData());
 
-  if (item) {
-    // auto load tab data
-    dispatch(fetchClientDetails({ id, tabName: item.apiName }));
+    const item = navItems.find((i) => i.name === savedTab);
 
-    // documents → auto PF
-    if (item.name === "Documents") {
-      dispatch(fetchClientDetails({ id, tabName: "PF" }));
+    if (item) {
+      // auto load tab data
+      dispatch(fetchClientDetails({ id, tabName: item.apiName }));
+
+      // documents → auto PF
+      if (item.name === "Documents") {
+        dispatch(fetchClientDetails({ id, tabName: "PF" }));
+      }
     }
-  }
-
-}, [id]);
-
+  }, [id]);
 
   const savedUserTypeTab =
     localStorage.getItem("selectedUserTypeTab") || "Client User";
@@ -351,69 +349,79 @@ useEffect(() => {
           <>
             {/* {console.log("Rendering Tab:",} */}
             {selectedTab === "Client Details" && clientData && (
-              <div className="bg-white shadow-lg rounded-xl px-6 py-3 w-full border border-gray-100">
-                <h2 className="text-2xl font-semibold text-[#2B4F81] mb-2 border-b pb-2">
+              <div className="bg-white shadow-lg rounded-xl px-4 sm:px-6 py-4 w-full border border-gray-100">
+                <h2 className="text-xl sm:text-2xl font-semibold text-[#2B4F81] mb-3 border-b pb-2">
                   🧾 Client Details
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[15px] text-gray-800">
-                  <div className="flex">
-                    <span className="text-gray-500 text-sm min-w-[150px]">
+
+                {/* Responsive Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-[15px] text-gray-800">
+                  {/* Row Item */}
+                  <div className="flex flex-col sm:flex-row">
+                    <span className="text-gray-500 text-sm w-full sm:w-40">
                       Client Name:
                     </span>
                     <span className="font-medium">
                       {clientData.client_name}
                     </span>
                   </div>
-                  <div className="flex">
-                    <span className="text-gray-500 text-sm min-w-[150px]">
+
+                  <div className="flex flex-col sm:flex-row">
+                    <span className="text-gray-500 text-sm w-full sm:w-40">
                       Entity Type:
                     </span>
                     <span className="font-medium">
                       {clientData.entity_type}
                     </span>
                   </div>
-                  <div className="flex">
-                    <span className="text-gray-500 text-sm min-w-[150px]">
+
+                  <div className="flex flex-col sm:flex-row">
+                    <span className="text-gray-500 text-sm w-full sm:w-40">
                       Date of Incorporation:
                     </span>
                     <span className="font-medium">
                       {clientData.date_of_incorporation}
                     </span>
                   </div>
-                  <div className="flex">
-                    <span className="text-gray-500 text-sm min-w-[150px]">
+
+                  <div className="flex flex-col sm:flex-row">
+                    <span className="text-gray-500 text-sm w-full sm:w-40">
                       Contact Person:
                     </span>
                     <span className="font-medium">
                       {clientData.contact_person}
                     </span>
                   </div>
-                  <div className="flex">
-                    <span className="text-gray-500 text-sm min-w-[150px]">
+
+                  <div className="flex flex-col sm:flex-row">
+                    <span className="text-gray-500 text-sm w-full sm:w-40">
                       Designation:
                     </span>
                     <span className="font-medium">
                       {clientData.designation}
                     </span>
                   </div>
-                  <div className="flex">
-                    <span className="text-gray-500 text-sm min-w-[150px]">
+
+                  <div className="flex flex-col sm:flex-row">
+                    <span className="text-gray-500 text-sm w-full sm:w-40">
                       Contact No:
                     </span>
                     <span className="font-medium">
                       {clientData.contact_no_1}
                     </span>
                   </div>
-                  <div className="flex">
-                    <span className="text-gray-500 text-sm min-w-[150px]">
+
+                  <div className="flex flex-col sm:flex-row">
+                    <span className="text-gray-500 text-sm w-full sm:w-40">
                       Another No:
                     </span>
                     <span className="font-medium">
                       {clientData.contact_no_2}
                     </span>
                   </div>
-                  <div className="flex">
-                    <span className="text-gray-500 text-sm min-w-[150px]">
+
+                  <div className="flex flex-col sm:flex-row">
+                    <span className="text-gray-500 text-sm w-full sm:w-40">
                       Status:
                     </span>
                     <span className="font-medium capitalize text-green-600">
@@ -421,14 +429,18 @@ useEffect(() => {
                     </span>
                   </div>
                 </div>
-                <div className="flex mr-2 mt-6">
-                  <span className="text-gray-500 text-sm min-w-[150px]">
+
+                {/* Email */}
+                <div className="flex flex-col sm:flex-row mt-6">
+                  <span className="text-gray-500 text-sm w-full sm:w-40">
                     Email:
                   </span>
                   <span className="font-medium text-gray-800">
                     {clientData.email}
                   </span>
                 </div>
+
+                {/* Business Details */}
                 <div className="mt-6">
                   <span className="text-gray-500 text-sm block mb-1">
                     Business Details

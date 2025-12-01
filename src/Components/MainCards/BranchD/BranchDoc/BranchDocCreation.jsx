@@ -16,13 +16,15 @@ const styleCreateMOdal = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 750,
+  width: { xs: "95%", sm: "90%", md: "750px" },  // FULLY RESPONSIVE
+  maxHeight: "90vh",
+  overflowY: "auto",
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
-  p: 4,
+  p: { xs: 2, sm: 3, md: 4 },
   borderRadius: "10px",
 };
+
 function BranchDocCreation({ fetchBranchDetails }) {
   const { clientID, branchID } = useParams();
   const role = getUserRole();
@@ -205,218 +207,143 @@ function BranchDocCreation({ fetchBranchDetails }) {
   return (
     <>
       {/* <ToastContainer /> */}
-      <div>
-        <Modal
-          open={openCreateModal}
-          onClose={handleCreateClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={styleCreateMOdal}>
+    <div>
+  <Modal
+    open={openCreateModal}
+    onClose={handleCreateClose}
+    aria-labelledby="modal-modal-title"
+    aria-describedby="modal-modal-description"
+  >
+    <Box sx={styleCreateMOdal}>
+      <Typography
+        id="modal-modal-title"
+        variant="h5"
+        component="h2"
+        className="text-center border-b-2 border-[#366FA1] pb-3"
+      >
+        Create Branch Documents Details
+      </Typography>
+
+      <form className="my-5 w-full" onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+
+          {/* Select Document Type */}
+          <div className="col-span-1 sm:col-span-2 md:col-span-4">
             <Typography
-              id="modal-modal-title"
-              variant="h5"
-              component="h2"
-              className="text-center border-b-2 border-[#366FA1] pb-3"
+              variant="small"
+              color="blue-gray"
+              className="block font-semibold mb-1"
             >
-              Create Branch Documents Details
+              Select File
             </Typography>
-            <form className=" my-5 w-full " onSubmit={handleSubmit}>
-              <div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-4">
-                    <div className="">
-                      <label htmlFor="document_type">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="block  font-semibold  mb-1"
-                        >
-                          Select File
-                        </Typography>
-                      </label>
+            <Select
+              name="document_type"
+              value={formData.document_type}
+              required
+              onChange={(e) => setFormData((prev) => ({ ...prev, document_type: e }))}
+              className="w-full !border !border-[#cecece] bg-white text-gray-900 placeholder:text-gray-500 placeholder:opacity-100"
+              labelProps={{ className: "hidden" }}
+            >
+              <Option value="ptec">PTEC</Option>
+              <Option value="ptrc">PTRC</Option>
+              <Option value="gst">GST</Option>
+              <Option value="eway">EWAY</Option>
+              <Option value="other">Other</Option>
+            </Select>
+          </div>
 
-                      <div className="">
-                        <Select
-                          label="document_type"
-                          name="document_type"
-                          size="lg"
-                          value={formData.document_type}
-                          required
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              document_type: e,
-                            }))
-                          }
-                          animate={{
-                            mount: { y: 0 },
-                            unmount: { y: 25 },
-                          }}
-                          className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                          labelProps={{
-                            className: "hidden",
-                          }}
-                          containerProps={{ className: "min-w-[100px]" }}
-                        >
-                          <Option value="ptec">PTEC</Option>
-                          <Option value="ptrc">PTRC</Option>
-                          <Option value="gst">GST</Option>
-                          <Option value="eway">EWAY</Option>
+          {/* Username */}
+          <div className="col-span-1 md:col-span-2">
+            <Typography variant="small" className="font-semibold mb-1">
+              UserName
+            </Typography>
+            <Input
+              type="text"
+              name="login"
+              placeholder="UserName"
+              value={formData.login}
+              onChange={handleInputChange}
+              required
+              className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+              labelProps={{ className: "hidden" }}
+            />
+          </div>
 
-                          <Option value="other">Other</Option>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
+          {/* Password */}
+          <div className="col-span-1 md:col-span-2">
+            <Typography variant="small" className="font-semibold mb-1">
+              Password
+            </Typography>
+            <div className="relative">
+              <Input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleInputChange}
+                required
+                className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                labelProps={{ className: "hidden" }}
+              />
+              <button
+                type="button"
+                onClick={togglePasswordVisibility}
+                className="absolute top-3 right-3"
+              >
+                {showPassword ? (
+                  <EyeSlashIcon className="h-5 w-5 text-gray-500" />
+                ) : (
+                  <EyeIcon className="h-5 w-5 text-gray-500" />
+                )}
+              </button>
+            </div>
+          </div>
 
-                  <div className="col-span-2">
-                    <div>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1"
-                      >
-                        UserName
-                      </Typography>
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="login"
-                        value={formData.login}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="UserName"
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
-                        labelProps={{ className: "hidden" }}
-                        containerProps={{ className: "min-w-[100px]" }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <div>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1"
-                      >
-                        Password
-                      </Typography>
+          {/* Remark */}
+          <div className="col-span-1 sm:col-span-2 md:col-span-2">
+            <Typography variant="small" className="font-semibold mb-1">
+              Remark
+            </Typography>
+            <Input
+              type="text"
+              name="remark"
+              placeholder="Remarks"
+              value={formData.remark}
+              onChange={handleInputChange}
+              className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+              labelProps={{ className: "hidden" }}
+            />
+          </div>
 
+          {/* Attachments */}
+          <div className="col-span-1 sm:col-span-2 md:col-span-4">
+            <Typography variant="small" className="font-semibold mb-2">
+              Attachments
+            </Typography>
+            <input
+              type="file"
+              name="files"
+              onChange={handleFileChange}
+              required
+              multiple
+              className="file-input file-input-bordered file-input-success w-full"
+            />
+          </div>
+        </div>
 
-                      <div className="relative">
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          size="lg"
-                          name="password"
-                          placeholder="password"
-                          value={formData.password}
-                          onChange={handleInputChange}
-                          required
-                          className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
-                          labelProps={{
-                            className: "hidden",
-                          }}
-                          containerProps={{ className: "min-w-full" }}
-                        />
-                        {/* Toggle visibility button */}
-                        <button
-                          type="button"
-                          name="eye-btn"
-                          onClick={togglePasswordVisibility}
-                          className="absolute top-3 right-3"
-                        >
-                          {showPassword ? (
-                            <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-                          ) : (
-                            <EyeIcon className="h-5 w-5 text-gray-500" />
-                          )}
-                        </button>
-                      </div>
+        <DialogFooter className="mt-4">
+          <Button onClick={handleCreateClose} color="red" className="mr-1">
+            Cancel
+          </Button>
+          <Button type="submit" className="bg-primary">
+            Confirm
+          </Button>
+        </DialogFooter>
+      </form>
+    </Box>
+  </Modal>
+</div>
 
-
-
-                    </div>
-                  </div>
-
-                  <div className="col-span-2">
-                    <div>
-                      <label htmlFor="remarks">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="block font-semibold mb-2"
-                        >
-                          Remark
-                        </Typography>
-                      </label>
-
-                      <div className="">
-                        <Input
-                          type="text"
-                          size="lg"
-                          name="remark"
-                          placeholder="Remarks"
-                          value={formData.remark}
-                          onChange={handleInputChange}
-                          className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                          labelProps={{
-                            className: "hidden",
-                          }}
-                          containerProps={{ className: "min-w-[100px]" }}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-4">
-                    <label htmlFor="files">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Attachments
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <input
-                        type="file"
-                        name="files"
-                        onChange={handleFileChange}
-                        required
-                        multiple
-                        className="file-input file-input-bordered file-input-success w-full max-w-sm"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  onClick={handleCreateClose}
-                  conained="text"
-                  color="red"
-                  className="mr-1 "
-                  name="branchdoc_cancel"
-                >
-                  <span>Cancel</span>
-                </Button>
-                <Button
-                  conained="contained"
-                  type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
-                  className="bg-primary"
-                >
-                  <span>Confirm</span>
-                </Button>
-              </DialogFooter>
-            </form>
-          </Box>
-        </Modal>
-      </div>
       <Button
         conained="conained"
         size="md"

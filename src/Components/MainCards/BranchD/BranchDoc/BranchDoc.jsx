@@ -189,7 +189,7 @@ function BranchDoc({ branchDocumentsData, fetchBranchDetails }) {
       {/* <ToastContainer /> */}
 
       <div>
-        <div className="flex justify-between align-middle items-center mb-5">
+        <div className="flex justify-between align-middle items-center my-5">
           <div className="text-2xl text-gray-800 font-semibold">
             Branch Documents Details
           </div>

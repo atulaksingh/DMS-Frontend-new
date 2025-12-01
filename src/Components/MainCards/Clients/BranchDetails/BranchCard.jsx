@@ -27,28 +27,15 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
+  width: { xs: "95%", sm: "90%", md: "750px" },
+  maxHeight: "90vh",
+  overflowY: "auto",
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
-  paddingTop: "17px", // For vertical (top and bottom) padding
-  paddingInline: "40px",
+  p: 3,
   borderRadius: "10px",
 };
-const styleCreateMOdal = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 800,
-  bgcolor: "background.paper",
-  //   border: "1px solid #000",
-  boxShadow: 24,
-  // p: 4,
-  paddingTop: "17px", // For vertical (top and bottom) padding
-  paddingInline: "40px",
-  borderRadius: "10px",
-};
+
 const ITEM_HEIGHT = 48;
 
 export default function BranchCard({ rowId }) {
@@ -371,7 +358,7 @@ export default function BranchCard({ rowId }) {
         );
 
         // Dispatch action to fetch client details
-     
+
         // dispatch(fetchClientDetails({ id, tabName: "Branch" }));
       } else {
         throw new Error("Failed to load Branch data.");
@@ -403,7 +390,21 @@ export default function BranchCard({ rowId }) {
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
-          <Box sx={styleCreateMOdal}>
+          <Box
+            sx={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: { xs: "95%", sm: "90%", md: "750px" },
+              maxHeight: "90vh",
+              overflowY: "auto",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 3,
+              borderRadius: "10px",
+            }}
+          >
             <Typography
               id="modal-modal-title"
               variant="h5"
@@ -412,557 +413,219 @@ export default function BranchCard({ rowId }) {
             >
               Update Branch Details
             </Typography>
-            <form className=" my-5 w-full " onSubmit={handleSubmit}>
-              <div>
-                <div className="grid grid-cols-4 gap-x-[85px]">
-                  <div className="col-span-4">
-                    <label htmlFor="branch_name">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Branch Name
-                      </Typography>
-                    </label>
 
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="branch_name"
-                        placeholder="Branch Name"
-                        value={formData.branch_name}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
+            <form className="my-5 w-full" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                {/* Branch Name — full width */}
+                <div className="lg:col-span-2">
+                  <Typography className="block font-semibold mb-2">
+                    Branch Name
+                  </Typography>
+                  <Input
+                    type="text"
+                    name="branch_name"
+                    value={formData.branch_name}
+                    onChange={handleInputChange}
+                    placeholder="Branch Name"
+                    className="!w-full !border !border-[#cecece] bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                    labelProps={{ className: "hidden" }}
+                  />
+                </div>
 
-                  <div className="col-span-2">
-                    <label htmlFor="contact">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold  mb-1"
-                      >
-                        Contact No
-                      </Typography>
-                    </label>
+                {/* Contact */}
+                <div>
+                  <Typography className="block font-semibold mb-1">
+                    Contact No
+                  </Typography>
+                  <Input
+                    type="number"
+                    name="contact"
+                    value={formData.contact}
+                    onChange={handleInputChange}
+                    placeholder="Contact"
+                    className="!w-full !border !border-[#cecece] bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                    labelProps={{ className: "hidden" }}
+                  />
+                </div>
 
-                    <div className="">
-                      <Input
-                        type="number"
-                        size="lg"
-                        name="contact"
-                        placeholder="Contact"
-                        value={formData.contact}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white  text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
+                {/* GST */}
+                <div>
+                  <Typography className="block font-semibold mb-1">
+                    GST No
+                  </Typography>
+                  <Input
+                    type="text"
+                    name="gst_no"
+                    value={formData.gst_no}
+                    onChange={handleInputChange}
+                    placeholder="GST No"
+                    className="!w-full !border !border-[#cecece] bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                    labelProps={{ className: "hidden" }}
+                  />
+                </div>
 
-                  <div className="col-span-2">
-                    <label htmlFor="gst_no">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1 "
-                      >
-                        Gst No
-                      </Typography>
-                    </label>
+                {/* Country */}
+                <div>
+                  <Typography className="block font-semibold mb-1">
+                    Country
+                  </Typography>
+                  <Stack spacing={1} sx={{ width: "100%" }}>
+                    <Autocomplete
+                      options={countries}
+                      disableClearable
+                      getOptionLabel={(o) =>
+                        typeof o === "string" ? o : `${o.flag} ${o.name}`
+                      }
+                      value={selectedCountry}
+                      inputValue={formData.location || ""}
+                      onInputChange={(e, nv) => {
+                        setFormData({ ...formData, location: nv });
+                        const match = countries.find(
+                          (c) => c.name.toLowerCase() === nv.toLowerCase()
+                        );
+                        if (match) {
+                          setSelectedCountry(match);
+                          handleCountryChange(match);
+                        }
+                      }}
+                      onChange={(e, nv) => {
+                        setSelectedCountry(nv);
+                        setFormData({ ...formData, location: nv.name });
+                        handleCountryChange(nv);
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          size="small"
+                          fullWidth
+                          placeholder="Select Country"
+                        />
+                      )}
+                    />
+                  </Stack>
+                </div>
 
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="gst_no"
-                        placeholder="Gst No"
-                        value={formData.gst_no}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white  text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="gst_no">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1 "
-                      >
-                        Country
-                      </Typography>
-                    </label>
+                {/* State */}
+                <div>
+                  <Typography className="block font-semibold mb-1">
+                    State
+                  </Typography>
+                  <Stack spacing={1} sx={{ width: "100%" }}>
+                    <Autocomplete
+                      options={states}
+                      disableClearable
+                      getOptionLabel={(o) =>
+                        typeof o === "string" ? o : o.name
+                      }
+                      value={selectedState}
+                      inputValue={formData.state || ""}
+                      onInputChange={(e, nv) => {
+                        setFormData({ ...formData, state: nv });
+                        const match = states.find(
+                          (s) => s.name.toLowerCase() === nv.toLowerCase()
+                        );
+                        if (match) {
+                          setSelectedState(match);
+                          handleStateChange(match);
+                        }
+                      }}
+                      onChange={(e, nv) => {
+                        setSelectedState(nv);
+                        setFormData({ ...formData, state: nv.name });
+                        handleStateChange(nv);
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          size="small"
+                          fullWidth
+                          placeholder="Select State"
+                        />
+                      )}
+                    />
+                  </Stack>
+                </div>
 
-                    <div className="">
-                      <div className="">
-                        <div className="">
-                          <Stack spacing={1} sx={{ width: 300 }}>
-                            {/* <Autocomplete
-                              id="country-select"
-                              options={countries}
-                              disableClearable
-                              value={selectedCountry}
-                              getOptionLabel={(option) =>
-                                `${option.flag} ${option.name}`
-                              }
-                              onChange={(event, newValue) =>
-                                handleCountryChange(newValue)
-                              }
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.isoCode}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.flag} {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select Country"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                  InputProps={{
-                                    ...params.InputProps,
-                                    type: "search",
-                                  }}
-                                />
-                              )}
-                            /> */}
-                            <Autocomplete
-                              id="country-select"
-                              options={countries}
-                              freeSolo={false}
-                              disableClearable
-                              getOptionLabel={(option) =>
-                                typeof option === "string"
-                                  ? option
-                                  : `${option.flag} ${option.name}`
-                              }
-                              isOptionEqualToValue={(option, value) =>
-                                option.name === value.name
-                              }
-                              value={selectedCountry} // your selected country object
-                              inputValue={formData.location || ""}
-                              onInputChange={(event, newInputValue) => {
-                                setFormData({
-                                  ...formData,
-                                  location: newInputValue,
-                                });
+                {/* City */}
+                <div>
+                  <Typography className="block font-semibold mb-1">
+                    City
+                  </Typography>
+                  <Stack spacing={1} sx={{ width: "100%" }}>
+                    <Autocomplete
+                      options={cities}
+                      disableClearable
+                      getOptionLabel={(o) =>
+                        typeof o === "string" ? o : o.name
+                      }
+                      value={selectedCity}
+                      inputValue={formData.city || ""}
+                      onInputChange={(e, nv) => {
+                        setFormData({ ...formData, city: nv });
+                        const match = cities.find(
+                          (c) => c.name.toLowerCase() === nv.toLowerCase()
+                        );
+                        if (match) setSelectedCity(match);
+                      }}
+                      onChange={(e, nv) => {
+                        setSelectedCity(nv);
+                        setFormData({ ...formData, city: nv?.name || "" });
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          size="small"
+                          fullWidth
+                          placeholder="Select City"
+                        />
+                      )}
+                    />
+                  </Stack>
+                </div>
 
-                                const matchedCountry = countries.find(
-                                  (country) =>
-                                    country.name.toLowerCase() ===
-                                    newInputValue.toLowerCase()
-                                );
+                {/* Pincode */}
+                <div>
+                  <Typography className="block font-semibold mb-1">
+                    Pin Code
+                  </Typography>
+                  <Input
+                    type="number"
+                    name="pincode"
+                    value={formData.pincode}
+                    onChange={handleInputChange}
+                    placeholder="Pin Code"
+                    className="!w-full !border !border-[#cecece] bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                    labelProps={{ className: "hidden" }}
+                  />
+                </div>
 
-                                if (matchedCountry) {
-                                  setSelectedCountry(matchedCountry); // select the match
-                                  handleCountryChange(matchedCountry);
-                                }
-                              }}
-                              onChange={(event, newValue) => {
-                                if (newValue) {
-                                  setSelectedCountry(newValue);
-                                  setFormData({
-                                    ...formData,
-                                    location: newValue.name,
-                                  });
-                                  handleCountryChange(newValue);
-                                }
-                              }}
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.isoCode}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.flag} {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select Country"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                  InputProps={{
-                                    ...params.InputProps,
-                                    type: "search",
-                                  }}
-                                />
-                              )}
-                            />
-                          </Stack>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="gst_no">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1 "
-                      >
-                        State
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <div className="">
-                        <div className="">
-                          <Stack spacing={1} sx={{ width: 300 }}>
-                            {/* <Autocomplete
-                              id="state-select"
-                              options={states}
-                              disableClearable
-                              value={selectedState} // Use selectedState as the default value
-                              getOptionLabel={(option) => option.name}
-                              onChange={(event, newValue) =>
-                                handleStateChange(newValue)
-                              }
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.isoCode}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select State"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                />
-                              )}
-                            /> */}
-                            <Autocomplete
-                              id="state-select"
-                              options={states}
-                              disableClearable
-                              getOptionLabel={(option) =>
-                                typeof option === "string"
-                                  ? option
-                                  : option.name
-                              }
-                              isOptionEqualToValue={(option, value) =>
-                                option.name === value.name
-                              }
-                              value={selectedState} // selected state object
-                              inputValue={formData.state || ""}
-                              onInputChange={(event, newInputValue) => {
-                                setFormData({
-                                  ...formData,
-                                  state: newInputValue,
-                                });
-
-                                const matchedState = states.find(
-                                  (state) =>
-                                    state.name.toLowerCase() ===
-                                    newInputValue.toLowerCase()
-                                );
-
-                                if (matchedState) {
-                                  setSelectedState(matchedState); // auto-select match
-                                  handleStateChange(matchedState);
-                                }
-                              }}
-                              onChange={(event, newValue) => {
-                                if (newValue) {
-                                  setSelectedState(newValue);
-                                  setFormData({
-                                    ...formData,
-                                    state: newValue.name,
-                                  });
-                                  handleStateChange(newValue);
-                                }
-                              }}
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.isoCode}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select State"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                />
-                              )}
-                            />
-                          </Stack>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <label htmlFor="gst_no">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1 mt-2"
-                      >
-                        City
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <div className="">
-                        <div className="">
-                          <Stack spacing={1} sx={{ width: 300 }}>
-                            {/* <Autocomplete
-                              id="city-select"
-                              options={cities}
-                              disableClearable
-                              value={selectedCity} // Use selectedCity as the default value
-                              getOptionLabel={(option) => option.name}
-                              onChange={(event, newValue) =>
-                                handleCityChange(newValue)
-                              }
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.name}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select City"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "20px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "20px 6px",
-                                    },
-                                  }}
-                                />
-                              )}
-                            /> */}
-                            <Autocomplete
-                              id="city-select"
-                              options={cities}
-                              disableClearable
-                              getOptionLabel={(option) =>
-                                typeof option === "string"
-                                  ? option
-                                  : option.name
-                              }
-                              isOptionEqualToValue={(option, value) =>
-                                option.name === value.name
-                              }
-                              value={selectedCity} // selected city object
-                              inputValue={formData.city || ""}
-                              onInputChange={(event, newInputValue) => {
-                                setFormData((prevData) => ({
-                                  ...prevData,
-                                  city: newInputValue,
-                                }));
-
-                                const matchedCity = cities.find(
-                                  (city) =>
-                                    city.name.toLowerCase() ===
-                                    newInputValue.toLowerCase()
-                                );
-
-                                if (matchedCity) {
-                                  setSelectedCity(matchedCity);
-                                }
-                              }}
-                              onChange={(event, newValue) => {
-                                setSelectedCity(newValue);
-                                setFormData((prevData) => ({
-                                  ...prevData,
-                                  city: newValue ? newValue.name : "",
-                                }));
-                              }}
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.name}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select City"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                />
-                              )}
-                            />
-                          </Stack>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="col-span-2">
-                    <label htmlFor="pincode">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1 mt-2"
-                      >
-                        Pin Code
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <Input
-                        type="number"
-                        size="lg"
-                        name="pincode"
-                        placeholder="Pin Code"
-                        value={formData.pincode}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-4">
-                    <label htmlFor="address">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1 mt-2"
-                      >
-                        Address
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="address"
-                        placeholder="Address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] !h-[28px] !py-[16px] !px-[10px]"
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
-                  </div>
+                {/* Address — full width */}
+                <div className="lg:col-span-2">
+                  <Typography className="block font-semibold mb-1">
+                    Address
+                  </Typography>
+                  <Input
+                    type="text"
+                    name="address"
+                    value={formData.address}
+                    onChange={handleInputChange}
+                    placeholder="Address"
+                    className="!w-full !border !border-[#cecece] bg-white text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                    labelProps={{ className: "hidden" }}
+                  />
                 </div>
               </div>
+
               <DialogFooter>
                 <Button
                   onClick={handleCreateClose}
-                  conained="text"
                   color="red"
-                  className="mr-1 "
+                  className="mr-1"
                 >
-                  <span>Cancel</span>
+                  Cancel
                 </Button>
-                <Button
-                  conained="contained"
-                  type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
-                  className="bg-primary"
-                >
-                  <span>Confirm</span>
+                <Button type="submit" className="bg-primary">
+                  Confirm
                 </Button>
               </DialogFooter>
             </form>

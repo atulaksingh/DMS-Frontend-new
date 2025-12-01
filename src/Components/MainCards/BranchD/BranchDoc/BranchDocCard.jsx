@@ -24,26 +24,27 @@ const style = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
+  width: { xs: "90%", sm: "80%", md: "600px" }, // Responsive width
+  maxHeight: "90vh",
+  overflowY: "auto",
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
-  paddingTop: "17px", // For vertical (top and bottom) padding
-  paddingInline: "40px",
   borderRadius: "10px",
+  padding: "20px", // auto responsive padding
 };
+
 const styleCreateMOdal = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 800,
+  width: { xs: "95%", sm: "90%", md: "800px" },
+  maxHeight: "90vh",
+  overflowY: "auto",
   bgcolor: "background.paper",
-  //   border: "1px solid #000",
   boxShadow: 24,
-  // p: 4,
-  paddingTop: "17px", // For vertical (top and bottom) padding
-  paddingInline: "40px",
+  paddingTop: "16px",
+  paddingInline: "20px",
   borderRadius: "10px",
 };
 const ITEM_HEIGHT = 48;
@@ -72,17 +73,29 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
     ],
     login: [
       { test: (v) => v.length > 0, message: "Username is required" },
-      { test: (v) => /^[a-zA-Z0-9_]+$/.test(v), message: "Only letters, numbers, and underscores allowed" },
+      {
+        test: (v) => /^[a-zA-Z0-9_]+$/.test(v),
+        message: "Only letters, numbers, and underscores allowed",
+      },
     ],
     password: [
       { test: (v) => v.length > 0, message: "Password is required" },
-      { test: (v) => v.length >= 6, message: "Password must be at least 6 characters long" },
+      {
+        test: (v) => v.length >= 6,
+        message: "Password must be at least 6 characters long",
+      },
     ],
     remark: [
-      { test: (v) => v.length <= 500, message: "Remarks cannot exceed 500 characters" },
+      {
+        test: (v) => v.length <= 500,
+        message: "Remarks cannot exceed 500 characters",
+      },
     ],
     files: [
-      { test: (v) => v && v.length > 0, message: "At least one file is required" },
+      {
+        test: (v) => v && v.length > 0,
+        message: "At least one file is required",
+      },
       // {
       //   test: (v) => v.every(f => f.type === "application/pdf" || f.type.startsWith("image/") || f.type === "application/vnd.ms-excel" || f.type ===
       //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || f.type === "text/plain"), message: "Only PDF or image files are allowed"
@@ -107,16 +120,15 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
     }));
 
     const errorMsg = validateFileField(name, value);
-    setErrors(prev => ({ ...prev, [name]: errorMsg }));
+    setErrors((prev) => ({ ...prev, [name]: errorMsg }));
   };
-
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files); // FileList → Array
 
     setFormData((prev) => ({
       ...prev,
-      files: selectedFiles,  // store as array
+      files: selectedFiles, // store as array
     }));
 
     // validate with correct array
@@ -195,7 +207,8 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
       // Check for Axios-specific error response
       if (error.response) {
         toast.error(
-          error.response.data.message || "Failed to update BranchDoc details. Please try again.",
+          error.response.data.message ||
+            "Failed to update BranchDoc details. Please try again.",
           {
             position: "top-right",
             autoClose: 2000,
@@ -210,7 +223,6 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
       }
     }
   };
-
 
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -317,11 +329,24 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
               unmount: { scale: 0.9, y: -100 },
             }}
           >
-            <Box sx={style}>
+            <Box
+              sx={{
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                width: { xs: "95%", sm: "90%", md: "700px" },
+                maxHeight: "90vh",
+                overflowY: "auto",
+                bgcolor: "background.paper",
+                boxShadow: 24,
+                borderRadius: "10px",
+                p: { xs: 2, sm: 3 },
+              }}
+            >
+              {/* Title */}
               <Typography
-                id="modal-modal-title"
                 variant="h5"
-                component="h2"
                 className="text-center border-b-2 border-[#366FA1] pb-3"
               >
                 Details View
@@ -329,130 +354,110 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
 
               {branchDocData && (
                 <>
-                  <div>
-                    <form className=" my-5 w-full ">
-                      <div className="block px-4">
-                        <div className="flex gap-6  p-2">
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=" "
-                              size="sm"
-                            >
-                              Document Type :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {branchDocData.document_type}
-                            </div>
-                          </div>
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=""
-                            >
-                              UserName :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {branchDocData.login}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-6   p-2">
-                          <div className="w-full flex gap-3">
-                            <Typography
-                              variant="h6"
-                              color="blue-gray"
-                              className=""
-                              size="sm"
-                            >
-                              Password :
-                            </Typography>
-                            <div className="text-gray-700 text-[15px] my-auto">
-                              {branchDocData.password}
-                            </div>
-                          </div>
-                        </div>
-                        <div className="w-full flex gap-3 p-2">
-                          <Typography
-                            variant="h6"
-                            color="blue-gray"
-                            className=""
-                            size="sm"
-                          >
-                            Remark :
-                          </Typography>
-                          <div className="text-gray-700 text-[15px] my-auto">
-                            {branchDocData.remark}
-                          </div>
-                        </div>
-
-                        <div className="p-2">
-                          <Typography
-                            variant="h6"
-                            color="blue-gray"
-                            className="mb-1"
-                            size="sm"
-                          >
-                            Attachments :
-                          </Typography>
-                          <div className="flex justify-center">
-                            {branchDocData.files &&
-                              branchDocData.files.length > 0 && (
-                                <div>
-                                  {branchDocData.files.map((file, index) => {
-                                    const fullFilename = file.files
-                                      .split("/")
-                                      .pop();
-                                    const shortFilename =
-                                      shortenFilename(fullFilename);
-
-                                    return (
-                                      <div
-                                        key={index}
-                                        className="bg-primary text-white px-4 py-1 rounded-lg shadow-md w-80 my-1"
-                                      >
-                                        <div className="flex items-center justify-between">
-                                          <div>
-                                            <a
-                                              href={`https://admin.dms.zacoinfotech.com${file.files}`}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="font-medium"
-                                            >
-                                              {shortFilename}
-                                            </a>
-                                          </div>
-                                          <FaFileAlt className="text-xl" />
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              )}
-                          </div>
-                        </div>
+                  <div className="px-2 sm:px-4 mt-4">
+                    {/* GRID: Mobile=1, Tablet=2 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {/* Document Type */}
+                      <div>
+                        <Typography
+                          variant="h6"
+                          className="font-semibold text-gray-700 mb-1"
+                        >
+                          Document Type:
+                        </Typography>
+                        <p className="text-gray-800 text-[15px]">
+                          {branchDocData.document_type}
+                        </p>
                       </div>
-                    </form>
+
+                      {/* Username */}
+                      <div>
+                        <Typography
+                          variant="h6"
+                          className="font-semibold text-gray-700 mb-1"
+                        >
+                          Username:
+                        </Typography>
+                        <p className="text-gray-800 text-[15px]">
+                          {branchDocData.login}
+                        </p>
+                      </div>
+
+                      {/* Password */}
+                      <div>
+                        <Typography
+                          variant="h6"
+                          className="font-semibold text-gray-700 mb-1"
+                        >
+                          Password:
+                        </Typography>
+                        <p className="text-gray-800 text-[15px]">
+                          {branchDocData.password}
+                        </p>
+                      </div>
+
+                      {/* Remark */}
+                      <div>
+                        <Typography
+                          variant="h6"
+                          className="font-semibold text-gray-700 mb-1"
+                        >
+                          Remark:
+                        </Typography>
+                        <p className="text-gray-800 text-[15px]">
+                          {branchDocData.remark}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Attachments */}
+                    <div className="mt-6">
+                      <Typography
+                        variant="h6"
+                        className="font-semibold text-gray-700 mb-2"
+                      >
+                        Attachments:
+                      </Typography>
+
+                      <div className="flex flex-col gap-2 w-full">
+                        {branchDocData.files &&
+                          branchDocData.files.length > 0 &&
+                          branchDocData.files.map((file, index) => {
+                            const fullFilename = file.files.split("/").pop();
+                            const shortFilename = shortenFilename(fullFilename);
+
+                            return (
+                              <div
+                                key={index}
+                                className="bg-primary text-white px-4 py-1 rounded-lg shadow-md w-80 my-1"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <a
+                                      href={`https://admin.dms.zacoinfotech.com${file.files}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="font-medium"
+                                    >
+                                      {shortFilename}
+                                    </a>
+                                  </div>
+                                  <FaFileAlt className="text-xl" />
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </div>
                   </div>
-                  <DialogFooter>
-                    <Button
-                      conained="gradient"
-                      color="red"
-                      onClick={handleViewClose}
-                      className="mr-1 "
-                    >
-                      <span>Cancel</span>
+
+                  {/* Footer */}
+                  <DialogFooter className="mt-4 flex justify-end gap-2">
+                    <Button color="red" onClick={handleViewClose}>
+                      Cancel
                     </Button>
-                    <Button
-                      conained="gradient"
-                      color="green"
-                      className="bg-primary"
-                      onClick={handleViewClose}
-                    >
-                      <span>Confirm</span>
+                    <Button className="bg-primary" onClick={handleViewClose}>
+                      Confirm
                     </Button>
                   </DialogFooter>
                 </>
@@ -472,233 +477,165 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={styleCreateMOdal}>
+            {/* Title */}
             <Typography
-              id="modal-modal-title"
               variant="h5"
-              component="h2"
               className="text-center border-b-2 border-[#366FA1] pb-3"
             >
-              Update branchDoc Details
+              Update BranchDoc Details
             </Typography>
-            <form className=" my-5 w-full " onSubmit={handleSubmit}>
-              <div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-4">
-                    <div className="">
-                      <label htmlFor="document_type">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="block  font-semibold  mb-1"
-                        >
-                          Select File
-                        </Typography>
-                      </label>
 
-                      <div className="">
-                        <Select
-                          label="document_type"
-                          name="document_type"
-                          size="lg"
-                          value={formData.document_type}
-                          onChange={(e) =>
-                            setFormData((prev) => ({
-                              ...prev,
-                              document_type: e,
-                            }))
-                          }
-                          animate={{
-                            mount: { y: 0 },
-                            unmount: { y: 25 },
-                          }}
-                          className="!border !border-[#cecece] bg-white pt-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                          labelProps={{
-                            className: "hidden",
-                          }}
-                          containerProps={{ className: "min-w-[100px]" }}
-                        >
-                          <Option value="ptec">PTEC</Option>
-                          <Option value="ptrc">PTRC</Option>
-                          <Option value="gst">GST</Option>
-                          <Option value="eway">EWAY</Option>
+            {/* Form */}
+            <form className="my-5 w-full" onSubmit={handleSubmit}>
+              {/* GRID responsive */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* Select File – full width on all devices */}
+                <div className="col-span-1 sm:col-span-2 lg:col-span-4">
+                  <Typography className="font-semibold mb-1">
+                    Select File
+                  </Typography>
 
-                          <Option value="other">Other</Option>
-                        </Select>
-                      </div>
-                    </div>
-                  </div>
+                  <Select
+                    name="document_type"
+                    size="lg"
+                    value={formData.document_type}
+                    onChange={(e) =>
+                      setFormData({ ...formData, document_type: e })
+                    }
+                    className="!border !border-[#cecece] bg-white
+                        text-gray-900 w-full"
+                    labelProps={{ className: "hidden" }}
+                    containerProps={{ className: "w-full" }}
+                  >
+                    <Option value="ptec">PTEC</Option>
+                    <Option value="ptrc">PTRC</Option>
+                    <Option value="gst">GST</Option>
+                    <Option value="eway">EWAY</Option>
+                    <Option value="other">Other</Option>
+                  </Select>
+                </div>
 
-                  <div className="col-span-2">
-                    <div>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1"
-                      >
-                        UserName
-                      </Typography>
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="login"
-                        value={formData.login}
-                        onChange={handleInputChange}
-                        required
-                        placeholder="Login"
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
-                        labelProps={{ className: "hidden" }}
-                        containerProps={{ className: "min-w-[100px]" }}
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-2">
-                    <div>
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-1"
-                      >
-                        Password
-                      </Typography>
+                {/* Username */}
+                <div className="col-span-1 md:col-span-2">
+                  <Typography className="font-semibold mb-1">
+                    UserName
+                  </Typography>
+                  <Input
+                    type="text"
+                    name="login"
+                    value={formData.login}
+                    onChange={handleInputChange}
+                    placeholder="Login"
+                    className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                    labelProps={{ className: "hidden" }}
+                  />
+                </div>
 
-                      <div className="relative">
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          size="lg"
-                          name="password"
-                          placeholder="password"
-                          value={formData.password}
-                          onChange={handleInputChange}
-                          required
-                          className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
-                          labelProps={{
-                            className: "hidden",
-                          }}
-                          containerProps={{ className: "min-w-full" }}
-                        />
-                        {/* Toggle visibility button */}
-                        <button
-                          type="button"
-                          name="eye-btn"
-                          onClick={togglePasswordVisibility}
-                          className="absolute top-3 right-3"
-                        >
-                          {showPassword ? (
-                            <EyeSlashIcon className="h-5 w-5 text-gray-500" />
-                          ) : (
-                            <EyeIcon className="h-5 w-5 text-gray-500" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                {/* Password */}
+                <div className="col-span-1 md:col-span-2">
+                  <Typography className="font-semibold mb-1">
+                    Password
+                  </Typography>
 
-                  <div className="col-span-2">
-                    <div>
-                      <label htmlFor="remarks">
-                        <Typography
-                          variant="small"
-                          color="blue-gray"
-                          className="block font-semibold mb-2"
-                        >
-                          Remark
-                        </Typography>
-                      </label>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="Password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                      labelProps={{ className: "hidden" }}
+                    />
 
-                      <div className="">
-                        <Input
-                          type="text"
-                          size="lg"
-                          name="remark"
-                          placeholder="Remarks"
-                          value={formData.remark}
-                          onChange={handleInputChange}
-                          className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                          labelProps={{
-                            className: "hidden",
-                          }}
-                          containerProps={{ className: "min-w-[100px]" }}
-                        />
-                      </div>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={togglePasswordVisibility}
+                      className="absolute top-2.5 right-3"
+                    >
+                      {showPassword ? (
+                        <EyeSlashIcon className="h-5 w-5 text-gray-500" />
+                      ) : (
+                        <EyeIcon className="h-5 w-5 text-gray-500" />
+                      )}
+                    </button>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="col-span-1">
-                    <label htmlFor="files">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Attachments
-                      </Typography>
-                    </label>
 
-                    <div className="">
-                      <input
-                        type="file"
-                        name="files"
-                        onChange={handleFileChange}
-                        multiple
-                        className="file-input file-input-bordered file-input-success w-full max-w-sm"
-                      />
-                    </div>
-                  </div>
-                  <div className="col-span-1">
-                    <label htmlFor="attachment">
-                      <Typography
-                        variant="small"
-                        color="blue-gray"
-                        className="block font-semibold mb-2"
-                      >
-                        Attachments
-                      </Typography>
-                    </label>
-
-                    <div className="">
-                      {formData.files && formData.files.length > 0 && (
-                        <div className="text-sm text-gray-500 mt-2">
-                          <p>Selected files:</p>
-                          {formData.files.map((file, index) => (
-                            <p key={index}>
-                              {file.files ? (
-                                <a
-                                  href={`https://admin.dms.zacoinfotech.com${file.files}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-500 underline"
-                                >
-                                  {file.files.split("/").pop()}
-                                </a>
-                              ) : (
-                                <span>{file.name || "No file link available"}</span>
-                              )}
-                            </p>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                {/* Remark */}
+                <div className="col-span-1 md:col-span-2">
+                  <Typography className="font-semibold mb-1">Remark</Typography>
+                  <Input
+                    type="text"
+                    name="remark"
+                    placeholder="Remarks"
+                    value={formData.remark}
+                    onChange={handleInputChange}
+                    className="!border !border-[#cecece] bg-white py-1 text-gray-900 ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                    labelProps={{ className: "hidden" }}
+                  />
                 </div>
               </div>
-              <DialogFooter>
+
+              {/* Attachments */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                {/* Upload New Files */}
+                <div>
+                  <Typography className="font-semibold mb-1">
+                    Attachments
+                  </Typography>
+                  <input
+                    type="file"
+                    name="files"
+                    multiple
+                    onChange={handleFileChange}
+                    className="file-input file-input-bordered file-input-success w-full"
+                  />
+                </div>
+
+                {/* Existing Files */}
+                <div>
+                  <Typography className="font-semibold mb-1">
+                    Existing Files
+                  </Typography>
+
+                  {formData.files && formData.files.length > 0 ? (
+                    <div className="text-sm text-gray-600 mt-1 space-y-1">
+                      {formData.files.map((file, index) => (
+                        <p key={index}>
+                          {file?.files ? (
+                            <a
+                              href={`https://admin.dms.zacoinfotech.com${file.files}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 underline"
+                            >
+                              {file.files.split("/").pop()}
+                            </a>
+                          ) : (
+                            <span>{file.name}</span>
+                          )}
+                        </p>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">No files selected</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <DialogFooter className="mt-6">
                 <Button
                   onClick={handleCreateClose}
-                  conained="text"
                   color="red"
-                  className="mr-1 "
+                  className="mr-1"
                 >
-                  <span>Cancel</span>
+                  Cancel
                 </Button>
-                <Button
-                  conained="contained"
-                  type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
-                  className="bg-primary"
-                >
-                  <span>Confirm</span>
+
+                <Button type="submit" className="bg-primary">
+                  Confirm
                 </Button>
               </DialogFooter>
             </form>
@@ -720,57 +657,57 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
           }}
         >
           <Box sx={style}>
+            {/* Header */}
             <Typography
-              id="modal-modal-title"
               variant="h5"
-              component="h2"
               className="text-center border-b-2 border-[#366FA1] pb-3"
             >
               Delete
             </Typography>
 
-            <div>
-              <div className="w-full max-w-md mx-auto pb-7">
-                <div className="my-8 text-center">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="w-14 fill-red-500 inline"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z"
-                      data-original="#000000"
-                    />
-                    <path
-                      d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z"
-                      data-original="#000000"
-                    />
-                  </svg>
-                  <h4 className="text-gray-800 text-lg font-semibold mt-4">
-                    Are you sure you want to delete it?
-                  </h4>
-                  <p className="text-sm text-gray-600 mt-4">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                    auctor auctor arcu, at fermentum dui. Maecenas
-                  </p>
-                </div>
+            {/* Content */}
+            <div className="w-full mx-auto py-6 px-2 text-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-14 fill-red-500 inline"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19 7a1 1 0 0 0-1 1v11.191A1.92 1.92 0 0 1 15.99 21H8.01A1.92 1.92 0 0 1 6 19.191V8a1 1 0 0 0-2 0v11.191A3.918 3.918 0 0 0 8.01 23h7.98A3.918 3.918 0 0 0 20 19.191V8a1 1 0 0 0-1-1Zm1-3h-4V2a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v2H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2ZM10 4V3h4v1Z"
+                  data-original="#000000"
+                />
+                <path
+                  d="M11 17v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Zm4 0v-7a1 1 0 0 0-2 0v7a1 1 0 0 0 2 0Z"
+                  data-original="#000000"
+                />
+              </svg>
 
-                <div className="flex flex-col space-y-2">
-                  <button
-                    type="button"
-                    onClick={handleDeleteID}
-                    className="px-4 py-2 rounded-lg text-white text-sm tracking-wide bg-red-500 hover:bg-red-600 active:bg-red-500"
-                  >
-                    Delete
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleDeleteClose}
-                    className="px-4 py-2 rounded-lg text-gray-800 text-sm tracking-wide bg-gray-200 hover:bg-gray-300 active:bg-gray-200"
-                  >
-                    Cancel
-                  </button>
-                </div>
+              <h4 className="text-gray-800 text-lg font-semibold mt-4">
+                Are you sure you want to delete it?
+              </h4>
+
+              <p className="text-sm text-gray-600 mt-3 px-2 sm:px-6">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                auctor auctor arcu, at fermentum dui. Maecenas.
+              </p>
+
+              {/* Buttons Responsive */}
+              <div className="mt-6 flex flex-col gap-2">
+                <button
+                  type="button"
+                  onClick={handleDeleteID}
+                  className="px-4 py-2 rounded-lg text-white text-sm bg-red-500 hover:bg-red-600"
+                >
+                  Delete
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDeleteClose}
+                  className="px-4 py-2 rounded-lg text-gray-800 text-sm bg-gray-200 hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
               </div>
             </div>
           </Box>

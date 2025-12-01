@@ -16,16 +16,23 @@ const styleCreateMOdal = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 750,
+  width: { xs: "95%", sm: "90%", md: "750px" },
+  maxHeight: "90vh",
+  overflowY: "auto",
   bgcolor: "background.paper",
   boxShadow: 24,
-  p: 4,
+  p: { xs: 2, sm: 3 },
   borderRadius: "10px",
 };
-function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = "view" }) {
+
+function OfficeLocCreation({
+  fetchBranchDetails,
+  branchID: propBranchID,
+  mode = "view",
+}) {
   const { branchID: urlBranchID } = useParams(); // from route (view page)
   const role = getUserRole();
-  const branchID = propBranchID || urlBranchID;  // priority to prop
+  const branchID = propBranchID || urlBranchID; // priority to prop
   const [openCreateModal, setOpenCreateModal] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -43,9 +50,7 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
   const handleCountryChange = (country) => {
     const matchedCountry =
       typeof country === "string"
-        ? countries.find(
-          (c) => c.name.toLowerCase() === country.toLowerCase()
-        )
+        ? countries.find((c) => c.name.toLowerCase() === country.toLowerCase())
         : country;
 
     if (!matchedCountry) return;
@@ -90,28 +95,53 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
 
   const locationRules = {
     location: [
-      { test: v => v && v.trim().length > 0, message: "Location is required" },
-      { test: v => /^[A-Za-z0-9\s,.-]+$/.test(v), message: "Location can only contain letters, numbers, spaces, commas, dots, and hyphens" },
+      {
+        test: (v) => v && v.trim().length > 0,
+        message: "Location is required",
+      },
+      {
+        test: (v) => /^[A-Za-z0-9\s,.-]+$/.test(v),
+        message:
+          "Location can only contain letters, numbers, spaces, commas, dots, and hyphens",
+      },
     ],
     contact: [
-      { test: v => v && String(v).trim().length > 0, message: "Contact number is required" },
-      { test: v => /^\d{10}$/.test(String(v)), message: "Contact number must be exactly 10 digits" },
+      {
+        test: (v) => v && String(v).trim().length > 0,
+        message: "Contact number is required",
+      },
+      {
+        test: (v) => /^\d{10}$/.test(String(v)),
+        message: "Contact number must be exactly 10 digits",
+      },
     ],
     address: [
-      { test: v => v && v.trim().length > 0, message: "Address is required" },
-      { test: v => v.length >= 5, message: "Address must be at least 5 characters long" },
+      { test: (v) => v && v.trim().length > 0, message: "Address is required" },
+      {
+        test: (v) => v.length >= 5,
+        message: "Address must be at least 5 characters long",
+      },
     ],
     city: [
-      { test: v => v && v.trim().length > 0, message: "City is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "City can only contain alphabets and spaces" },
+      { test: (v) => v && v.trim().length > 0, message: "City is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "City can only contain alphabets and spaces",
+      },
     ],
     state: [
-      { test: v => v && v.trim().length > 0, message: "State is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "State can only contain alphabets and spaces" },
+      { test: (v) => v && v.trim().length > 0, message: "State is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "State can only contain alphabets and spaces",
+      },
     ],
     country: [
-      { test: v => v && v.trim().length > 0, message: "Country is required" },
-      { test: v => /^[A-Za-z\s]+$/.test(v), message: "Country can only contain alphabets and spaces" },
+      { test: (v) => v && v.trim().length > 0, message: "Country is required" },
+      {
+        test: (v) => /^[A-Za-z\s]+$/.test(v),
+        message: "Country can only contain alphabets and spaces",
+      },
     ],
   };
 
@@ -187,7 +217,6 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
           fetchBranchDetails();
         }
 
-
         setFormData({
           location: "",
           contact: "",
@@ -200,14 +229,17 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
         handleCreateClose();
       } else {
         // If the response is not successful, handle it as an error
-        throw new Error(response.data?.message || "Failed to create office location.");
+        throw new Error(
+          response.data?.message || "Failed to create office location."
+        );
       }
     } catch (error) {
       console.error("Error submitting data:", error);
 
       // Show error toast with meaningful message
       toast.error(
-        error.response?.data?.message || "Failed to create office location. Please try again.",
+        error.response?.data?.message ||
+          "Failed to create office location. Please try again.",
         {
           position: "top-right",
           autoClose: 2000,
@@ -215,7 +247,6 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
       );
     }
   };
-
 
   return (
     <>
@@ -236,10 +267,13 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
             >
               Create Office Location Details
             </Typography>
-            <form className=" my-5 w-full " onSubmit={handleSubmit}>
+
+            <form className="my-5 w-full" onSubmit={handleSubmit}>
               <div>
-                <div className="grid grid-cols-4 gap-4">
-                  <div className="col-span-4">
+                {/* RESPONSIVE GRID */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                  {/* LOCATION */}
+                  <div className="col-span-1 sm:col-span-2 md:col-span-4">
                     <label htmlFor="location">
                       <Typography
                         variant="small"
@@ -249,26 +283,24 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                         Location
                       </Typography>
                     </label>
-
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="location"
-                        placeholder="Location"
-                        value={formData.location}
-                        onChange={handleInputChange}
-                        required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
+                    <Input
+                      type="text"
+                      size="lg"
+                      name="location"
+                      placeholder="Location"
+                      value={formData.location}
+                      onChange={handleInputChange}
+                      required
+                      className="!border !border-[#cecece] bg-white py-1 text-gray-900
+             placeholder:text-gray-500 placeholder:opacity-100
+             focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                      labelProps={{ className: "hidden" }}
+                      containerProps={{ className: "min-w-full" }}
+                    />
                   </div>
 
-                  <div className="col-span-2">
+                  {/* CONTACT */}
+                  <div className="col-span-1 md:col-span-2">
                     <label htmlFor="contact">
                       <Typography
                         variant="small"
@@ -279,24 +311,24 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                       </Typography>
                     </label>
 
-                    <div className="">
-                      <Input
-                        type="number"
-                        size="lg"
-                        name="contact"
-                        placeholder="Contact Number"
-                        value={formData.contact}
-                        onChange={handleInputChange}
-                        required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
+                    <Input
+                      type="number"
+                      size="lg"
+                      name="contact"
+                      placeholder="Contact Number"
+                      value={formData.contact}
+                      onChange={handleInputChange}
+                      required
+                      className="!border !border-[#cecece] bg-white py-1 text-gray-900
+             placeholder:text-gray-500 placeholder:opacity-100
+             focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                      labelProps={{ className: "hidden" }}
+                      containerProps={{ className: "min-w-full" }}
+                    />
                   </div>
-                  <div className="col-span-2">
+
+                  {/* COUNTRY */}
+                  <div className="col-span-1 md:col-span-2">
                     <label htmlFor="country">
                       <Typography
                         variant="small"
@@ -307,65 +339,49 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                       </Typography>
                     </label>
 
-                    <div className="">
-                      <div className="">
-                        <div className="">
-                          <Stack spacing={1} sx={{ width: 300 }}>
-                            <Autocomplete
-                              id="country-select"
-                              options={countries}
-                              freeSolo
-                              disableClearable={false}
-                              getOptionLabel={(option) =>
-                                typeof option === "string" ? option : `${option.flag} ${option.name}`
-                              }
-                              value={selectedCountry} // <-- controlled value
-                              onChange={(event, newValue) => handleCountryChange(newValue)}
-                              onInputChange={(event, inputValue) => {
-                                const exactMatch = countries.find(
-                                  (country) =>
-                                    country.name.toLowerCase() === inputValue.toLowerCase()
-                                );
-                                if (exactMatch) {
-                                  handleCountryChange(exactMatch);
-                                }
-                              }}
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.isoCode}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.flag} {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select Country"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                />
-                              )}
-                            />
-                          </Stack>
-                        </div>
-                      </div>
-                    </div>
+                    <Stack spacing={1} sx={{ width: "100%" }}>
+                      <Autocomplete
+                        id="country-select"
+                        options={countries}
+                        freeSolo
+                        disableClearable={false}
+                        getOptionLabel={(option) =>
+                          typeof option === "string"
+                            ? option
+                            : `${option.flag} ${option.name}`
+                        }
+                        value={selectedCountry}
+                        onChange={(e, newValue) =>
+                          handleCountryChange(newValue)
+                        }
+                        onInputChange={(e, inputValue) => {
+                          const exactMatch = countries.find(
+                            (x) =>
+                              x.name.toLowerCase() === inputValue.toLowerCase()
+                          );
+                          if (exactMatch) handleCountryChange(exactMatch);
+                        }}
+                        renderOption={(props, option) => (
+                          <li {...props} key={option.isoCode}>
+                            {option.flag} {option.name}
+                          </li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            size="small"
+                            placeholder="Select Country"
+                            sx={{
+                              "& .MuiInputBase-root": { height: 42 },
+                            }}
+                          />
+                        )}
+                      />
+                    </Stack>
                   </div>
 
-                  <div className="col-span-2">
+                  {/* STATE */}
+                  <div className="col-span-1 md:col-span-2">
                     <label htmlFor="state">
                       <Typography
                         variant="small"
@@ -376,74 +392,54 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                       </Typography>
                     </label>
 
-                    <div className="">
-                      <div className="">
-                        <div className="">
-                          <Stack spacing={1} sx={{ width: 300 }}>
-                            <Autocomplete
-                              id="state-select"
-                              options={states}
-                              disableClearable
-                              getOptionLabel={(option) =>
-                                typeof option === "string" ? option : option.name
-                              }
-                              isOptionEqualToValue={(option, value) => option.name === value.name}
-                              value={selectedState} // selected state object
-                              inputValue={formData.state || ""}
-                              onInputChange={(event, newInputValue) => {
-                                setFormData({ ...formData, state: newInputValue });
+                    <Stack spacing={1} sx={{ width: "100%" }}>
+                      <Autocomplete
+                        id="state-select"
+                        options={states}
+                        disableClearable
+                        getOptionLabel={(option) =>
+                          typeof option === "string" ? option : option.name
+                        }
+                        isOptionEqualToValue={(o, v) => o.name === v.name}
+                        value={selectedState}
+                        inputValue={formData.state || ""}
+                        onInputChange={(e, v) => {
+                          setFormData({ ...formData, state: v });
 
-                                const matchedState = states.find(
-                                  (state) => state.name.toLowerCase() === newInputValue.toLowerCase()
-                                );
-
-                                if (matchedState) {
-                                  setSelectedState(matchedState); // auto-select match
-                                  handleStateChange(matchedState);
-                                }
-                              }}
-                              onChange={(event, newValue) => {
-                                if (newValue) {
-                                  setSelectedState(newValue);
-                                  setFormData({ ...formData, state: newValue.name });
-                                  handleStateChange(newValue);
-                                }
-                              }}
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.isoCode}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select State"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                />
-                              )}
-                            />
-                          </Stack>
-                        </div>
-                      </div>
-                    </div>
+                          const match = states.find(
+                            (x) => x.name.toLowerCase() === v.toLowerCase()
+                          );
+                          if (match) {
+                            setSelectedState(match);
+                            handleStateChange(match);
+                          }
+                        }}
+                        onChange={(e, v) => {
+                          if (v) {
+                            setSelectedState(v);
+                            setFormData({ ...formData, state: v.name });
+                            handleStateChange(v);
+                          }
+                        }}
+                        renderOption={(props, option) => (
+                          <li {...props}>{option.name}</li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            size="small"
+                            placeholder="Select State"
+                            sx={{
+                              "& .MuiInputBase-root": { height: 42 },
+                            }}
+                          />
+                        )}
+                      />
+                    </Stack>
                   </div>
-                  <div className="col-span-2">
+
+                  {/* CITY */}
+                  <div className="col-span-1 md:col-span-2">
                     <label htmlFor="city">
                       <Typography
                         variant="small"
@@ -454,76 +450,48 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                       </Typography>
                     </label>
 
-                    <div className="">
-                      <div className="">
-                        <div className="">
-                          <Stack spacing={1} sx={{ width: 300 }}>
-                            <Autocomplete
-                              id="city-select"
-                              options={cities}
-                              disableClearable
-                              getOptionLabel={(option) =>
-                                typeof option === "string" ? option : option.name
-                              }
-                              isOptionEqualToValue={(option, value) => option.name === value.name}
-                              value={selectedCity} // selected city object
-                              inputValue={formData.city || ""}
-                              onInputChange={(event, newInputValue) => {
-                                setFormData((prevData) => ({
-                                  ...prevData,
-                                  city: newInputValue,
-                                }));
+                    <Stack spacing={1} sx={{ width: "100%" }}>
+                      <Autocomplete
+                        id="city-select"
+                        options={cities}
+                        disableClearable
+                        getOptionLabel={(option) =>
+                          typeof option === "string" ? option : option.name
+                        }
+                        isOptionEqualToValue={(o, v) => o.name === v.name}
+                        value={selectedCity}
+                        inputValue={formData.city || ""}
+                        onInputChange={(e, v) => {
+                          setFormData({ ...formData, city: v });
 
-                                const matchedCity = cities.find(
-                                  (city) => city.name.toLowerCase() === newInputValue.toLowerCase()
-                                );
-
-                                if (matchedCity) {
-                                  setSelectedCity(matchedCity);
-                                }
-                              }}
-                              onChange={(event, newValue) => {
-                                setSelectedCity(newValue);
-                                setFormData((prevData) => ({
-                                  ...prevData,
-                                  city: newValue ? newValue.name : "",
-                                }));
-                              }}
-                              renderOption={(props, option) => (
-                                <li
-                                  {...props}
-                                  key={option.name}
-                                  style={{
-                                    padding: "4px 8px",
-                                    fontSize: "0.875rem",
-                                  }}
-                                >
-                                  {option.name}
-                                </li>
-                              )}
-                              renderInput={(params) => (
-                                <TextField
-                                  {...params}
-                                  size="small"
-                                  placeholder="Select City"
-                                  sx={{
-                                    "& .MuiInputBase-root": {
-                                      height: 33,
-                                      padding: "4px 6px",
-                                    },
-                                    "& .MuiOutlinedInput-input": {
-                                      padding: "4px 6px",
-                                    },
-                                  }}
-                                />
-                              )}
-                            />
-                          </Stack>
-                        </div>
-                      </div>
-                    </div>
+                          const match = cities.find(
+                            (x) => x.name.toLowerCase() === v.toLowerCase()
+                          );
+                          if (match) setSelectedCity(match);
+                        }}
+                        onChange={(e, v) => {
+                          setSelectedCity(v);
+                          setFormData({ ...formData, city: v ? v.name : "" });
+                        }}
+                        renderOption={(props, option) => (
+                          <li {...props}>{option.name}</li>
+                        )}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            size="small"
+                            placeholder="Select City"
+                            sx={{
+                              "& .MuiInputBase-root": { height: 42 },
+                            }}
+                          />
+                        )}
+                      />
+                    </Stack>
                   </div>
-                  <div className="col-span-4">
+
+                  {/* ADDRESS */}
+                  <div className="col-span-1 sm:col-span-2 md:col-span-4">
                     <label htmlFor="address">
                       <Typography
                         variant="small"
@@ -534,43 +502,34 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
                       </Typography>
                     </label>
 
-                    <div className="">
-                      <Input
-                        type="text"
-                        size="lg"
-                        name="address"
-                        placeholder="Address"
-                        value={formData.address}
-                        onChange={handleInputChange}
-                        required
-                        className="!border !border-[#cecece] bg-white py-1 text-gray-900   ring-4 ring-transparent placeholder:text-gray-500 placeholder:opacity-100 focus:!border-[#366FA1] focus:!border-t-[#366FA1] "
-                        labelProps={{
-                          className: "hidden",
-                        }}
-                        containerProps={{ className: "min-w-full" }}
-                      />
-                    </div>
+                    <Input
+                      type="text"
+                      size="lg"
+                      name="address"
+                      placeholder="Address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      required
+                      className="!border !border-[#cecece] bg-white py-1 text-gray-900
+             placeholder:text-gray-500 placeholder:opacity-100
+             focus:!border-[#366FA1] focus:!border-t-[#366FA1]"
+                      labelProps={{ className: "hidden" }}
+                      containerProps={{ className: "min-w-full" }}
+                    />
                   </div>
                 </div>
               </div>
-              <DialogFooter>
+
+              <DialogFooter className="mt-4 flex justify-end gap-3">
                 <Button
                   onClick={handleCreateClose}
-                  conained="text"
                   color="red"
-                  className="mr-1 "
                   name="officelocation_cancel"
                 >
-                  <span>Cancel</span>
+                  Cancel
                 </Button>
-                <Button
-                  conained="contained"
-                  type="submit"
-                  //   color="green"
-                  // onClick={handleCreateClose}
-                  className="bg-primary"
-                >
-                  <span>Confirm</span>
+                <Button type="submit" className="bg-primary">
+                  Confirm
                 </Button>
               </DialogFooter>
             </form>
@@ -603,9 +562,6 @@ function OfficeLocCreation({ fetchBranchDetails, branchID: propBranchID, mode = 
           Create
         </button>
       )}
-
-
-
     </>
   );
 }
