@@ -320,8 +320,8 @@ export default function BranchCard({ rowId }) {
   const handleDeleteClose = () => setOpenDeleteModal(false);
   const handleViewClose = () => setOpenViewModal(false);
   const handleCreateOpen = async () => {
-    setOpenCreateModal(true);
     setAnchorEl(null);
+    setOpenCreateModal(true);
 
     try {
       const response = await axiosInstance.get(
@@ -372,7 +372,7 @@ export default function BranchCard({ rowId }) {
 
         // Dispatch action to fetch client details
      
-        dispatch(fetchClientDetails({ id, tabName: "Branch" }));
+        // dispatch(fetchClientDetails({ id, tabName: "Branch" }));
       } else {
         throw new Error("Failed to load Branch data.");
       }
