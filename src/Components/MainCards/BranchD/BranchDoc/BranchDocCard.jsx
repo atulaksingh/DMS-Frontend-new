@@ -96,10 +96,6 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
         test: (v) => v && v.length > 0,
         message: "At least one file is required",
       },
-      // {
-      //   test: (v) => v.every(f => f.type === "application/pdf" || f.type.startsWith("image/") || f.type === "application/vnd.ms-excel" || f.type ===
-      //     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || f.type === "text/plain"), message: "Only PDF or image files are allowed"
-      // },
     ],
   };
 
@@ -358,10 +354,10 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
                     {/* GRID: Mobile=1, Tablet=2 */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Document Type */}
-                      <div>
+                      <div className="flex flex-col lg:flex-row lg:items-center gap-1">
                         <Typography
                           variant="h6"
-                          className="font-semibold text-gray-700 mb-1"
+                          className="font-semibold text-gray-700 "
                         >
                           Document Type:
                         </Typography>
@@ -371,10 +367,10 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
                       </div>
 
                       {/* Username */}
-                      <div>
+                      <div className="flex flex-col lg:flex-row lg:items-center gap-1">
                         <Typography
                           variant="h6"
-                          className="font-semibold text-gray-700 mb-1"
+                          className="font-semibold text-gray-700 "
                         >
                           Username:
                         </Typography>
@@ -384,10 +380,10 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
                       </div>
 
                       {/* Password */}
-                      <div>
+                      <div className="flex flex-col lg:flex-row lg:items-center gap-1">
                         <Typography
                           variant="h6"
-                          className="font-semibold text-gray-700 mb-1"
+                          className="font-semibold text-gray-700"
                         >
                           Password:
                         </Typography>
@@ -397,10 +393,10 @@ export default function BranchDocCard({ rowId, fetchBranchDetails }) {
                       </div>
 
                       {/* Remark */}
-                      <div>
+                      <div className="flex flex-col lg:flex-row lg:items-center gap-1">
                         <Typography
                           variant="h6"
-                          className="font-semibold text-gray-700 mb-1"
+                          className="font-semibold text-gray-700 "
                         >
                           Remark:
                         </Typography>

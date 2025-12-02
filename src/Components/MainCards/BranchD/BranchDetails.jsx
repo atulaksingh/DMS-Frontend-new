@@ -217,6 +217,7 @@ function BranchDetails() {
                       "&.Mui-selected": {
                         color: "primary",
                         fontWeight: "bold",
+                         border: 2,
                       },
                       "&:hover": { color: "primary" },
                     }}
